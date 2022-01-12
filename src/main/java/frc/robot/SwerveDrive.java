@@ -13,13 +13,12 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.util.sendable.Sendable;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 
 /** Add your docs here. */
-public class SwerveDrive extends Base implements Sendable {
+public class SwerveDrive extends Base {
     public static final double kMaxSpeed = 3.0; // 3 meters per second
     public static final double kMaxAngularSpeed = Math.PI; // 1/2 rotation per second
 
@@ -118,6 +117,10 @@ public class SwerveDrive extends Base implements Sendable {
 
     @Override
     public void robotInit() {
+        Shuffleboard.getTab("main").add(m_frontLeft);
+        Shuffleboard.getTab("main").add(m_frontRight);
+        Shuffleboard.getTab("main").add(m_backLeft);
+        Shuffleboard.getTab("main").add(m_backRight);
     }
 
     @Override
@@ -131,10 +134,6 @@ public class SwerveDrive extends Base implements Sendable {
         } else if (OI.shouldSetRobotRelative()) {
             m_fieldRelative = false;
         }
-        Shuffleboard.getTab("main").add(m_frontLeft);
-        Shuffleboard.getTab("main").add(m_frontRight);
-        Shuffleboard.getTab("main").add(m_backLeft);
-        Shuffleboard.getTab("main").add(m_backRight);
     }
 
     @Override
