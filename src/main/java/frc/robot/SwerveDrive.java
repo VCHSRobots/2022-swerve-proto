@@ -9,6 +9,7 @@ import com.kauailabs.navx.frc.AHRS;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.filter.SlewRateLimiter;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
@@ -28,26 +29,32 @@ public class SwerveDrive extends Base {
     private final SlewRateLimiter m_ySpeedLimiter = new SlewRateLimiter(5);
     private final SlewRateLimiter m_rotLimiter = new SlewRateLimiter(5);
 
-    private final double inches15toMeters = Units.inchesToMeters(15);
+    private final double inches15toMeters = Units.inchesToMeters(11);
     private final Translation2d m_frontLeftLocation = new Translation2d(inches15toMeters, inches15toMeters);
     private final Translation2d m_frontRightLocation = new Translation2d(inches15toMeters, -inches15toMeters);
     private final Translation2d m_backLeftLocation = new Translation2d(-inches15toMeters, inches15toMeters);
     private final Translation2d m_backRightLocation = new Translation2d(-inches15toMeters, -inches15toMeters);
 
+    /*
+     * frontright offset 28.91
+     * backright 172.52
+     * frontleft 140.53
+     * backleft 163.65
+     */
     private final SwerveModule m_frontLeft = new SwerveModule(RobotMap.kDrive_FrontLeftDrive_TalonFX,
-            RobotMap.kDrive_FrontLeftTurn_TalonFX, RobotMap.kDrive_FrontLeftEncoder, 0);
+            RobotMap.kDrive_FrontLeftTurn_TalonFX, RobotMap.kDrive_FrontLeftEncoder, Units.degreesToRadians((140.53-180.0)));
     private final SwerveModule m_frontRight = new SwerveModule(RobotMap.kDrive_FrontRightDrive_TalonFX,
-            RobotMap.kDrive_FrontRightTurn_TalonFX, RobotMap.kDrive_FrontRightEncoder, 0);
+            RobotMap.kDrive_FrontRightTurn_TalonFX, RobotMap.kDrive_FrontRightEncoder, Units.degreesToRadians(28.91));
     private final SwerveModule m_backLeft = new SwerveModule(RobotMap.kDrive_BackLeftDrive_TalonFX,
-            RobotMap.kDrive_BackLeftTurn_TalonFX, RobotMap.kDrive_BackLeftEncoder, 0);
+            RobotMap.kDrive_BackLeftTurn_TalonFX, RobotMap.kDrive_BackLeftEncoder, Units.degreesToRadians(163.65-180.0));
     private final SwerveModule m_backRight = new SwerveModule(RobotMap.kDrive_BackRightDrive_TalonFX,
-            RobotMap.kDrive_BackRightTurn_TalonFX, RobotMap.kDrive_BackRightEncoder, 0);
+            RobotMap.kDrive_BackRightTurn_TalonFX, RobotMap.kDrive_BackRightEncoder, Units.degreesToRadians(172.52));
 
     private final AHRS m_gyro = new AHRS(SPI.Port.kMXP);
 
     private final SwerveDriveKinematics m_kinematics = new SwerveDriveKinematics(
             m_frontLeftLocation, m_frontRightLocation, m_backLeftLocation, m_backRightLocation);
-    private final SwerveDriveOdometry m_odometry = new SwerveDriveOdometry(m_kinematics, m_gyro.getRotation2d());
+    private final SwerveDriveOdometry m_odometry = new SwerveDriveOdometry(m_kinematics, Rotation2d.fromDegrees(-m_gyro.getAngle()));
 
     private boolean m_fieldRelative = false;
 
@@ -55,8 +62,9 @@ public class SwerveDrive extends Base {
     private ChassisSpeeds m_lastChassisSpeedsDesired = new ChassisSpeeds();
 
     public SwerveDrive() {
+        m_gyro.calibrate();
         m_gyro.reset();
-        
+                
     }
 
     /**
@@ -71,7 +79,7 @@ public class SwerveDrive extends Base {
     @SuppressWarnings("ParameterName")
     public void drive(double xSpeed, double ySpeed, double rot, boolean fieldRelative) {
         m_lastChassisSpeedsDesired = fieldRelative
-                ? ChassisSpeeds.fromFieldRelativeSpeeds(xSpeed, ySpeed, rot, m_gyro.getRotation2d())
+                ? ChassisSpeeds.fromFieldRelativeSpeeds(xSpeed, ySpeed, rot, Rotation2d.fromDegrees(-m_gyro.getAngle()))
                 : new ChassisSpeeds(xSpeed, ySpeed, rot);
 
         var swerveModuleStates = m_kinematics.toSwerveModuleStates(m_lastChassisSpeedsDesired);
@@ -89,7 +97,7 @@ public class SwerveDrive extends Base {
     /** Updates the field relative position of the robot. */
     public void updateOdometry() {
         m_odometry.update(
-                m_gyro.getRotation2d(),
+                Rotation2d.fromDegrees(-m_gyro.getAngle()),
                 m_frontLeft.getState(),
                 m_frontRight.getState(),
                 m_backLeft.getState(),
@@ -130,6 +138,7 @@ public class SwerveDrive extends Base {
 
     @Override
     public void disabledInit() {
+
     }
 
     @Override
@@ -171,16 +180,16 @@ public class SwerveDrive extends Base {
 
         // ADD CODE TO TEST MOTORS HERE
         if (OI.xboxDrive.getAButton()) {
-            m_frontLeft.m_driveMotor.set(ControlMode.PercentOutput, 0.07);
-            m_frontRight.m_driveMotor.set(ControlMode.PercentOutput, 0.07);
-            m_backLeft.m_driveMotor.set(ControlMode.PercentOutput, 0.07);
-            m_backRight.m_driveMotor.set(ControlMode.PercentOutput, 0.07);
+            m_frontLeft.m_turningMotor.set(ControlMode.PercentOutput, 0.03);
+            m_frontRight.m_turningMotor.set(ControlMode.PercentOutput, 0.03);
+            m_backLeft.m_turningMotor.set(ControlMode.PercentOutput, 0.03);
+            m_backRight.m_turningMotor.set(ControlMode.PercentOutput, 0.03);
         }
         else{
-            m_frontLeft.m_driveMotor.set(ControlMode.PercentOutput, 0);
-            m_frontRight.m_driveMotor.set(ControlMode.PercentOutput, 0);
-            m_backLeft.m_driveMotor.set(ControlMode.PercentOutput, 0);
-            m_backRight.m_driveMotor.set(ControlMode.PercentOutput, 0);
+            m_backRight.m_turningMotor.set(ControlMode.PercentOutput, 0);
+            m_backLeft.m_turningMotor.set(ControlMode.PercentOutput, 0);
+            m_frontRight.m_turningMotor.set(ControlMode.PercentOutput, 0);
+            m_frontLeft.m_turningMotor.set(ControlMode.PercentOutput, 0);
         }
     }
 
@@ -188,7 +197,7 @@ public class SwerveDrive extends Base {
     public void initSendable(SendableBuilder builder) {
         builder.setSmartDashboardType("Swerve Drive");
         builder.addBooleanProperty("Field Oriented", () -> m_fieldRelative, null);
-        builder.addDoubleProperty("Heading deg", () -> m_gyro.getRotation2d().getDegrees(), null);
+        builder.addDoubleProperty("Heading deg", () -> -m_gyro.getAngle(), null);
         builder.addDoubleProperty("Desired Vx m/s", () -> m_lastChassisSpeedsDesired.vxMetersPerSecond, null);
         builder.addDoubleProperty("Desired Vy m/s", () -> m_lastChassisSpeedsDesired.vyMetersPerSecond, null);
         builder.addDoubleProperty("Desired Rot rad/s", () -> m_lastChassisSpeedsDesired.omegaRadiansPerSecond, null);

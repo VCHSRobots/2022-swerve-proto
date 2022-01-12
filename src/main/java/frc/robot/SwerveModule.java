@@ -24,8 +24,8 @@ import com.ctre.phoenix.sensors.SensorVelocityMeasPeriod;
 /** Add your docs here. */
 public class SwerveModule implements Sendable {
     private static final double kWheelRadius = Units.inchesToMeters(4);// 0.0508;
-    private static final int kEncoderResolution = 4096;
-    private static final double kDriveDistancePerPulse = 2 * Math.PI * kWheelRadius / kEncoderResolution;
+    private static final int kEncoderResolution = 2048;
+    private static final double kDriveDistancePerPulse = 2 * Math.PI * kWheelRadius * (1/5) * (1 / kEncoderResolution);
 
     private static final double kModuleMaxAngularVelocity = SwerveDrive.kMaxAngularSpeed;
     private static final double kModuleMaxAngularAcceleration = 2 * Math.PI; // radians per second squared
@@ -35,21 +35,22 @@ public class SwerveModule implements Sendable {
 
     // private final encoder m_driveEncoder; // use the encode inside talonfx
     private final CANCoder m_turningEncoder;
+    private double m_turningEncoderOffset = 0;
 
     // Gains are for example purposes only - must be determined for your own robot!
     private final PIDController m_drivePIDController = new PIDController(1, 0, 0);
 
     // Gains are for example purposes only - must be determined for your own robot!
     private final ProfiledPIDController m_turningPIDController = new ProfiledPIDController(
-            1,
+            1.75,
             0,
             0,
             new TrapezoidProfile.Constraints(
                     kModuleMaxAngularVelocity, kModuleMaxAngularAcceleration));
 
     // Gains are for example purposes only - must be determined for your own robot!
-    private final SimpleMotorFeedforward m_driveFeedforward = new SimpleMotorFeedforward(1, 3);
-    private final SimpleMotorFeedforward m_turnFeedforward = new SimpleMotorFeedforward(1, 0.5);
+    private final SimpleMotorFeedforward m_driveFeedforward = new SimpleMotorFeedforward(0.3, 0.4);
+    private final SimpleMotorFeedforward m_turnFeedforward = new SimpleMotorFeedforward(0.4, 0.5);
 
     private SwerveModuleState m_desiredState = new SwerveModuleState();
 
@@ -79,17 +80,17 @@ public class SwerveModule implements Sendable {
         m_turningMotor.setNeutralMode(NeutralMode.Brake);
 
         m_driveMotor.setInverted(false);
-        m_turningMotor.setInverted(false);
+        m_turningMotor.setInverted(true);
 
         m_driveMotor.setSensorPhase(false);
         m_turningMotor.setSensorPhase(false);
 
         TalonFXConfiguration baseConfig = new TalonFXConfiguration();
-        baseConfig.closedloopRamp = 0.05;
+        baseConfig.closedloopRamp = 0.02;
         baseConfig.neutralDeadband = 0.005;
         baseConfig.nominalOutputForward = 0.0;
         baseConfig.nominalOutputReverse = 0.0;
-        baseConfig.openloopRamp = 0.05;
+        baseConfig.openloopRamp = 0.02;
         baseConfig.peakOutputForward = 1.0;
         baseConfig.peakOutputReverse = -1.0;
         baseConfig.statorCurrLimit.enable = true;
@@ -136,6 +137,8 @@ public class SwerveModule implements Sendable {
         // Limit the PID Controller's input range between -pi and pi and set the input
         // to be continuous.
         m_turningPIDController.enableContinuousInput(-Math.PI, Math.PI);
+
+        m_turningEncoderOffset = turningEncoderOffset;
     }
 
     /**
@@ -161,6 +164,10 @@ public class SwerveModule implements Sendable {
     // kTurningRadiansPerPulse;
     // }
 
+    private double getTurningPositionRadians() {
+        return Units.degreesToRadians(m_turningEncoder.getAbsolutePosition()) - m_turningEncoderOffset;
+    }
+
     /**
      * Sets the desired state for the module.
      *
@@ -169,7 +176,7 @@ public class SwerveModule implements Sendable {
     public void setDesiredState(SwerveModuleState desiredState) {
         // Optimize the reference state to avoid spinning further than 90 degrees
         SwerveModuleState state = SwerveModuleState.optimize(desiredState,
-                Rotation2d.fromDegrees(m_turningEncoder.getAbsolutePosition()));
+                new Rotation2d(getTurningPositionRadians()));
 
         m_desiredState = state;
 
@@ -180,7 +187,7 @@ public class SwerveModule implements Sendable {
 
         // Calculate the turning motor output from the turning PID controller.
         final double turnOutput = m_turningPIDController
-                .calculate(Units.degreesToRadians(m_turningEncoder.getAbsolutePosition()), state.angle.getRadians());
+                .calculate(getTurningPositionRadians(), state.angle.getRadians());
 
         final double turnFeedforward = m_turnFeedforward.calculate(m_turningPIDController.getSetpoint().velocity);
 
@@ -193,6 +200,8 @@ public class SwerveModule implements Sendable {
         builder.setSmartDashboardType("Swerve Module");
         builder.addDoubleProperty("Actual Drive m/s", () -> getDriveRatePerSecond(), null);
         builder.addDoubleProperty("Actual Angle deg", () -> m_turningEncoder.getAbsolutePosition(), null);
+        builder.addDoubleProperty("Actual Angle with offset rad", () -> getTurningPositionRadians(), null);
+        builder.addDoubleProperty("Drive Position", () -> m_driveMotor.getSelectedSensorPosition(), null);
         builder.addDoubleProperty("Desired Drive m/s", () -> m_desiredState.speedMetersPerSecond, null);
         builder.addDoubleProperty("Desired Angle deg", () -> m_desiredState.angle.getDegrees(), null);
     }
