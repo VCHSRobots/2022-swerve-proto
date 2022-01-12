@@ -40,6 +40,7 @@ public class Robot extends TimedRobot {
     for (Base subsys : m_subsystems) {
       subsys.robotInit();
     }
+    Shuffleboard.getTab("main").add("swerve drive", m_subsystems[0]);
   }
 
   /**
@@ -58,7 +59,6 @@ public class Robot extends TimedRobot {
     for (Base subsys : m_subsystems) {
       subsys.robotPeriodic();
     }
-    Shuffleboard.getTab("main").add(m_subsystems[0]);
   }
 
   /**

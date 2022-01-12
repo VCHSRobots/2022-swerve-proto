@@ -4,6 +4,7 @@
 
 package frc.robot;
 
+import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.kauailabs.navx.frc.AHRS;
 
 import edu.wpi.first.math.MathUtil;
@@ -14,6 +15,7 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.util.sendable.SendableBuilder;
+import edu.wpi.first.util.sendable.SendableRegistry;
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 
@@ -54,6 +56,7 @@ public class SwerveDrive extends Base {
 
     public SwerveDrive() {
         m_gyro.reset();
+        
     }
 
     /**
@@ -117,10 +120,12 @@ public class SwerveDrive extends Base {
 
     @Override
     public void robotInit() {
-        Shuffleboard.getTab("main").add(m_frontLeft);
-        Shuffleboard.getTab("main").add(m_frontRight);
-        Shuffleboard.getTab("main").add(m_backLeft);
-        Shuffleboard.getTab("main").add(m_backRight);
+        // SendableRegistry.add(m_frontLeft, "frontleft");
+        // SendableRegistry.add(m_frontRight, "frontright");
+        Shuffleboard.getTab("main").add("front left", m_frontLeft);
+        Shuffleboard.getTab("main").add("front right", m_frontRight);
+        Shuffleboard.getTab("main").add("back left", m_backLeft);
+        Shuffleboard.getTab("main").add("back right", m_backRight);
     }
 
     @Override
@@ -164,6 +169,19 @@ public class SwerveDrive extends Base {
     @Override
     public void testPeriodic() {
 
+        // ADD CODE TO TEST MOTORS HERE
+        if (OI.xboxDrive.getAButton()) {
+            m_frontLeft.m_driveMotor.set(ControlMode.PercentOutput, 0.07);
+            m_frontRight.m_driveMotor.set(ControlMode.PercentOutput, 0.07);
+            m_backLeft.m_driveMotor.set(ControlMode.PercentOutput, 0.07);
+            m_backRight.m_driveMotor.set(ControlMode.PercentOutput, 0.07);
+        }
+        else{
+            m_frontLeft.m_driveMotor.set(ControlMode.PercentOutput, 0);
+            m_frontRight.m_driveMotor.set(ControlMode.PercentOutput, 0);
+            m_backLeft.m_driveMotor.set(ControlMode.PercentOutput, 0);
+            m_backRight.m_driveMotor.set(ControlMode.PercentOutput, 0);
+        }
     }
 
     @Override

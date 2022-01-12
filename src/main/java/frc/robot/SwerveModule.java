@@ -30,8 +30,8 @@ public class SwerveModule implements Sendable {
     private static final double kModuleMaxAngularVelocity = SwerveDrive.kMaxAngularSpeed;
     private static final double kModuleMaxAngularAcceleration = 2 * Math.PI; // radians per second squared
 
-    private final WPI_TalonFX m_driveMotor;
-    private final WPI_TalonFX m_turningMotor;
+    public final WPI_TalonFX m_driveMotor;
+    public final WPI_TalonFX m_turningMotor;
 
     // private final encoder m_driveEncoder; // use the encode inside talonfx
     private final CANCoder m_turningEncoder;
@@ -193,7 +193,7 @@ public class SwerveModule implements Sendable {
         builder.setSmartDashboardType("Swerve Module");
         builder.addDoubleProperty("Actual Drive m/s", () -> getDriveRatePerSecond(), null);
         builder.addDoubleProperty("Actual Angle deg", () -> m_turningEncoder.getAbsolutePosition(), null);
-        builder.addDoubleProperty("Desired Drive m/x", () -> m_desiredState.speedMetersPerSecond, null);
+        builder.addDoubleProperty("Desired Drive m/s", () -> m_desiredState.speedMetersPerSecond, null);
         builder.addDoubleProperty("Desired Angle deg", () -> m_desiredState.angle.getDegrees(), null);
     }
 }
