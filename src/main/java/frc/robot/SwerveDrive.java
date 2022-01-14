@@ -37,16 +37,16 @@ public class SwerveDrive extends Base {
 
     private final SwerveModule m_frontLeft = new SwerveModule(RobotMap.kDrive_FrontLeftDrive_TalonFX,
             RobotMap.kDrive_FrontLeftTurn_TalonFX, RobotMap.kDrive_FrontLeftEncoder,
-            Constants.SwerveModuleOffsetRadians.FRONT_LEFT);
+            Constants.SwerveModuleOffsetRadians.FRONT_LEFT, 0);
     private final SwerveModule m_frontRight = new SwerveModule(RobotMap.kDrive_FrontRightDrive_TalonFX,
             RobotMap.kDrive_FrontRightTurn_TalonFX, RobotMap.kDrive_FrontRightEncoder,
-            Constants.SwerveModuleOffsetRadians.FRONT_RIGHT);
+            Constants.SwerveModuleOffsetRadians.FRONT_RIGHT, 0);
     private final SwerveModule m_backLeft = new SwerveModule(RobotMap.kDrive_BackLeftDrive_TalonFX,
             RobotMap.kDrive_BackLeftTurn_TalonFX, RobotMap.kDrive_BackLeftEncoder,
-            Constants.SwerveModuleOffsetRadians.BACK_LEFT);
+            Constants.SwerveModuleOffsetRadians.BACK_LEFT, 0);
     private final SwerveModule m_backRight = new SwerveModule(RobotMap.kDrive_BackRightDrive_TalonFX,
             RobotMap.kDrive_BackRightTurn_TalonFX, RobotMap.kDrive_BackRightEncoder,
-            Constants.SwerveModuleOffsetRadians.BACK_RIGHT);
+            Constants.SwerveModuleOffsetRadians.BACK_RIGHT, 0);
 
     private final AHRS m_gyro = new AHRS(SPI.Port.kMXP);
 
