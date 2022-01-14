@@ -17,11 +17,15 @@ import edu.wpi.first.util.sendable.SendableBuilder;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.DemandType;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
+import com.ctre.phoenix.motorcontrol.RemoteFeedbackDevice;
+import com.ctre.phoenix.motorcontrol.RemoteSensorSource;
 import com.ctre.phoenix.motorcontrol.TalonFXFeedbackDevice;
+import com.ctre.phoenix.motorcontrol.can.FilterConfiguration;
 import com.ctre.phoenix.motorcontrol.can.TalonFXConfiguration;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import com.ctre.phoenix.sensors.AbsoluteSensorRange;
 import com.ctre.phoenix.sensors.CANCoder;
+import com.ctre.phoenix.sensors.CANCoderStatusFrame;
 import com.ctre.phoenix.sensors.SensorInitializationStrategy;
 import com.ctre.phoenix.sensors.SensorVelocityMeasPeriod;
 
@@ -34,7 +38,8 @@ public class SwerveModule implements Sendable {
     // TODO: find this.
     // 360 deg * turning rot per motor rot * motor rot per 2048 enc ticks
     private static final double kTurningRotPerMotorRot = 1 / 10.0;
-    private static final double kTurningDegreesPerIntegratedEncoderTicks = 360.0 * kTurningRotPerMotorRot * (1 / kTalonFXEncoderResolution);
+    private static final double kTurningDegreesPerIntegratedEncoderTicks = 360.0 * kTurningRotPerMotorRot
+            * (1 / kTalonFXEncoderResolution);
 
     private static final double kModuleMaxAngularVelocity = SwerveDrive.kMaxAngularSpeed;
     private static final double kModuleMaxAngularAcceleration = 2 * Math.PI; // radians per second squared
@@ -122,43 +127,40 @@ public class SwerveModule implements Sendable {
         baseConfig.voltageCompSaturation = 11;
         baseConfig.initializationStrategy = SensorInitializationStrategy.BootToAbsolutePosition;
 
-        m_turningMotor.configAllSettings(baseConfig);
-        m_turningMotor.configSelectedFeedbackSensor(TalonFXFeedbackDevice.IntegratedSensor, 0, 100);
-        m_turningMotor.configIntegratedSensorAbsoluteRange(AbsoluteSensorRange.Signed_PlusMinus180);
-        m_turningMotor.configIntegratedSensorOffset(turningIntegratedEncoderOffset / kTurningRotPerMotorRot);
-        // integrated sensor updates on CAN bus every 100ms
-        m_turningMotor.setStatusFramePeriod(21, 100);
+        TalonFXConfiguration turnConfig = baseConfig;
+        turnConfig.remoteFilter0.remoteSensorDeviceID = turningEncoderChannel;
+        turnConfig.remoteFilter0.remoteSensorSource = RemoteSensorSource.CANCoder;
+        turnConfig.slot0.allowableClosedloopError = 50;
+        turnConfig.slot0.closedLoopPeakOutput = 1.0;
+        turnConfig.slot0.closedLoopPeriod = 20;
+        turnConfig.slot0.integralZone = 100;
+        turnConfig.slot0.kP = 0.0;
+        turnConfig.slot0.kI = 0.0;
+        turnConfig.slot0.kD = 0.0;
+        turnConfig.slot0.kF = 0.0;
+
+        m_turningMotor.configAllSettings(turnConfig);
+        m_turningMotor.configSelectedFeedbackSensor(RemoteFeedbackDevice.RemoteSensor0);
         m_turningMotor.selectProfileSlot(0, 0);
 
         TalonFXConfiguration driveConfig = baseConfig;
         driveConfig.slot0.allowableClosedloopError = 0;
         driveConfig.slot0.closedLoopPeakOutput = 1;
-        driveConfig.slot0.closedLoopPeriod = 1;
-        driveConfig.slot0.integralZone = 10;
-        driveConfig.slot0.kP = 1;
+        driveConfig.slot0.closedLoopPeriod = 10;
+        driveConfig.slot0.integralZone = 100;
+        driveConfig.slot0.kP = 0;
         driveConfig.slot0.kI = 0;
         driveConfig.slot0.kD = 0;
         driveConfig.slot0.kF = 0;
-
+        
         m_driveMotor.configAllSettings(driveConfig);
         m_driveMotor.selectProfileSlot(0, 0);
 
-        // m_driveEncoder = new Encoder(driveEncoderChannelA, driveEncoderChannelB);
         m_turningEncoder = new CANCoder(turningEncoderChannel);
         m_turningEncoder.configFactoryDefault();
         m_turningEncoder.configAbsoluteSensorRange(AbsoluteSensorRange.Signed_PlusMinus180);
         m_turningEncoder.configSensorInitializationStrategy(SensorInitializationStrategy.BootToAbsolutePosition);
-
-        // Set the distance per pulse for the drive encoder. We can simply use the
-        // distance traveled for one rotation of the wheel divided by the encoder
-        // resolution.
-        // m_driveEncoder.setDistancePerPulse(2 * Math.PI * kWheelRadius /
-        // kEncoderResolution);
-
-        // Set the distance (in this case, angle) per pulse for the turning encoder.
-        // This is the the angle through an entire rotation (2 * pi) divided by the
-        // encoder resolution.
-        // m_turningEncoder.setDistancePerPulse(2 * Math.PI / kEncoderResolution);
+        m_turningEncoder.setStatusFramePeriod(CANCoderStatusFrame.SensorData, 10);
 
         // Limit the PID Controller's input range between -pi and pi and set the input
         // to be continuous.
@@ -192,12 +194,6 @@ public class SwerveModule implements Sendable {
 
     private double getTurningPositionRadians() {
         return Units.degreesToRadians(m_turningEncoder.getAbsolutePosition()) - m_turningEncoderOffset;
-    }
-
-    private double getTurningPositionRadiansIntegratedSensor() {
-        return Units
-                .degreesToRadians(m_turningMotor.getSelectedSensorPosition() * kTurningDegreesPerIntegratedEncoderTicks
-                        - m_turningIntegratedEncoderOffset);
     }
 
     /**
@@ -236,26 +232,32 @@ public class SwerveModule implements Sendable {
     public void setDesiredStateTalonOnboard(SwerveModuleState desiredState) {
         // Optimize the reference state to avoid spinning further than 90 degrees
         SwerveModuleState state = SwerveModuleState.optimize(desiredState,
-                new Rotation2d(getTurningPositionRadiansIntegratedSensor()));
+                new Rotation2d(getTurningPositionRadians()));
 
         m_desiredState = state;
 
         // Calculate the drive output from the drive PID controller.
-        // final double driveOutput = m_drivePIDController.calculate(getDriveRatePerSecond(), state.speedMetersPerSecond);
+        // final double driveOutput =
+        // m_drivePIDController.calculate(getDriveRatePerSecond(),
+        // state.speedMetersPerSecond);
 
         final double driveFeedforward = m_driveFeedforwardIntegrated.calculate(state.speedMetersPerSecond);
-        
+
         // Calculate the turning motor output from the turning PID controller.
         // final double turnOutput = m_turningPIDController
-        //         .calculate(getTurningPositionRadians(), state.angle.getRadians());
+        // .calculate(getTurningPositionRadians(), state.angle.getRadians());
 
-        final double turnFeedforward = m_turnFeedForwardIntegrated.calculate(m_turningPIDController.getSetpoint().velocity);
+        final double turnFeedforward = m_turnFeedForwardIntegrated
+                .calculate(m_turningPIDController.getSetpoint().velocity);
 
         // m_driveMotor.setVoltage(driveOutput + driveFeedforward);
         // m_turningMotor.setVoltage(turnOutput + turnFeedforward);
         final double k100msPerSec = 10;
-        m_driveMotor.set(ControlMode.Velocity, state.speedMetersPerSecond / kDriveMetersPerIntegratedTick / k100msPerSec, DemandType.ArbitraryFeedForward, driveFeedforward);
-        m_turningMotor.set(ControlMode.MotionMagic, state.angle.getDegrees() / kTurningDegreesPerIntegratedEncoderTicks, DemandType.ArbitraryFeedForward, turnFeedforward);
+        m_driveMotor.set(ControlMode.Velocity,
+                state.speedMetersPerSecond / kDriveMetersPerIntegratedTick / k100msPerSec,
+                DemandType.ArbitraryFeedForward, driveFeedforward);
+        m_turningMotor.set(ControlMode.MotionMagic, state.angle.getDegrees(),
+                DemandType.ArbitraryFeedForward, turnFeedforward);
     }
 
     @Override
