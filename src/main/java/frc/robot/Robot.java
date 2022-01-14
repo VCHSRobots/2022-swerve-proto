@@ -41,6 +41,7 @@ public class Robot extends TimedRobot {
       subsys.robotInit();
     }
     Shuffleboard.getTab("main").add("swerve drive", m_subsystems[0]);
+    Shuffleboard.getTab("main").add("xbox", OI.xboxDrive);
   }
 
   /**

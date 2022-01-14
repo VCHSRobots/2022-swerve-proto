@@ -4,11 +4,9 @@
 
 package frc.robot;
 
-import edu.wpi.first.wpilibj.XboxController;
-
 /** Add your docs here. */
 public class OI {
-    static XboxController xboxDrive = new XboxController(0);
+    static xbox4415 xboxDrive = new xbox4415(0);
 
     static public double getDriveY() {
         return xboxDrive.getLeftY();

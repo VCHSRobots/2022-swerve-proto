@@ -42,15 +42,15 @@ public class SwerveModule implements Sendable {
 
     // Gains are for example purposes only - must be determined for your own robot!
     private final ProfiledPIDController m_turningPIDController = new ProfiledPIDController(
-            1.75,
+            2,
             0,
             0,
             new TrapezoidProfile.Constraints(
-                    kModuleMaxAngularVelocity, kModuleMaxAngularAcceleration));
+                    2*kModuleMaxAngularVelocity, 2*kModuleMaxAngularAcceleration));
 
     // Gains are for example purposes only - must be determined for your own robot!
     private final SimpleMotorFeedforward m_driveFeedforward = new SimpleMotorFeedforward(0.3, 0.4);
-    private final SimpleMotorFeedforward m_turnFeedforward = new SimpleMotorFeedforward(0.4, 0.5);
+    private final SimpleMotorFeedforward m_turnFeedforward = new SimpleMotorFeedforward(0.0, 0.5);
 
     private SwerveModuleState m_desiredState = new SwerveModuleState();
 
@@ -90,7 +90,7 @@ public class SwerveModule implements Sendable {
         baseConfig.neutralDeadband = 0.005;
         baseConfig.nominalOutputForward = 0.0;
         baseConfig.nominalOutputReverse = 0.0;
-        baseConfig.openloopRamp = 0.02;
+        baseConfig.openloopRamp = 0.01;
         baseConfig.peakOutputForward = 1.0;
         baseConfig.peakOutputReverse = -1.0;
         baseConfig.statorCurrLimit.enable = true;
@@ -198,11 +198,12 @@ public class SwerveModule implements Sendable {
     @Override
     public void initSendable(SendableBuilder builder) {
         builder.setSmartDashboardType("Swerve Module");
-        builder.addDoubleProperty("Actual Drive m/s", () -> getDriveRatePerSecond(), null);
+        builder.addDoubleProperty("Actual Drive m-s", () -> getDriveRatePerSecond(), null);
+        builder.addDoubleProperty("Actual Position", ()->m_driveMotor.getSelectedSensorPosition(), null);
         builder.addDoubleProperty("Actual Angle deg", () -> m_turningEncoder.getAbsolutePosition(), null);
         builder.addDoubleProperty("Actual Angle with offset rad", () -> getTurningPositionRadians(), null);
         builder.addDoubleProperty("Drive Position", () -> m_driveMotor.getSelectedSensorPosition(), null);
-        builder.addDoubleProperty("Desired Drive m/s", () -> m_desiredState.speedMetersPerSecond, null);
+        builder.addDoubleProperty("Desired Drive m-s", () -> m_desiredState.speedMetersPerSecond, null);
         builder.addDoubleProperty("Desired Angle deg", () -> m_desiredState.angle.getDegrees(), null);
     }
 }
