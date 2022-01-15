@@ -6,6 +6,14 @@ package frc.robot;
 
 /** Add your docs here. */
 public class RobotMap {
+
+    /* turning motor gearing:
+     * motor--->
+     * 8:24
+     * 18:72
+     * turning wheel
+     * 24/8 * 72/18 = 12
+     */
     public static final int kDrive_FrontLeftDrive_TalonFX   = 4;
     public static final int kDrive_FrontLeftTurn_TalonFX    = 3;
     public static final int kDrive_FrontRightDrive_TalonFX  = 2;

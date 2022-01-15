@@ -14,7 +14,6 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
-import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.SPI;
@@ -22,8 +21,8 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 
 /** Add your docs here. */
 public class SwerveDrive extends Base {
-    public static final double kMaxSpeed = 1.5; // 3 meters per second
-    public static final double kMaxAngularSpeed = 2 * Math.PI; // 1/2 rotation per second
+    public static final double kMaxSpeed = 2.0; // 3 meters per second
+    public static final double kMaxAngularSpeed = 2 * Math.PI; // 1 rotation per second
 
     private final SlewRateLimiter m_xSpeedLimiter = new SlewRateLimiter(5);
     private final SlewRateLimiter m_ySpeedLimiter = new SlewRateLimiter(5);
@@ -87,9 +86,9 @@ public class SwerveDrive extends Base {
     
         SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, kMaxSpeed);
         /* START OF TESTING ROTATION ONLY CODE */
-        for (SwerveModuleState state : swerveModuleStates) {
-            state.speedMetersPerSecond = 0;
-        }
+        // for (SwerveModuleState state : swerveModuleStates) {
+        //     state.speedMetersPerSecond = 0;
+        // }
         /* END OF TESTING ROTATION ONLY CODE */
         m_frontLeft.setDesiredState(swerveModuleStates[0]);
         m_frontRight.setDesiredState(swerveModuleStates[1]);
@@ -137,6 +136,8 @@ public class SwerveDrive extends Base {
         Shuffleboard.getTab("main").add("front right", m_frontRight);
         Shuffleboard.getTab("main").add("back left", m_backLeft);
         Shuffleboard.getTab("main").add("back right", m_backRight);
+        Shuffleboard.getTab("main").addNumber("wheel speed", () -> m_frontLeft.m_driveMotor.getSelectedSensorVelocity());
+
     }
 
     @Override
@@ -151,6 +152,7 @@ public class SwerveDrive extends Base {
         } else if (OI.shouldSetRobotRelative()) {
             m_fieldRelative = false;
         }
+        
     }
 
     @Override
@@ -200,8 +202,8 @@ public class SwerveDrive extends Base {
         builder.setSmartDashboardType("Swerve Drive");
         builder.addBooleanProperty("Field Oriented", () -> m_fieldRelative, null);
         builder.addDoubleProperty("Heading deg", () -> -m_gyro.getAngle(), null);
-        builder.addDoubleProperty("Desired Vx m/s", () -> m_lastChassisSpeedsDesired.vxMetersPerSecond, null);
-        builder.addDoubleProperty("Desired Vy m/s", () -> m_lastChassisSpeedsDesired.vyMetersPerSecond, null);
-        builder.addDoubleProperty("Desired Rot rad/s", () -> m_lastChassisSpeedsDesired.omegaRadiansPerSecond, null);
+        builder.addDoubleProperty("Desired Vx m-s", () -> m_lastChassisSpeedsDesired.vxMetersPerSecond, null);
+        builder.addDoubleProperty("Desired Vy m-s", () -> m_lastChassisSpeedsDesired.vyMetersPerSecond, null);
+        builder.addDoubleProperty("Desired Rot rad-s", () -> m_lastChassisSpeedsDesired.omegaRadiansPerSecond, null);
     }
 }

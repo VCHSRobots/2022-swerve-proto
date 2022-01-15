@@ -9,11 +9,11 @@ import edu.wpi.first.math.util.Units;
 /** Add your docs here. */
 public class Constants {
     public static final class SwerveModuleOffsetRadians {
-        public static final double FRONT_LEFT = Units.degreesToRadians(-39);
-        public static final double FRONT_RIGHT = Units.degreesToRadians(29);
-        public static final double BACK_LEFT = Units.degreesToRadians(-16);
-        public static final double BACK_RIGHT = Units.degreesToRadians(173);
+        public static final double FRONT_LEFT = Units.degreesToRadians(-42.5);
+        public static final double FRONT_RIGHT = Units.degreesToRadians(29.5);
+        public static final double BACK_LEFT = Units.degreesToRadians(-16.5);
+        public static final double BACK_RIGHT = Units.degreesToRadians(172.0);
     }
 
-    public static final double xboxDeadband = 0.9;
+    public static final double xboxDeadband = 0.09;
 }

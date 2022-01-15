@@ -16,6 +16,7 @@ import edu.wpi.first.util.sendable.SendableBuilder;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.DemandType;
+import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.RemoteFeedbackDevice;
 import com.ctre.phoenix.motorcontrol.RemoteSensorSource;
@@ -33,16 +34,16 @@ import com.ctre.phoenix.sensors.SensorVelocityMeasPeriod;
 public class SwerveModule implements Sendable {
     private static final double kWheelRadius = Units.inchesToMeters(4);// 0.0508;
     private static final int kTalonFXEncoderResolution = 2048;
-    private static final double kDriveMetersPerIntegratedTick = 2 * Math.PI * kWheelRadius * (1 / 5)
-            * (1 / kTalonFXEncoderResolution);
+    private static final double kDriveMetersPerIntegratedTick = 2.0 * Math.PI * kWheelRadius * (1.0 / 4.85)
+            * (1.0 / kTalonFXEncoderResolution);
     // TODO: find this.
     // 360 deg * turning rot per motor rot * motor rot per 2048 enc ticks
     private static final double kTurningRotPerMotorRot = 1 / 10.0;
     private static final double kTurningDegreesPerIntegratedEncoderTicks = 360.0 * kTurningRotPerMotorRot
             * (1 / kTalonFXEncoderResolution);
 
-    private static final double kModuleMaxAngularVelocity = SwerveDrive.kMaxAngularSpeed;
-    private static final double kModuleMaxAngularAcceleration = 2 * Math.PI; // radians per second squared
+    private static final double kModuleMaxAngularVelocity = 2 * SwerveDrive.kMaxAngularSpeed;
+    private static final double kModuleMaxAngularAcceleration = 12 * Math.PI; // radians per second squared
 
     public final WPI_TalonFX m_driveMotor;
     public final WPI_TalonFX m_turningMotor;
@@ -50,25 +51,23 @@ public class SwerveModule implements Sendable {
     // private final encoder m_driveEncoder; // use the encode inside talonfx
     private final CANCoder m_turningEncoder;
     private double m_turningEncoderOffset = 0;
-    private double m_turningIntegratedEncoderOffset = 0;
 
     // Gains are for example purposes only - must be determined for your own robot!
-    private final PIDController m_drivePIDController = new PIDController(1, 0, 0);
+    private final PIDController m_drivePIDController = new PIDController(0.85, 0, 0);
 
     // Gains are for example purposes only - must be determined for your own robot!
     private final ProfiledPIDController m_turningPIDController = new ProfiledPIDController(
-            2,
+            3.2,
             0,
             0,
             new TrapezoidProfile.Constraints(
-                    2 * kModuleMaxAngularVelocity, 2 * kModuleMaxAngularAcceleration));
+                    kModuleMaxAngularVelocity, kModuleMaxAngularAcceleration));
 
     // Gains are for example purposes only - must be determined for your own robot!
-    private final SimpleMotorFeedforward m_driveFeedforward = new SimpleMotorFeedforward(0.3, 0.4);
-    private final SimpleMotorFeedforward m_turnFeedforward = new SimpleMotorFeedforward(0.0, 0.5);
+    private final SimpleMotorFeedforward m_driveFeedforward = new SimpleMotorFeedforward(0.2, 0.85); // 0.2, 0.82
+    private final SimpleMotorFeedforward m_turnFeedforward = new SimpleMotorFeedforward(0.02, 0.18);
 
     private final SimpleMotorFeedforward m_driveFeedforwardIntegrated = new SimpleMotorFeedforward(0, 0);
-    private final SimpleMotorFeedforward m_turnFeedForwardIntegrated = new SimpleMotorFeedforward(0, 0);
 
     private SwerveModuleState m_desiredState = new SwerveModuleState();
 
@@ -138,6 +137,9 @@ public class SwerveModule implements Sendable {
         turnConfig.slot0.kI = 0.0;
         turnConfig.slot0.kD = 0.0;
         turnConfig.slot0.kF = 0.0;
+        turnConfig.motionAcceleration = kModuleMaxAngularAcceleration;
+        turnConfig.motionCruiseVelocity = kModuleMaxAngularVelocity;
+        turnConfig.motionCurveStrength = 2;
 
         m_turningMotor.configAllSettings(turnConfig);
         m_turningMotor.configSelectedFeedbackSensor(RemoteFeedbackDevice.RemoteSensor0);
@@ -154,6 +156,7 @@ public class SwerveModule implements Sendable {
         driveConfig.slot0.kF = 0;
         
         m_driveMotor.configAllSettings(driveConfig);
+        m_driveMotor.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor);
         m_driveMotor.selectProfileSlot(0, 0);
 
         m_turningEncoder = new CANCoder(turningEncoderChannel);
@@ -183,6 +186,7 @@ public class SwerveModule implements Sendable {
     }
 
     private double getDriveRatePerSecond() {
+        // return m_driveMotor.getSelectedSensorVelocity();
         return m_driveMotor.getSelectedSensorVelocity() * 10 * kDriveMetersPerIntegratedTick;
     }
 
@@ -247,7 +251,7 @@ public class SwerveModule implements Sendable {
         // final double turnOutput = m_turningPIDController
         // .calculate(getTurningPositionRadians(), state.angle.getRadians());
 
-        final double turnFeedforward = m_turnFeedForwardIntegrated
+        final double turnFeedforward = m_turnFeedforward
                 .calculate(m_turningPIDController.getSetpoint().velocity);
 
         // m_driveMotor.setVoltage(driveOutput + driveFeedforward);
@@ -263,10 +267,10 @@ public class SwerveModule implements Sendable {
     @Override
     public void initSendable(SendableBuilder builder) {
         builder.setSmartDashboardType("Swerve Module");
-        builder.addDoubleProperty("Actual Drive m-s", () -> getDriveRatePerSecond(), null);
+        builder.addDoubleProperty("Actual Drive m-s", () -> this.getDriveRatePerSecond(), null);
         builder.addDoubleProperty("Drive Enc Position", () -> m_driveMotor.getSelectedSensorPosition(), null);
         builder.addDoubleProperty("Actual Angle deg", () -> m_turningEncoder.getAbsolutePosition(), null);
-        builder.addDoubleProperty("Actual Angle with offset rad", () -> getTurningPositionRadians(), null);
+        builder.addDoubleProperty("Actual Angle with offset deg", () -> Units.radiansToDegrees(getTurningPositionRadians()), null);
         builder.addDoubleProperty("Desired Drive m-s", () -> m_desiredState.speedMetersPerSecond, null);
         builder.addDoubleProperty("Desired Angle deg", () -> m_desiredState.angle.getDegrees(), null);
     }
