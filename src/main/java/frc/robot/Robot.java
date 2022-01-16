@@ -95,7 +95,7 @@ public class Robot extends TimedRobot {
       subsys.autonomousInit();
     }
 
-    autonomous.startTimer();
+    autonomous.autonomousInit();
 
   }
 
@@ -103,7 +103,7 @@ public class Robot extends TimedRobot {
   @Override
   public void autonomousPeriodic() {
 
-    autonomous.autoUpdate();
+    autonomous.autonomousPeriodic();
 
     switch (m_autoSelected) {
       case kCustomAuto:

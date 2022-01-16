@@ -32,7 +32,7 @@ import com.ctre.phoenix.sensors.SensorVelocityMeasPeriod;
 
 /** Add your docs here. */
 public class SwerveModule implements Sendable {
-    private static final double kWheelRadius = Units.inchesToMeters(4);// 0.0508;
+    private static final double kWheelRadius = Units.inchesToMeters(4) / 2.0;
     private static final int kTalonFXEncoderResolution = 2048;
     private static final double kDriveMetersPerIntegratedTick = 2.0 * Math.PI * kWheelRadius * (1.0 / 4.85)
             * (1.0 / kTalonFXEncoderResolution);
@@ -53,7 +53,7 @@ public class SwerveModule implements Sendable {
     private double m_turningEncoderOffset = 0;
 
     // Gains are for example purposes only - must be determined for your own robot!
-    private final PIDController m_drivePIDController = new PIDController(0.85, 0, 0);
+    private final PIDController m_drivePIDController = new PIDController(0, 0, 0); //3
 
     // Gains are for example purposes only - must be determined for your own robot!
     private final ProfiledPIDController m_turningPIDController = new ProfiledPIDController(
@@ -64,8 +64,8 @@ public class SwerveModule implements Sendable {
                     kModuleMaxAngularVelocity, kModuleMaxAngularAcceleration));
 
     // Gains are for example purposes only - must be determined for your own robot!
-    private final SimpleMotorFeedforward m_driveFeedforward = new SimpleMotorFeedforward(0.2, 0.85); // 0.2, 0.82
-    private final SimpleMotorFeedforward m_turnFeedforward = new SimpleMotorFeedforward(0.02, 0.18);
+    private final SimpleMotorFeedforward m_driveFeedforward = new SimpleMotorFeedforward(0.15, 1.8); // 0.15, 0.75
+    private final SimpleMotorFeedforward m_turnFeedforward = new SimpleMotorFeedforward(0.1, 0.28);
 
     private final SimpleMotorFeedforward m_driveFeedforwardIntegrated = new SimpleMotorFeedforward(0, 0);
 
