@@ -83,11 +83,11 @@ public class SwerveDrive extends Base {
                 : new ChassisSpeeds(xSpeed, ySpeed, rot);
 
         var swerveModuleStates = m_kinematics.toSwerveModuleStates(m_lastChassisSpeedsDesired);
-    
+
         SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, kMaxSpeed);
         /* START OF TESTING ROTATION ONLY CODE */
         // for (SwerveModuleState state : swerveModuleStates) {
-        //     state.speedMetersPerSecond = 0;
+        // state.speedMetersPerSecond = 0;
         // }
         /* END OF TESTING ROTATION ONLY CODE */
         m_frontLeft.setDesiredState(swerveModuleStates[0]);
@@ -136,13 +136,12 @@ public class SwerveDrive extends Base {
         Shuffleboard.getTab("main").add("front right", m_frontRight);
         Shuffleboard.getTab("main").add("back left", m_backLeft);
         Shuffleboard.getTab("main").add("back right", m_backRight);
-        Shuffleboard.getTab("main").addNumber("wheel speed", () -> m_frontLeft.m_driveMotor.getSelectedSensorVelocity());
-
+        Shuffleboard.getTab("main").addNumber("wheel speed",
+                () -> m_frontLeft.m_driveMotor.getSelectedSensorVelocity());
     }
 
     @Override
     public void disabledInit() {
-
     }
 
     @Override
@@ -152,7 +151,6 @@ public class SwerveDrive extends Base {
         } else if (OI.shouldSetRobotRelative()) {
             m_fieldRelative = false;
         }
-        
     }
 
     @Override
