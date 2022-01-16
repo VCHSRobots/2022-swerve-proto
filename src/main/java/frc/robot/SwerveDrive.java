@@ -103,7 +103,7 @@ public class SwerveDrive extends Base {
         m_backLeft.setDesiredState(swerveModuleStates[2]);
         m_backRight.setDesiredState(swerveModuleStates[3]);
 
-        updateOdometry();
+        // updateOdometry();    // MOVED TO ROBOTPERIODIC()
     }
 
     /** Updates the field relative position of the robot. */
@@ -161,6 +161,7 @@ public class SwerveDrive extends Base {
         } else if (OI.shouldSetRobotRelative()) {
             m_fieldRelative = false;
         }
+        updateOdometry();
     }
 
     @Override
