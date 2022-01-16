@@ -9,6 +9,7 @@ import com.kauailabs.navx.frc.AHRS;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.filter.SlewRateLimiter;
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
@@ -67,6 +68,10 @@ public class SwerveDrive extends Base {
         return Rotation2d.fromDegrees(-m_gyro.getAngle());
     }
 
+    public Pose2d getPose2d() {
+        return m_odometry.getPoseMeters();
+    }
+
     /**
      * Method to drive the robot using joystick info.
      *
@@ -82,7 +87,11 @@ public class SwerveDrive extends Base {
                 ? ChassisSpeeds.fromFieldRelativeSpeeds(xSpeed, ySpeed, rot, getGyroRotation2d())
                 : new ChassisSpeeds(xSpeed, ySpeed, rot);
 
-        var swerveModuleStates = m_kinematics.toSwerveModuleStates(m_lastChassisSpeedsDesired);
+        driveFromChassisSpeeds(m_lastChassisSpeedsDesired);
+    }
+
+    public void driveFromChassisSpeeds(ChassisSpeeds chassisSpeed) {
+        var swerveModuleStates = m_kinematics.toSwerveModuleStates(chassisSpeed);
     
         SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, kMaxSpeed);
         /* START OF TESTING ROTATION ONLY CODE */
