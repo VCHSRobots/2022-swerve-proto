@@ -24,8 +24,11 @@ public class Robot extends TimedRobot {
   private String m_autoSelected;
   private final SendableChooser<String> m_chooser = new SendableChooser<>();
 
-  private final Base[] m_subsystems = { new SwerveDrive(), };
+  public static SwerveDrive m_swerve = new SwerveDrive();
+  private final Base[] m_subsystems = { m_swerve, };
 
+  private Auto autonomous;
+  
   /**
    * This function is run when the robot is first started up and should be used
    * for any
@@ -42,6 +45,9 @@ public class Robot extends TimedRobot {
     }
     Shuffleboard.getTab("main").add("swerve drive", m_subsystems[0]);
     Shuffleboard.getTab("main").add("xbox", OI.xboxDrive);
+
+    autonomous = new Auto();
+
   }
 
   /**
@@ -88,11 +94,17 @@ public class Robot extends TimedRobot {
     for (Base subsys : m_subsystems) {
       subsys.autonomousInit();
     }
+
+    autonomous.startTimer();
+
   }
 
   /** This function is called periodically during autonomous. */
   @Override
   public void autonomousPeriodic() {
+
+    autonomous.autoUpdate();
+
     switch (m_autoSelected) {
       case kCustomAuto:
         // Put custom auto code here
@@ -106,6 +118,7 @@ public class Robot extends TimedRobot {
     for (Base subsys : m_subsystems) {
       subsys.autonomousPeriodic();
     }
+
   }
 
   /** This function is called once when teleop is enabled. */
