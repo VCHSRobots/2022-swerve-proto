@@ -23,7 +23,7 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 /** Add your docs here. */
 public class SwerveDrive extends Base {
     public static final double kMaxSpeed = 2.0; // 3 meters per second
-    public static final double kMaxAngularSpeed = 2 * Math.PI; // 1 rotation per second
+    public static final double kMaxAngularSpeed = 3 * Math.PI; // 1 rotation per second
 
     private final SlewRateLimiter m_xSpeedLimiter = new SlewRateLimiter(5);
     private final SlewRateLimiter m_ySpeedLimiter = new SlewRateLimiter(5);
@@ -92,7 +92,6 @@ public class SwerveDrive extends Base {
 
     public void driveFromChassisSpeeds(ChassisSpeeds chassisSpeed) {
         var swerveModuleStates = m_kinematics.toSwerveModuleStates(chassisSpeed);
-
         SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, kMaxSpeed);
         /* START OF TESTING ROTATION ONLY CODE */
         // for (SwerveModuleState state : swerveModuleStates) {
@@ -103,6 +102,8 @@ public class SwerveDrive extends Base {
         m_frontRight.setDesiredState(swerveModuleStates[1]);
         m_backLeft.setDesiredState(swerveModuleStates[2]);
         m_backRight.setDesiredState(swerveModuleStates[3]);
+
+        updateOdometry();
     }
 
     /** Updates the field relative position of the robot. */

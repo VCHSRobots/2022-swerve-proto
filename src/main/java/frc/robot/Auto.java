@@ -14,9 +14,12 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.trajectory.TrajectoryUtil;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
+import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class Auto {
 
@@ -33,7 +36,7 @@ public class Auto {
     Timer timer = new Timer();
 
     public Auto() {
-        pathPlannerTrajectory = PathPlanner.loadPath("square", 2, 3);
+        pathPlannerTrajectory = PathPlanner.loadPath("rotating", 2, 3);
     }
 
     public void robotInit() {
@@ -76,8 +79,10 @@ public class Auto {
         } else {
             // adjustedSpeeds is initialized to zero, don't need to re assign
         }
-        Robot.m_swerve.driveFromChassisSpeeds(adjustedSpeeds);
 
+        System.out.println(Robot.m_swerve.getPose2d());
+
+        Robot.m_swerve.driveFromChassisSpeeds(adjustedSpeeds);
     }
 
 }
