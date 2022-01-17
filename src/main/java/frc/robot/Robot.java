@@ -46,7 +46,12 @@ public class Robot extends TimedRobot {
     Shuffleboard.getTab("main").add("swerve drive", m_subsystems[0]);
     Shuffleboard.getTab("main").add("xbox", OI.xboxDrive);
 
+    Shuffleboard.getTab("main").addNumber("pose/x", ()->m_swerve.getPose2d().getX());
+    Shuffleboard.getTab("main").addNumber("pose/y", ()->m_swerve.getPose2d().getY());
+    Shuffleboard.getTab("main").addNumber("pose/theta", ()->m_swerve.getPose2d().getRotation().getDegrees());
+
     autonomous = new Auto();
+    autonomous.robotInit();
 
   }
 
@@ -66,6 +71,8 @@ public class Robot extends TimedRobot {
     for (Base subsys : m_subsystems) {
       subsys.robotPeriodic();
     }
+
+    autonomous.robotPeriodic();
   }
 
   /**
@@ -118,6 +125,8 @@ public class Robot extends TimedRobot {
     for (Base subsys : m_subsystems) {
       subsys.autonomousPeriodic();
     }
+
+
 
   }
 

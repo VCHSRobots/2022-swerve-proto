@@ -32,18 +32,16 @@ import com.ctre.phoenix.sensors.SensorVelocityMeasPeriod;
 
 /** Add your docs here. */
 public class SwerveModule implements Sendable {
-        private static final double kWheelRadius = Units.inchesToMeters(4) / 2.0;
+        private static final double kWheelRadius = Units.inchesToMeters(4.0/2.0);
         private static final int kTalonFXEncoderResolution = 2048;
         private static final double kDriveMetersPerIntegratedTick = 2.0 * Math.PI * kWheelRadius * (1.0 / 4.85)
-                        * (1.0 / kTalonFXEncoderResolution);
+                        * (1.0 / (double) kTalonFXEncoderResolution);
         // TODO: find this.
         // 360 deg * turning rot per motor rot * motor rot per 2048 enc ticks
         private static final double kTurningRotPerMotorRot = 1 / 10.0;
-        private static final double kTurningDegreesPerIntegratedEncoderTicks = 360.0 * kTurningRotPerMotorRot
-                        * (1 / kTalonFXEncoderResolution);
 
         private static final double kModuleMaxAngularVelocity = 2 * SwerveDrive.kMaxAngularSpeed;
-        private static final double kModuleMaxAngularAcceleration = 12 * Math.PI; // radians per second squared
+        private static final double kModuleMaxAngularAcceleration = 6 * Math.PI; // radians per second squared
 
         public final WPI_TalonFX m_driveMotor;
         public final WPI_TalonFX m_turningMotor;
@@ -53,7 +51,7 @@ public class SwerveModule implements Sendable {
         private double m_turningEncoderOffset = 0;
 
         // Gains are for example purposes only - must be determined for your own robot!
-        private final PIDController m_drivePIDController = new PIDController(2.5, 0, 0); // 3
+        private final PIDController m_drivePIDController = new PIDController(2.2, 0, 0); // 3
 
         // Gains are for example purposes only - must be determined for your own robot!
         private final ProfiledPIDController m_turningPIDController = new ProfiledPIDController(
@@ -64,8 +62,8 @@ public class SwerveModule implements Sendable {
                                         kModuleMaxAngularVelocity, kModuleMaxAngularAcceleration));
 
         // Gains are for example purposes only - must be determined for your own robot!
-        private final SimpleMotorFeedforward m_driveFeedforward = new SimpleMotorFeedforward(0.15, 1.63); // 0.15, 0.75
-        private final SimpleMotorFeedforward m_turnFeedforward = new SimpleMotorFeedforward(0.1, 0.28);
+        private final SimpleMotorFeedforward m_driveFeedforward = new SimpleMotorFeedforward(0.15, 1.25); // 0.15, 0.75
+        private final SimpleMotorFeedforward m_turnFeedforward = new SimpleMotorFeedforward(0.1, 0.275);
 
         private final SimpleMotorFeedforward m_driveFeedforwardIntegrated = new SimpleMotorFeedforward(0, 0);
 
@@ -158,6 +156,7 @@ public class SwerveModule implements Sendable {
                 m_driveMotor.configAllSettings(driveConfig);
                 m_driveMotor.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor);
                 m_driveMotor.selectProfileSlot(0, 0);
+                m_driveMotor.configSelectedFeedbackCoefficient(1);
 
                 m_turningEncoder = new CANCoder(turningEncoderChannel);
                 m_turningEncoder.configFactoryDefault();
