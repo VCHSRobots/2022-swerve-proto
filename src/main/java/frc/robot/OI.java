@@ -27,4 +27,8 @@ public class OI {
     static public boolean shouldSetRobotRelative() {
         return xboxDrive.getPOV() == 90;
     }
+
+    static public boolean getResetOdometry() {
+        return xboxDrive.getStartButton();
+    }
 }

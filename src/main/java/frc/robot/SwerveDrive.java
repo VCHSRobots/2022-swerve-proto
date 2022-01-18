@@ -161,6 +161,9 @@ public class SwerveDrive extends Base {
         } else if (OI.shouldSetRobotRelative()) {
             m_fieldRelative = false;
         }
+        if (OI.getResetOdometry()) {
+            m_odometry.resetPosition(new Pose2d(), getGyroRotation2d());
+        }
         updateOdometry();
     }
 
