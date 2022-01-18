@@ -4,6 +4,8 @@
 
 package frc.robot;
 
+import java.lang.annotation.Retention;
+
 /** Add your docs here. */
 public class OI {
     static xbox4415 xboxDrive = new xbox4415(0);
@@ -17,7 +19,7 @@ public class OI {
     }
 
     static public double getDriveRot() {
-        return xboxDrive.getRightX();
+        return Math.copySign(Math.pow(xboxDrive.getRightX(), 2), xboxDrive.getRightX());
     }
 
     static public boolean shouldSetFieldRelative() {
@@ -30,5 +32,9 @@ public class OI {
 
     static public boolean getResetOdometry() {
         return xboxDrive.getStartButton();
+    }
+    
+    static public boolean getDriveAtSetRate() {
+        return xboxDrive.getAButton();
     }
 }

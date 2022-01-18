@@ -4,6 +4,8 @@
 
 package frc.robot;
 
+import java.security.interfaces.XECKey;
+
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.kauailabs.navx.frc.AHRS;
 
@@ -19,10 +21,11 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 /** Add your docs here. */
 public class SwerveDrive extends Base {
-    public static final double kMaxSpeed = 2.0; // 3 meters per second
+    public static final double kMaxSpeed = 3.0; // 3 meters per second
     public static final double kMaxAngularSpeed = 3 * Math.PI; // 1 rotation per second
 
     private final SlewRateLimiter m_xSpeedLimiter = new SlewRateLimiter(5);
@@ -117,7 +120,15 @@ public class SwerveDrive extends Base {
     }
 
     private void driveWithXbox() {
-        // Get the x speed. We are inverting this because Xbox controllers return
+        // set wheels to 1 Rot per sec, else drive normal
+        if (OI.getDriveAtSetRate()) {
+            final var xSpeed = 0.5;
+            final var ySpeed = 0;
+            final var rot = 0;
+            drive(xSpeed, ySpeed, rot, false);
+            SmartDashboard.putNumber("desired XSpeed", xSpeed);
+        } else {
+                // Get the x speed. We are inverting this because Xbox controllers return
         // negative values when we push forward.
         final var xSpeed = -m_xSpeedLimiter.calculate(MathUtil.applyDeadband(OI.getDriveY(), Constants.xboxDeadband))
                 * SwerveDrive.kMaxSpeed;
@@ -136,6 +147,7 @@ public class SwerveDrive extends Base {
                 * SwerveDrive.kMaxAngularSpeed;
 
         drive(xSpeed, ySpeed, rot, m_fieldRelative);
+        }
     }
 
     @Override
@@ -146,8 +158,6 @@ public class SwerveDrive extends Base {
         Shuffleboard.getTab("main").add("front right", m_frontRight);
         Shuffleboard.getTab("main").add("back left", m_backLeft);
         Shuffleboard.getTab("main").add("back right", m_backRight);
-        Shuffleboard.getTab("main").addNumber("wheel speed",
-                () -> m_frontLeft.m_driveMotor.getSelectedSensorVelocity());
     }
 
     @Override
@@ -169,7 +179,7 @@ public class SwerveDrive extends Base {
 
     @Override
     public void autonomousInit() {
-
+        m_odometry.resetPosition(new Pose2d(), getGyroRotation2d());
     }
 
     @Override

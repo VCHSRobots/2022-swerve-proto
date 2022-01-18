@@ -1,6 +1,7 @@
 {
   "SysId": {
     "Analysis Type": "General Mechanism",
+    "AnalyzerJSONLocation": "C:\\dev\\FRC\\2022-swerve-proto\\characterization\\sysid_data20220117-204231.json",
     "NetworkTables Settings": {
       "serverTeam": "4415"
     },
