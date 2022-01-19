@@ -106,7 +106,7 @@ public class SwerveDrive extends Base {
         m_backLeft.setDesiredState(swerveModuleStates[2]);
         m_backRight.setDesiredState(swerveModuleStates[3]);
 
-        // updateOdometry();    // MOVED TO ROBOTPERIODIC()
+        // updateOdometry(); // MOVED TO ROBOTPERIODIC()
     }
 
     /** Updates the field relative position of the robot. */
@@ -128,25 +128,27 @@ public class SwerveDrive extends Base {
             drive(xSpeed, ySpeed, rot, false);
             SmartDashboard.putNumber("desired XSpeed", xSpeed);
         } else {
-                // Get the x speed. We are inverting this because Xbox controllers return
-        // negative values when we push forward.
-        final var xSpeed = -m_xSpeedLimiter.calculate(MathUtil.applyDeadband(OI.getDriveY(), Constants.xboxDeadband))
-                * SwerveDrive.kMaxSpeed;
+            // Get the x speed. We are inverting this because Xbox controllers return
+            // negative values when we push forward.
+            final var xSpeed = -m_xSpeedLimiter
+                    .calculate(MathUtil.applyDeadband(OI.getDriveY(), Constants.xboxDeadband))
+                    * SwerveDrive.kMaxSpeed;
 
-        // Get the y speed or sideways/strafe speed. We are inverting this because
-        // we want a positive value when we pull to the left. Xbox controllers
-        // return positive values when you pull to the right by default.
-        final var ySpeed = -m_ySpeedLimiter.calculate(MathUtil.applyDeadband(OI.getDriveX(), Constants.xboxDeadband))
-                * SwerveDrive.kMaxSpeed;
+            // Get the y speed or sideways/strafe speed. We are inverting this because
+            // we want a positive value when we pull to the left. Xbox controllers
+            // return positive values when you pull to the right by default.
+            final var ySpeed = -m_ySpeedLimiter
+                    .calculate(MathUtil.applyDeadband(OI.getDriveX(), Constants.xboxDeadband))
+                    * SwerveDrive.kMaxSpeed;
 
-        // Get the rate of angular rotation. We are inverting this because we want a
-        // positive value when we pull to the left (remember, CCW is positive in
-        // mathematics). Xbox controllers return positive values when you pull to
-        // the right by default.
-        final var rot = -m_rotLimiter.calculate(MathUtil.applyDeadband(OI.getDriveRot(), Constants.xboxDeadband))
-                * SwerveDrive.kMaxAngularSpeed;
+            // Get the rate of angular rotation. We are inverting this because we want a
+            // positive value when we pull to the left (remember, CCW is positive in
+            // mathematics). Xbox controllers return positive values when you pull to
+            // the right by default.
+            final var rot = -m_rotLimiter.calculate(MathUtil.applyDeadband(OI.getDriveRot(), Constants.xboxDeadband))
+                    * SwerveDrive.kMaxAngularSpeed;
 
-        drive(xSpeed, ySpeed, rot, m_fieldRelative);
+            drive(xSpeed, ySpeed, rot, m_fieldRelative);
         }
     }
 
@@ -172,6 +174,7 @@ public class SwerveDrive extends Base {
             m_fieldRelative = false;
         }
         if (OI.getResetOdometry()) {
+            m_gyro.reset();
             m_odometry.resetPosition(new Pose2d(), getGyroRotation2d());
         }
         updateOdometry();
