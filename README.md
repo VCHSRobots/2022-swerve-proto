@@ -16,3 +16,5 @@ prototype swerve code
 - navX docs
   - https://pdocs.kauailabs.com/navx-mxp/software/roborio-libraries/java/
   - AHRS gyro / IMU api: https://www.kauailabs.com/public_files/navx-mxp/apidocs/java/com/kauailabs/navx/frc/AHRS.html
+- frc254 talk on computer vision
+  - https://www.team254.com/documents/vision-control/
