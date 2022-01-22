@@ -37,4 +37,8 @@ public class OI {
     static public boolean getDriveAtSetRate() {
         return xboxDrive.getAButton();
     }
+
+    static public boolean getCenterOfRotationFrontLeft() {
+        return xboxDrive.getLeftBumper();
+    }
 }
