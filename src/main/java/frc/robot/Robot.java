@@ -29,6 +29,7 @@ public class Robot extends TimedRobot {
   private final Base[] m_subsystems = { m_swerve, };
 
   private Auto autonomous;
+  private Intake intake;
   
   /**
    * This function is run when the robot is first started up and should be used
@@ -54,6 +55,9 @@ public class Robot extends TimedRobot {
     autonomous = new Auto();
     autonomous.robotInit();
 
+    intake = new Intake();
+    intake.robotInit();
+
     CameraServer.startAutomaticCapture();
 
   }
@@ -76,6 +80,7 @@ public class Robot extends TimedRobot {
     }
 
     autonomous.robotPeriodic();
+    intake.robotPeriodic();
   }
 
   /**
@@ -106,7 +111,6 @@ public class Robot extends TimedRobot {
     }
 
     autonomous.autonomousInit();
-
   }
 
   /** This function is called periodically during autonomous. */
@@ -136,6 +140,9 @@ public class Robot extends TimedRobot {
   /** This function is called once when teleop is enabled. */
   @Override
   public void teleopInit() {
+
+    intake.teleopInit();
+
     for (Base subsys : m_subsystems) {
       subsys.teleopInit();
     }
@@ -144,6 +151,9 @@ public class Robot extends TimedRobot {
   /** This function is called periodically during operator control. */
   @Override
   public void teleopPeriodic() {
+
+    intake.teleopPeriodic();
+
     for (Base subsys : m_subsystems) {
       subsys.teleopPeriodic();
     }

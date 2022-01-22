@@ -34,11 +34,16 @@ public class OI {
         return xboxDrive.getStartButton();
     }
 
-    static public boolean getDriveAtSetRate() {
-        return xboxDrive.getAButton();
-    }
-
     static public boolean getCenterOfRotationFrontLeft() {
         return xboxDrive.getLeftBumper();
     }
+    
+    static public boolean getIntake() {
+        return xboxDrive.getAButton();
+    }
+
+    static public boolean togglePneumatic() {
+        return xboxDrive.getXButton();
+    }
+
 }
