@@ -33,7 +33,7 @@ public class OI {
     static public boolean getResetOdometry() {
         return xboxDrive.getStartButton();
     }
-    
+
     static public boolean getDriveAtSetRate() {
         return xboxDrive.getAButton();
     }

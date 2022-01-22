@@ -23,12 +23,12 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 /** Add your docs here. */
 public class SwerveDrive extends Base {
-    public static final double kMaxSpeed = 3.0; // 3 meters per second
+    public static final double kMaxSpeed = 2.0; // 3 meters per second
     public static final double kMaxAngularSpeed = 3 * Math.PI; // 1 rotation per second
 
     private final SlewRateLimiter m_xSpeedLimiter = new SlewRateLimiter(5);
     private final SlewRateLimiter m_ySpeedLimiter = new SlewRateLimiter(5);
-    private final SlewRateLimiter m_rotLimiter = new SlewRateLimiter(5);
+    private final SlewRateLimiter m_rotLimiter = new SlewRateLimiter(8);
 
     private final double inches15toMeters = Units.inchesToMeters(11);
     private final Translation2d m_frontLeftLocation = new Translation2d(inches15toMeters, inches15toMeters);
@@ -83,7 +83,8 @@ public class SwerveDrive extends Base {
      *                      field.
      */
     @SuppressWarnings("ParameterName")
-    public void drive(double xSpeed, double ySpeed, double rot, boolean fieldRelative, Translation2d centerOfRotationMeters) {
+    public void drive(double xSpeed, double ySpeed, double rot, boolean fieldRelative,
+            Translation2d centerOfRotationMeters) {
         m_lastChassisSpeedsDesired = fieldRelative
                 ? ChassisSpeeds.fromFieldRelativeSpeeds(xSpeed, ySpeed, rot, getGyroRotation2d())
                 : new ChassisSpeeds(xSpeed, ySpeed, rot);
@@ -128,27 +129,39 @@ public class SwerveDrive extends Base {
         // negative values when we push forward.
         final var xSpeed = -m_xSpeedLimiter
                 .calculate(MathUtil.applyDeadband(OI.getDriveY(), Constants.xboxDeadband))
-                * SwerveDrive.kMaxSpeed;
+                * SwerveDrive.kMaxSpeed * 0.9;
 
         // Get the y speed or sideways/strafe speed. We are inverting this because
         // we want a positive value when we pull to the left. Xbox controllers
         // return positive values when you pull to the right by default.
         final var ySpeed = -m_ySpeedLimiter
                 .calculate(MathUtil.applyDeadband(OI.getDriveX(), Constants.xboxDeadband))
-                * SwerveDrive.kMaxSpeed;
+                * SwerveDrive.kMaxSpeed * 0.9;
 
         // Get the rate of angular rotation. We are inverting this because we want a
         // positive value when we pull to the left (remember, CCW is positive in
         // mathematics). Xbox controllers return positive values when you pull to
         // the right by default.
-        final var rot = -m_rotLimiter.calculate(MathUtil.applyDeadband(OI.getDriveRot(), Constants.xboxDeadband))
-                * SwerveDrive.kMaxAngularSpeed;
+        // final var rot =
+        // -m_rotLimiter.calculate(MathUtil.applyDeadband(OI.getDriveRot(),
+        // Constants.xboxDeadband))
+        // * SwerveDrive.kMaxAngularSpeed;
 
+        // final var centerOfRotationMeters = OI.getCenterOfRotationFrontLeft() ?
+        // m_frontLeftLocation
+        // : new Translation2d();
 
-        final var centerOfRotationMeters = OI.getCenterOfRotationFrontLeft() ? m_frontLeftLocation : new Translation2d();
+        // START OF TEST DRIVE CODE
+        final var rot = -m_rotLimiter.calculate(MathUtil.applyDeadband(
+                -OI.xboxDrive.getLeftTriggerAxis() + OI.xboxDrive.getRightTriggerAxis(),
+                Constants.xboxDeadband)) * SwerveDrive.kMaxAngularSpeed;
+
+        final var centerOfRotationMeters = new Translation2d(0.75 * -OI.xboxDrive.getRightX(),
+                0.75 * OI.xboxDrive.getRightY())
+                        .rotateBy(new Rotation2d(Math.PI / 2.0));
+        // END OF TEST DRIVE CODE
 
         drive(xSpeed, ySpeed, rot, m_fieldRelative, centerOfRotationMeters);
-
     }
 
     @Override

@@ -36,13 +36,13 @@ public class SwerveModule implements Sendable {
         private static final int kTalonFXEncoderResolution = 2048;
         private static final double kDriveMetersPerIntegratedTick = 2.0 * Math.PI * kWheelRadius * (1.0 / 6.0)
                         * (1.0 / (double) kTalonFXEncoderResolution);
-        
+
         // TODO: find this.
         // 360 deg * turning rot per motor rot * motor rot per 2048 enc ticks
-        private static final double kTurningRotPerMotorRot = 1 / 10.0; 
+        private static final double kTurningRotPerMotorRot = 1 / 10.0;
 
         private static final double kModuleMaxAngularVelocity = 4 * SwerveDrive.kMaxAngularSpeed;
-        private static final double kModuleMaxAngularAcceleration = 6 * Math.PI; // radians per second squared
+        private static final double kModuleMaxAngularAcceleration = 12 * Math.PI; // radians per second squared
 
         public final WPI_TalonFX m_driveMotor;
         public final WPI_TalonFX m_turningMotor;
@@ -271,7 +271,8 @@ public class SwerveModule implements Sendable {
         public void initSendable(SendableBuilder builder) {
                 builder.setSmartDashboardType("Swerve Module");
                 builder.addDoubleProperty("Actual Drive m-s", () -> this.getDriveRatePerSecond(), null);
-                builder.addDoubleProperty("Drive Position Meters", () -> (kDriveMetersPerIntegratedTick * m_driveMotor.getSelectedSensorPosition()), null);
+                builder.addDoubleProperty("Drive Position Meters",
+                                () -> (kDriveMetersPerIntegratedTick * m_driveMotor.getSelectedSensorPosition()), null);
                 builder.addDoubleProperty("Actual Angle deg", () -> m_turningEncoder.getAbsolutePosition(), null);
                 builder.addDoubleProperty("Actual Angle with offset deg",
                                 () -> Units.radiansToDegrees(getTurningPositionRadians()), null);
