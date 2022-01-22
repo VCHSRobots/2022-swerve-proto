@@ -24,6 +24,8 @@ public class RobotMap {
     public static final int kDrive_BackRightTurn_TalonFX    = 7;
 
     public static final int kIntake_roller_TalonFX          = 9;
+    public static final int kIntake_mover_TalonFX           = 10;
+    public static final int kIntake_shooterInput_TalonFX    = 15;
 
     public static final int kDrive_FrontLeftEncoder         = 12;
     public static final int kDrive_FrontRightEncoder        = 11;

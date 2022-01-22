@@ -5,6 +5,8 @@
 package frc.robot;
 
 import edu.wpi.first.cameraserver.CameraServer;
+import edu.wpi.first.wpilibj.Compressor;
+import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -25,8 +27,12 @@ public class Robot extends TimedRobot {
   private String m_autoSelected;
   private final SendableChooser<String> m_chooser = new SendableChooser<>();
 
+  private final Compressor pcmCompressor = new Compressor(2, PneumaticsModuleType.CTREPCM);
+  private final Compressor phCompressor = new Compressor(3, PneumaticsModuleType.REVPH);
+
   public static SwerveDrive m_swerve = new SwerveDrive();
-  private final Base[] m_subsystems = { m_swerve, };
+  public static Intake  m_intake = new Intake();
+  private final Base[] m_subsystems = { m_swerve, m_intake, };
 
   private Auto autonomous;
   private Intake intake;
@@ -38,6 +44,10 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void robotInit() {
+
+    pcmCompressor.enableDigital();
+    pcmCompressor.disable();
+
     m_chooser.setDefaultOption("Default Auto", kDefaultAuto);
     m_chooser.addOption("My Auto", kCustomAuto);
     SmartDashboard.putData("Auto choices", m_chooser);
@@ -54,9 +64,6 @@ public class Robot extends TimedRobot {
 
     autonomous = new Auto();
     autonomous.robotInit();
-
-    intake = new Intake();
-    intake.robotInit();
 
     CameraServer.startAutomaticCapture();
 
@@ -141,8 +148,6 @@ public class Robot extends TimedRobot {
   @Override
   public void teleopInit() {
 
-    intake.teleopInit();
-
     for (Base subsys : m_subsystems) {
       subsys.teleopInit();
     }
@@ -151,8 +156,6 @@ public class Robot extends TimedRobot {
   /** This function is called periodically during operator control. */
   @Override
   public void teleopPeriodic() {
-
-    intake.teleopPeriodic();
 
     for (Base subsys : m_subsystems) {
       subsys.teleopPeriodic();
