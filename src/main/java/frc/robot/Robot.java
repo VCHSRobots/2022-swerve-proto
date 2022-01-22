@@ -26,7 +26,9 @@ public class Robot extends TimedRobot {
   private final SendableChooser<String> m_chooser = new SendableChooser<>();
 
   public static SwerveDrive m_swerve = new SwerveDrive();
-  private final Base[] m_subsystems = { m_swerve, };
+  public static Shooter m_shooter = new Shooter();
+
+  private final Base[] m_subsystems = { m_swerve, m_shooter};
 
   private Auto autonomous;
   private Intake intake;
@@ -46,6 +48,7 @@ public class Robot extends TimedRobot {
       subsys.robotInit();
     }
     Shuffleboard.getTab("main").add("swerve drive", m_subsystems[0]);
+    Shuffleboard.getTab("main").add("shooter", m_subsystems[1]);
     Shuffleboard.getTab("main").add("xbox", OI.xboxDrive);
 
     Shuffleboard.getTab("main").addNumber("pose/x", ()->m_swerve.getPose2d().getX());

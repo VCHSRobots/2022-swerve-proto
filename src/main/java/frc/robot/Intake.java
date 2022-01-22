@@ -24,6 +24,7 @@ public class Intake extends Base{
     public final DoubleSolenoid doublePCM = new DoubleSolenoid(PneumaticsModuleType.CTREPCM, RobotMap.kIntake_Pnuematic1, RobotMap.kIntake_Pnuematic2);
 
     ShuffleboardTab rollerMotorTab = Shuffleboard.getTab("Intake");
+    
     NetworkTableEntry ntIntakeSpeed = rollerMotorTab.add("speed", 0.1).getEntry();
 
     @Override
