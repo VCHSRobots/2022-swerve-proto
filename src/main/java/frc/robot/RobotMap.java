@@ -27,4 +27,17 @@ public class RobotMap {
     public static final int kDrive_FrontRightEncoder        = 11;
     public static final int kDrive_BackLeftEncoder          = 13;
     public static final int kDrive_BackRightEncoder         = 14;
+
+    public static final int kClimb_LeftArm_TalonFX          = 15;
+    public static final int kClimb_RightArm_TalonFX         = 16;
+    public static final int kClimb_NeutralExtra_TalonFX     = 17; //extra talon for climber, may or may not be used. since purpose has not been finalized, its "neutral" for now
+    public static final int kClimb_LeftSolenoidForward     = 6;
+    public static final int kClimb_LeftSolenoidReverse     = 7;
+    public static final int kClimb_RightSolenoidForward    = 8;
+    public static final int kClimb_RightSolenoidReverse    = 9;
+
+
+
+
+
 }
