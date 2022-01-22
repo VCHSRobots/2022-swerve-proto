@@ -39,13 +39,10 @@ public class OI {
         return xboxDrive.getLeftBumper();
     }
     
-    static public boolean getIntake() {
+    static public boolean startIntake() {
         return xboxDrive.getAButton();
     }
 
-    static public boolean togglePneumatic() {
-        return xboxDrive.getXButton();
-    }
     static public double getRightTriggerAxisForShoot() {
         return xboxShooterTesting.getRightTriggerAxis();
     }
