@@ -9,6 +9,7 @@ import java.lang.annotation.Retention;
 /** Add your docs here. */
 public class OI {
     static xbox4415 xboxDrive = new xbox4415(0);
+    static xbox4415 xboxShooterTesting = new xbox4415(2);
 
     static public double getDriveY() {
         return xboxDrive.getLeftY();
@@ -44,6 +45,16 @@ public class OI {
 
     static public boolean togglePneumatic() {
         return xboxDrive.getXButton();
+    }
+    static public double getRightTriggerAxisForShoot() {
+        return xboxShooterTesting.getRightTriggerAxis();
+    }
+    static public boolean getLeftBumperForTurntable(){
+        return xboxShooterTesting.getLeftBumper();
+    }
+    static public boolean getRightBumperForTurntable(){
+        return xboxShooterTesting.getRightBumper();
+
     }
 
 }

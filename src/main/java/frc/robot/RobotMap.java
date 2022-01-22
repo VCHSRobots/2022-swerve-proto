@@ -32,4 +32,9 @@ public class RobotMap {
 
     public static final int kIntake_Pnuematic1              = 0;
     public static final int kIntake_Pnuematic2              = 1;
+
+    public static final int kShoot_BottomMotor_TalonFX     = 31;
+    public static final int kShoot_TopMotor_TalonFX        = 32;
+    public static final int kTurnTableMotor_TalonFX        = 33;
+
 }
