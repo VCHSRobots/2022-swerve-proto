@@ -27,4 +27,10 @@ public class RobotMap {
     public static final int kDrive_FrontRightEncoder        = 11;
     public static final int kDrive_BackLeftEncoder          = 13;
     public static final int kDrive_BackRightEncoder         = 14;
+
+    public static final int kShoot_BottomMotor_TalonFX     = 31;
+    
+    public static final int kTurnTableMotor_TalonFX     = 32;
+
+    public static final int kShoot_TopMotor_TalonFX     = 33;
 }
