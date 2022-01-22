@@ -18,3 +18,5 @@ prototype swerve code
   - AHRS gyro / IMU api: https://www.kauailabs.com/public_files/navx-mxp/apidocs/java/com/kauailabs/navx/frc/AHRS.html
 - frc254 talk on computer vision
   - https://www.team254.com/documents/vision-control/
+- pathplanner 2.0
+  - https://github.com/mjansen4857/pathplanner
