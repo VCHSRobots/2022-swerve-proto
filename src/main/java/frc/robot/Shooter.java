@@ -18,29 +18,33 @@ import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
+import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class Shooter extends Base {
-   
 
     ShuffleboardTab ShootMotorTab = Shuffleboard.getTab("Shooter");
-    NetworkTableEntry ntShooterSpeed = ShootMotorTab.add("speed", 0.75).getEntry();
-    NetworkTableEntry ntShooterSpeedBot = ShootMotorTab.add("speed bot", 0.75).getEntry();
+
+    NetworkTableEntry ntTopRPM = ShootMotorTab.add("Top RPM", 1000).getEntry();
+    NetworkTableEntry ntBotRPM = ShootMotorTab.add("BOT RPM", 1000).getEntry();
+
     WPI_TalonFX ShootTalonTop = new WPI_TalonFX(RobotMap.kShoot_BottomMotor_TalonFX);
     WPI_TalonFX ShootTalonBot = new WPI_TalonFX(RobotMap.kShoot_TopMotor_TalonFX);
     WPI_TalonFX TurnTableTalon = new WPI_TalonFX(RobotMap.kTurnTableMotor_TalonFX);
+
     double shootTopSpeed = 0;
     double shootBotSpeed = 0;
     double turntableSpeed = 0;
 
-
-
-    
+    SimpleMotorFeedforward m_ShootFeedForward = new SimpleMotorFeedforward(0, 0);
 
     @Override
     public void robotInit() {
+        ShootMotorTab.addNumber("Actual Top RPM", () -> tickesPer100msToRPM(ShootTalonTop.getSelectedSensorVelocity()));
+        ShootMotorTab.addNumber("Actual Bot RPM", () -> tickesPer100msToRPM(ShootTalonTop.getSelectedSensorVelocity()));
+
         TalonFXConfiguration baseConfig = new TalonFXConfiguration();
         baseConfig.closedloopRamp = 0.02;
         baseConfig.neutralDeadband = 0.005;
@@ -60,7 +64,6 @@ public class Shooter extends Base {
         baseConfig.velocityMeasurementPeriod = SensorVelocityMeasPeriod.Period_100Ms;
         baseConfig.voltageCompSaturation = 11;
         baseConfig.initializationStrategy = SensorInitializationStrategy.BootToAbsolutePosition;
-
         baseConfig.slot0.allowableClosedloopError = 50;
         baseConfig.slot0.closedLoopPeakOutput = 1.0;
         baseConfig.slot0.closedLoopPeriod = 20;
@@ -69,6 +72,16 @@ public class Shooter extends Base {
         baseConfig.slot0.kI = 0.0;
         baseConfig.slot0.kD = 0.0;
         baseConfig.slot0.kF = 0.0;
+        baseConfig.slot0.kP = 0.03;
+
+        ShootTalonBot.configFactoryDefault();
+        ShootTalonTop.configFactoryDefault();
+        TurnTableTalon.configFactoryDefault();
+
+        ShootTalonBot.configAllSettings(baseConfig);
+        ShootTalonTop.configAllSettings(baseConfig);
+
+        TurnTableTalon.configOpenloopRamp(0.1);
 
     }
 
@@ -90,36 +103,40 @@ public class Shooter extends Base {
 
     @Override
     public void teleopPeriodic() {
-        
-        
+        shootBotSpeed = 0;
+        shootTopSpeed = 0;
 
         if (OI.getRightTriggerAxisForShoot() > 0.5) {
-            shootTopSpeed = ntShooterSpeed.getNumber(0).doubleValue();
-            shootBotSpeed = ntShooterSpeed.getNumber(0).doubleValue();
-
-        } 
-        if (OI.getRightBumperForTurntable()){
+            shootTopSpeed = rpmToTicksper100ms(ntTopRPM.getNumber(0).doubleValue());
+            shootBotSpeed = rpmToTicksper100ms(ntBotRPM.getNumber(0).doubleValue());
+        } else {
+            shootBotSpeed = 0;
+            shootTopSpeed = 0;
+        }
+        if (OI.getRightBumperForTurntable()) {
             turntableSpeed = 0.2;
         }
-        if (OI.getLeftBumperForTurntable()){
+        if (OI.getLeftBumperForTurntable()) {
             turntableSpeed = -0.2;
         }
 
         ShootTalonTop.set(ControlMode.Velocity, shootTopSpeed);
         ShootTalonBot.set(ControlMode.Velocity, shootBotSpeed);
-     //   TurnTableTalon.set(ControlMode.Position, TurnTableTalon);
+        TurnTableTalon.set(ControlMode.PercentOutput, turntableSpeed);
 
     }
 
-    public double rpmToTicks100ms(double rpm){
+    public double rpmToTicksper100ms(double rpm) {
         double secondsinmin = 60;
         double secto100ms = 10;
         double tick = 2048;
+        double rpmtoticks100 = rpm / secondsinmin / secto100ms * tick;
+        return rpmtoticks100;
 
-        return rpm/secondsinmin/secto100ms*tick;
+    }
 
-
-
+    public double tickesPer100msToRPM(double ticksPer100ms) {
+        return ticksPer100ms * 60 * 10 / 2048;
     }
 
 }
