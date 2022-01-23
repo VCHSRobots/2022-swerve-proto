@@ -31,21 +31,24 @@ public class Shooter extends Base {
     NetworkTableEntry ntTopRPM = ShootMotorTab.add("Top RPM", 1000).getEntry();
     NetworkTableEntry ntBotRPM = ShootMotorTab.add("BOT RPM", 1000).getEntry();
 
-    WPI_TalonFX ShootTalonTop = new WPI_TalonFX(RobotMap.kShoot_BottomMotor_TalonFX);
-    WPI_TalonFX ShootTalonBot = new WPI_TalonFX(RobotMap.kShoot_TopMotor_TalonFX);
+    WPI_TalonFX ShootTalonTop = new WPI_TalonFX(RobotMap.kShoot_TopMotor_TalonFX);
+    WPI_TalonFX ShootTalonBot = new WPI_TalonFX(RobotMap.kShoot_BottomMotor_TalonFX);
     WPI_TalonFX TurnTableTalon = new WPI_TalonFX(RobotMap.kTurnTableMotor_TalonFX);
 
     double shootTopSpeed = 0;
     double shootBotSpeed = 0;
     double turntableSpeed = 0;
 
-    SimpleMotorFeedforward m_ShootFeedForward = new SimpleMotorFeedforward(0, 0);
+    // SimpleMotorFeedforward m_ShootFeedForward = new SimpleMotorFeedforward(0.00, 0.005);
 
     @Override
     public void robotInit() {
         ShootMotorTab.addNumber("Actual Top RPM", () -> tickesPer100msToRPM(ShootTalonTop.getSelectedSensorVelocity()));
-        ShootMotorTab.addNumber("Actual Bot RPM", () -> tickesPer100msToRPM(ShootTalonTop.getSelectedSensorVelocity()));
-
+        ShootMotorTab.addNumber("Actual Bot RPM", () -> tickesPer100msToRPM(ShootTalonBot.getSelectedSensorVelocity()));
+        ShootMotorTab.addNumber("Sensor Position Top", () -> ShootTalonTop.getSelectedSensorPosition());
+        ShootMotorTab.addNumber("Sensor Position Bot", () -> ShootTalonBot.getSelectedSensorPosition());
+        ntTopRPM.setDouble(1000);
+        ntBotRPM.setDouble(1000);
         TalonFXConfiguration baseConfig = new TalonFXConfiguration();
         baseConfig.closedloopRamp = 0.02;
         baseConfig.neutralDeadband = 0.005;
@@ -69,11 +72,10 @@ public class Shooter extends Base {
         baseConfig.slot0.closedLoopPeakOutput = 1.0;
         baseConfig.slot0.closedLoopPeriod = 20;
         baseConfig.slot0.integralZone = 100;
-        baseConfig.slot0.kP = 0.0;
         baseConfig.slot0.kI = 0.0;
         baseConfig.slot0.kD = 0.0;
-        baseConfig.slot0.kF = 0.0;
-        baseConfig.slot0.kP = 0.03;
+        baseConfig.slot0.kF = 0.05;
+        baseConfig.slot0.kP = 0.03; // 0.03
 
         ShootTalonBot.configFactoryDefault();
         ShootTalonTop.configFactoryDefault();
@@ -106,6 +108,7 @@ public class Shooter extends Base {
     public void teleopPeriodic() {
         shootBotSpeed = 0;
         shootTopSpeed = 0;
+        turntableSpeed = 0;
 
         if (OI.getRightTriggerAxisForShoot() > 0.5) {
             shootTopSpeed = rpmToTicksper100ms(ntTopRPM.getNumber(0).doubleValue());
@@ -115,10 +118,10 @@ public class Shooter extends Base {
             shootTopSpeed = 0;
         }
         if (OI.getRightBumperForTurntable()) {
-            turntableSpeed = 0.2;
+            turntableSpeed = 0.07;
         }
         if (OI.getLeftBumperForTurntable()) {
-            turntableSpeed = -0.2;
+            turntableSpeed = -0.07;
         }
 
         ShootTalonTop.set(ControlMode.Velocity, shootTopSpeed);

@@ -27,16 +27,14 @@ public class Robot extends TimedRobot {
   private String m_autoSelected;
   private final SendableChooser<String> m_chooser = new SendableChooser<>();
 
-  private final Compressor pcmCompressor = new Compressor(2, PneumaticsModuleType.CTREPCM);
-  private final Compressor phCompressor = new Compressor(3, PneumaticsModuleType.REVPH);
+  // private final Compressor pcmCompressor = new Compressor(2, PneumaticsModuleType.CTREPCM);
 
-  public static SwerveDrive m_swerve = new SwerveDrive();
+  // public static SwerveDrive m_swerve = new SwerveDrive();
   public static Shooter m_shooter = new Shooter();
-  public static Intake  m_intake = new Intake();
-  private final Base[] m_subsystems = { m_swerve, m_intake, m_shooter};
+  // public static Intake  m_intake = new Intake();
+  private final Base[] m_subsystems = { m_shooter};
 
-  private Auto autonomous;
-  private Intake intake;
+  // private Auto autonomous;
   
   /**
    * This function is run when the robot is first started up and should be used
@@ -46,9 +44,6 @@ public class Robot extends TimedRobot {
   @Override
   public void robotInit() {
 
-    pcmCompressor.enableDigital();
-    pcmCompressor.disable();
-
     m_chooser.setDefaultOption("Default Auto", kDefaultAuto);
     m_chooser.addOption("My Auto", kCustomAuto);
     SmartDashboard.putData("Auto choices", m_chooser);
@@ -57,15 +52,14 @@ public class Robot extends TimedRobot {
       subsys.robotInit();
     }
     Shuffleboard.getTab("main").add("swerve drive", m_subsystems[0]);
-    Shuffleboard.getTab("main").add("shooter", m_subsystems[2]);
     Shuffleboard.getTab("main").add("xbox", OI.xboxDrive);
 
-    Shuffleboard.getTab("main").addNumber("pose/x", ()->m_swerve.getPose2d().getX());
-    Shuffleboard.getTab("main").addNumber("pose/y", ()->m_swerve.getPose2d().getY());
-    Shuffleboard.getTab("main").addNumber("pose/theta", ()->m_swerve.getPose2d().getRotation().getDegrees());
+    // Shuffleboard.getTab("main").addNumber("pose/x", ()->m_swerve.getPose2d().getX());
+    // Shuffleboard.getTab("main").addNumber("pose/y", ()->m_swerve.getPose2d().getY());
+    // Shuffleboard.getTab("main").addNumber("pose/theta", ()->m_swerve.getPose2d().getRotation().getDegrees());
 
-    autonomous = new Auto();
-    autonomous.robotInit();
+    // autonomous = new Auto();
+    // autonomous.robotInit();
 
     CameraServer.startAutomaticCapture();
 
@@ -88,8 +82,7 @@ public class Robot extends TimedRobot {
       subsys.robotPeriodic();
     }
 
-    autonomous.robotPeriodic();
-    intake.robotPeriodic();
+    // autonomous.robotPeriodic();
   }
 
   /**
@@ -119,14 +112,14 @@ public class Robot extends TimedRobot {
       subsys.autonomousInit();
     }
 
-    autonomous.autonomousInit();
+    // autonomous.autonomousInit();
   }
 
   /** This function is called periodically during autonomous. */
   @Override
   public void autonomousPeriodic() {
 
-    autonomous.autonomousPeriodic();
+    // autonomous.autonomousPeriodic();
 
     switch (m_autoSelected) {
       case kCustomAuto:
