@@ -1,54 +1,48 @@
 package frc.robot;
 
-import java.util.ResourceBundle.Control;
-
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.DemandType;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
-import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
-import com.ctre.phoenix.motorcontrol.TalonFXInvertType;
-import com.ctre.phoenix.motorcontrol.VelocityMeasPeriod;
-import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.ctre.phoenix.motorcontrol.can.TalonFXConfiguration;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import com.ctre.phoenix.sensors.SensorInitializationStrategy;
 import com.ctre.phoenix.sensors.SensorVelocityMeasPeriod;
 
-import edu.wpi.first.wpilibj.GenericHID;
-import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.networktables.NetworkTableEntry;
-import edu.wpi.first.util.sendable.SendableBuilder;
-import edu.wpi.first.wpilibj.DigitalInput;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class Shooter extends Base {
 
     ShuffleboardTab ShootMotorTab = Shuffleboard.getTab("Shooter");
 
     NetworkTableEntry ntTopRPM = ShootMotorTab.add("Top RPM", 1000).getEntry();
-    NetworkTableEntry ntBotRPM = ShootMotorTab.add("BOT RPM", 1000).getEntry();
+    NetworkTableEntry ntBotRPM = ShootMotorTab.add("Bot RPM", 1000).getEntry();
 
     WPI_TalonFX ShootTalonTop = new WPI_TalonFX(RobotMap.kShoot_TopMotor_TalonFX);
     WPI_TalonFX ShootTalonBot = new WPI_TalonFX(RobotMap.kShoot_BottomMotor_TalonFX);
     WPI_TalonFX TurnTableTalon = new WPI_TalonFX(RobotMap.kTurnTableMotor_TalonFX);
 
-    double shootTopSpeed = 0;
-    double shootBotSpeed = 0;
-    double turntableSpeed = 0;
+    // SimpleMotorFeedforward m_ShootFeedForward = new SimpleMotorFeedforward(0.00,
+    // 0.00045);
 
-    // SimpleMotorFeedforward m_ShootFeedForward = new SimpleMotorFeedforward(0.00, 0.005);
+    // SHUFFLEBOARD HELPERS
+    private double getTopMotorRPM() {
+        return ticksPer100msToRPM(ShootTalonTop.getSelectedSensorVelocity());
+    }
+
+    private double getBotMotorRPM() {
+        return ticksPer100msToRPM(ShootTalonBot.getSelectedSensorVelocity());
+    }
+
+    // END SHUFFLEBOARD HELPERS
 
     @Override
     public void robotInit() {
-        ShootMotorTab.addNumber("Actual Top RPM", () -> tickesPer100msToRPM(ShootTalonTop.getSelectedSensorVelocity()));
-        ShootMotorTab.addNumber("Actual Bot RPM", () -> tickesPer100msToRPM(ShootTalonBot.getSelectedSensorVelocity()));
-        ShootMotorTab.addNumber("Sensor Position Top", () -> ShootTalonTop.getSelectedSensorPosition());
-        ShootMotorTab.addNumber("Sensor Position Bot", () -> ShootTalonBot.getSelectedSensorPosition());
-        ntTopRPM.setDouble(1000);
-        ntBotRPM.setDouble(1000);
+        ShootMotorTab.addNumber("Actual Top RPM", () -> getTopMotorRPM());
+        ShootMotorTab.addNumber("Actual Bot RPM", () -> getBotMotorRPM());
+
         TalonFXConfiguration baseConfig = new TalonFXConfiguration();
         baseConfig.closedloopRamp = 0.02;
         baseConfig.neutralDeadband = 0.005;
@@ -84,6 +78,15 @@ public class Shooter extends Base {
         ShootTalonBot.configAllSettings(baseConfig);
         ShootTalonTop.configAllSettings(baseConfig);
 
+        ShootTalonBot.setNeutralMode(NeutralMode.Coast);
+        ShootTalonTop.setNeutralMode(NeutralMode.Coast);
+
+        ShootTalonBot.setInverted(false);
+        ShootTalonTop.setInverted(false);
+
+        ShootTalonBot.setSensorPhase(false);
+        ShootTalonTop.setSensorPhase(false);
+
         TurnTableTalon.configOpenloopRamp(0.1);
 
     }
@@ -106,16 +109,14 @@ public class Shooter extends Base {
 
     @Override
     public void teleopPeriodic() {
-        shootBotSpeed = 0;
-        shootTopSpeed = 0;
-        turntableSpeed = 0;
+        // default all set outputs to 0
+        double shootTopSpeed = 0;
+        double shootBotSpeed = 0;
+        double turntableSpeed = 0;
 
         if (OI.getRightTriggerAxisForShoot() > 0.5) {
-            shootTopSpeed = rpmToTicksper100ms(ntTopRPM.getNumber(0).doubleValue());
-            shootBotSpeed = rpmToTicksper100ms(ntBotRPM.getNumber(0).doubleValue());
-        } else {
-            shootBotSpeed = 0;
-            shootTopSpeed = 0;
+            shootTopSpeed = rpmToTicksPer100ms(ntTopRPM.getNumber(0).doubleValue());
+            shootBotSpeed = rpmToTicksPer100ms(ntBotRPM.getNumber(0).doubleValue());
         }
         if (OI.getRightBumperForTurntable()) {
             turntableSpeed = 0.07;
@@ -130,17 +131,20 @@ public class Shooter extends Base {
 
     }
 
-    public double rpmToTicksper100ms(double rpm) {
-        double secondsinmin = 60;
-        double secto100ms = 10;
-        double tick = 2048;
-        double rpmtoticks100 = rpm / secondsinmin / secto100ms * tick;
-        return rpmtoticks100;
+    public double rpmToTicksPer100ms(double rpm) {
+        double minutesPerSecond = 1.0 / 60.0;
+        double secondsPer100ms = 1.0 / 10.0;
+        double ticksPerRotation = 2048;
+        double ticksPer100ms = rpm * minutesPerSecond * secondsPer100ms * ticksPerRotation;
+        return ticksPer100ms;
 
     }
 
-    public double tickesPer100msToRPM(double ticksPer100ms) {
-        return ticksPer100ms * 60 * 10 / 2048;
+    public double ticksPer100msToRPM(double ticksPer100ms) {
+        double secondsPerMinute = 60.0;
+        double oneHundredMSPerSecond = 10.0;
+        double rotationsPerTick = 1.0 / 2048;
+        double RPM = ticksPer100ms * secondsPerMinute * oneHundredMSPerSecond * rotationsPerTick;
+        return RPM;
     }
-
 }
