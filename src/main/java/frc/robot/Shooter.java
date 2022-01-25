@@ -147,4 +147,16 @@ public class Shooter extends Base {
         double RPM = ticksPer100ms * secondsPerMinute * oneHundredMSPerSecond * rotationsPerTick;
         return RPM;
     }
+
+    /*
+    NOTE: NOT ACTUAL RPM, INPUTTED RPM
+    20 feet 5300 top 5600 bot
+    17 feet 9 inch 4300
+    15 feet 3900
+    13 feet 3130 top 3200 bot
+    11 feet 2800 top 3250 bot
+    9 feet 1600 top 4000 bot
+    7 feet 1270 top 4270 bot
+    */
+
 }
