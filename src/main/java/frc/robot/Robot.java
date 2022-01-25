@@ -5,6 +5,8 @@
 package frc.robot;
 
 import edu.wpi.first.cameraserver.CameraServer;
+import edu.wpi.first.wpilibj.Compressor;
+import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -25,10 +27,16 @@ public class Robot extends TimedRobot {
   private String m_autoSelected;
   private final SendableChooser<String> m_chooser = new SendableChooser<>();
 
-  public static SwerveDrive m_swerve = new SwerveDrive();
-  private final Base[] m_subsystems = { m_swerve, };
+  // TODO: double check what type of compressor module we are using
+  // private final Compressor m_phCompressor = new Compressor(2, PneumaticsModuleType.REVPH);
 
-  private Auto autonomous;
+  public static SwerveDrive m_swerve = new SwerveDrive();
+  public static Shooter m_shooter = new Shooter();
+  public static Intake  m_intake = new Intake();
+  public static ColorSensor m_colorSensor = new ColorSensor();
+  private final Base[] m_subsystems = { m_shooter, m_swerve, m_intake, m_colorSensor };
+
+  private Auto autonomous = new Auto();
   
   /**
    * This function is run when the robot is first started up and should be used
@@ -37,6 +45,7 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void robotInit() {
+
     m_chooser.setDefaultOption("Default Auto", kDefaultAuto);
     m_chooser.addOption("My Auto", kCustomAuto);
     SmartDashboard.putData("Auto choices", m_chooser);
@@ -51,7 +60,6 @@ public class Robot extends TimedRobot {
     Shuffleboard.getTab("main").addNumber("pose/y", ()->m_swerve.getPose2d().getY());
     Shuffleboard.getTab("main").addNumber("pose/theta", ()->m_swerve.getPose2d().getRotation().getDegrees());
 
-    autonomous = new Auto();
     autonomous.robotInit();
 
     CameraServer.startAutomaticCapture();
@@ -97,16 +105,12 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void autonomousInit() {
-    m_autoSelected = m_chooser.getSelected();
-    // m_autoSelected = SmartDashboard.getString("Auto Selector", kDefaultAuto);
-    System.out.println("Auto selected: " + m_autoSelected);
 
     for (Base subsys : m_subsystems) {
       subsys.autonomousInit();
     }
 
     autonomous.autonomousInit();
-
   }
 
   /** This function is called periodically during autonomous. */
@@ -114,16 +118,6 @@ public class Robot extends TimedRobot {
   public void autonomousPeriodic() {
 
     autonomous.autonomousPeriodic();
-
-    switch (m_autoSelected) {
-      case kCustomAuto:
-        // Put custom auto code here
-        break;
-      case kDefaultAuto:
-      default:
-        // Put default auto code here
-        break;
-    }
 
     for (Base subsys : m_subsystems) {
       subsys.autonomousPeriodic();
@@ -136,6 +130,7 @@ public class Robot extends TimedRobot {
   /** This function is called once when teleop is enabled. */
   @Override
   public void teleopInit() {
+
     for (Base subsys : m_subsystems) {
       subsys.teleopInit();
     }
@@ -144,6 +139,7 @@ public class Robot extends TimedRobot {
   /** This function is called periodically during operator control. */
   @Override
   public void teleopPeriodic() {
+
     for (Base subsys : m_subsystems) {
       subsys.teleopPeriodic();
     }

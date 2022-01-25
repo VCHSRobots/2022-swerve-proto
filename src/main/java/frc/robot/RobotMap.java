@@ -23,21 +23,31 @@ public class RobotMap {
     public static final int kDrive_BackRightDrive_TalonFX   = 8;
     public static final int kDrive_BackRightTurn_TalonFX    = 7;
 
+    public static final int kIntake_roller_TalonFX          = 9;
+    public static final int kIntake_mover_TalonFX           = 10;
+    public static final int kIntake_shooterInput_TalonFX    = 15;
+
     public static final int kDrive_FrontLeftEncoder         = 12;
     public static final int kDrive_FrontRightEncoder        = 11;
     public static final int kDrive_BackLeftEncoder          = 13;
     public static final int kDrive_BackRightEncoder         = 14;
 
-    public static final int kClimb_LeftArm_TalonFX          = 15;
-    public static final int kClimb_RightArm_TalonFX         = 16;
-    public static final int kClimb_NeutralExtra_TalonFX     = 17; //extra talon for climber, may or may not be used. since purpose has not been finalized, its "neutral" for now
-    public static final int kClimb_LeftSolenoidForward     = 6;
-    public static final int kClimb_LeftSolenoidReverse     = 7;
-    public static final int kClimb_RightSolenoidForward    = 8;
-    public static final int kClimb_RightSolenoidReverse    = 9;
+    public static final int kClimb_LeftArm_TalonFX          = 21;
+    public static final int kClimb_RightArm_TalonFX         = 22;
+    public static final int kClimb_NeutralExtra_TalonFX     = 23; //extra talon for climber, may or may not be used. since purpose has not been finalized, its "neutral" for now
+    public static final int kClimb_LeftSolenoidForward     = 4;
+    public static final int kClimb_LeftSolenoidReverse     = 5;
+    public static final int kClimb_RightSolenoidForward    = 6;
+    public static final int kClimb_RightSolenoidReverse    = 7;
 
 
 
 
+    public static final int kIntake_Pnuematic1              = 0;
+    public static final int kIntake_Pnuematic2              = 1;
+
+    public static final int kShoot_BottomMotor_TalonFX     = 31;
+    public static final int kShoot_TopMotor_TalonFX        = 32;
+    public static final int kTurnTableMotor_TalonFX        = 33;
 
 }
