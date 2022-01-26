@@ -5,6 +5,7 @@
 package frc.robot;
 
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.util.Color;
 
 /** Add your docs here. */
 public class Constants {
@@ -14,6 +15,11 @@ public class Constants {
         public static final double BACK_LEFT = Units.degreesToRadians(-16.5);
         public static final double BACK_RIGHT = Units.degreesToRadians(172.0);
     }
+
+    public static final Color kBlueBallColor = new Color(0.143, 0.427, 0.429);
+    public static final Color kRedBallColor = new Color(0.561, 0.232, 0.114);
+
+    public static final String targetedBall = "blue";
 
     public static final double xboxDeadband = 0.09;
 }

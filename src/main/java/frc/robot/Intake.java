@@ -25,11 +25,20 @@ import edu.wpi.first.wpilibj.util.Color;
 /** Add your docs here. */
 public class Intake extends Base {
 
+    private double m_motorSpeeds = 0;
+    private boolean isChanging = false;
+
     private Timer m_timer = new Timer();
-    private TimerTask m_timerTask = new TimerTask() {
+    private TimerTask m_changeToE = new TimerTask() {
         @Override
         public void run() {
             m_state = STATE.E;
+        };
+    };
+    private TimerTask m_change = new TimerTask() {
+        @Override
+        public void run() {
+            isChanging = false;
         };
     };
 
@@ -93,19 +102,43 @@ public class Intake extends Base {
 
                 break;
             case C:
-                if (ColorSensor.ballDetected) {
-                    m_state = STATE.D;
+
+                if(isChanging) {
+                    m_motorSpeeds = -1;
+                } else {
+
+                    isChanging = false;   
+                    m_motorSpeeds = .1;
+
+                    if(Constants.targetedBall == "blue") {
+                        if(ColorSensor.redBallDetected) {
+                            m_motorSpeeds = -1;
+                            isChanging = true;
+                            m_timer.schedule(m_change, 2500);
+                        } else {
+                            m_state = STATE.D;
+                        }
+                    } else if (Constants.targetedBall == "red"){
+                        if(ColorSensor.blueBallDetected) {
+                            m_motorSpeeds = -1;
+                            isChanging = true;
+                            m_timer.schedule(m_change, 2500);
+                        } else {
+                            m_state = STATE.D;
+                        }
+                    }
                 }
-                m_roller.set(ControlMode.PercentOutput, .1);
-                m_mover.set(ControlMode.PercentOutput, .1);
-                m_shooterIntake.set(ControlMode.PercentOutput, 0);
+
+                m_roller.set(ControlMode.PercentOutput, m_motorSpeeds);
+                m_mover.set(ControlMode.PercentOutput, m_motorSpeeds);
+                m_shooterIntake.set(ControlMode.PercentOutput, m_motorSpeeds);
 
                 m_doublePCM.set(Value.kForward);
 
                 break;
             case D:
                 // state changes to E after timer
-                m_timer.schedule(m_timerTask, 500);
+                m_timer.schedule(m_changeToE, 500);
                 m_roller.set(ControlMode.PercentOutput, .1);
                 m_mover.set(ControlMode.PercentOutput, .1);
                 m_shooterIntake.set(ControlMode.PercentOutput, 0);

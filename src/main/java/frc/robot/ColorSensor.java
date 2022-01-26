@@ -48,13 +48,6 @@ public class ColorSensor extends Base{
      */
     private final ColorMatch m_colorMatcher = new ColorMatch();
   
-    /**
-     * Note: Any example colors should be calibrated as the user needs, these
-     * are here as a basic example.
-     */
-    private final Color kBlueTarget = new Color(0.143, 0.427, 0.429);
-    private final Color kGreenTarget = new Color(0.197, 0.561, 0.240);
-    private final Color kRedTarget = new Color(0.561, 0.232, 0.114);
 
     ShuffleboardTab colorSensorTab = Shuffleboard.getTab("ColorSensor");
     NetworkTableEntry ntRedColor = colorSensorTab.add("Red", 0).getEntry();
@@ -68,11 +61,13 @@ public class ColorSensor extends Base{
 
     public static boolean ballDetected = false;
 
+    public static boolean redBallDetected = false;
+    public static boolean blueBallDetected = false;
+
     @Override
     public void robotInit() {
-      m_colorMatcher.addColorMatch(kBlueTarget);
-      m_colorMatcher.addColorMatch(kGreenTarget);
-      m_colorMatcher.addColorMatch(kRedTarget);
+      m_colorMatcher.addColorMatch(Constants.kBlueBallColor);
+      m_colorMatcher.addColorMatch(Constants.kRedBallColor);
     }
   
     @Override
@@ -95,10 +90,19 @@ public class ColorSensor extends Base{
       
       ColorMatchResult match = m_colorMatcher.matchClosestColor(detectedColor);
   
-      if(match.confidence > 0.8) {
-        ballDetected = true;
+      // if(match.confidence > 0.8) {
+      //   ballDetected = true;
+      // } else {
+      //   ballDetected = false;
+      // }
+      
+      if(detectedColor.red > 0.8) {
+        redBallDetected = true;
+      } else if(detectedColor.blue > 0.8) {
+        blueBallDetected = true;
       } else {
-        ballDetected = false;
+        redBallDetected = false;
+        blueBallDetected = false;
       }
 
       /**
