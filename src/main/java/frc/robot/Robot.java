@@ -34,7 +34,8 @@ public class Robot extends TimedRobot {
   public static Shooter m_shooter = new Shooter();
   public static Intake  m_intake = new Intake();
   public static ColorSensor m_colorSensor = new ColorSensor();
-  private final Base[] m_subsystems = { m_shooter, m_swerve, m_intake, m_colorSensor };
+  public static VisionBall m_visionBall= new VisionBall();
+  private final Base[] m_subsystems = { m_shooter, m_swerve, m_intake, m_colorSensor,m_visionBall };
 
   private Auto autonomous = new Auto();
   
