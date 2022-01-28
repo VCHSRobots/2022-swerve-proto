@@ -14,6 +14,7 @@ import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
  * for now, only work in teleop mode. 
  * 1. Read the most likely target detected by the PhotonVision RPi device from the Network table and display the target on shuffleboard
  * 2. drive toward it.
+ *   2.1 what if the ball is moving
  * 3. if no ball found, turn around to find the ball.
 */
 public class VisionBall extends Base {
@@ -37,21 +38,6 @@ public class VisionBall extends Base {
 
     @Override
     public void robotPeriodic() {
-        icount++;
-        if (icount % 30 == 0) {
-            var result = camera.getLatestResult();
-            if (result.hasTargets()) {
-                // Calculate angular turn power
-                // -1.0 required to ensure positive PID controller effort _increases_ yaw
-                ntTargetYaw.setDouble(result.getBestTarget().getYaw());
-                ntTargetPitch.setDouble(result.getBestTarget().getPitch());
-                ntTargetArea.setDouble(result.getBestTarget().getArea());
-            } else {
-                ntTargetYaw.setDouble(-1);
-                ntTargetPitch.setDouble(-1);
-                ntTargetArea.setDouble(-1);
-            }
-        }
     }
 
     @Override
@@ -66,6 +52,35 @@ public class VisionBall extends Base {
     }
 
     public void autonomousPeriodic() {
+        icount++;
+        var result = camera.getLatestResult();
+
+        //update shuffle board
+        if (icount % 30 == 0) {
+            if (result.hasTargets()) {
+                ntTargetYaw.setDouble(result.getBestTarget().getYaw());
+                ntTargetPitch.setDouble(result.getBestTarget().getPitch());
+                ntTargetArea.setDouble(result.getBestTarget().getArea());
+            } else {
+                ntTargetYaw.setDouble(-1);
+                ntTargetPitch.setDouble(-1);
+                ntTargetArea.setDouble(-1);
+            }
+        }
+        if (!result.hasTargets()) {
+            return;
+        }
+
+        /*
+        double targetYaw=result.getBestTarget().getYaw();
+        double targetPitch=result.getBestTarget().getPitch();
+        double targetArea=result.getBestTarget().getArea();
+
+        //drive toward the ball
+        double xSpeed=()
+        Robot.m_swerve.drive(xSpeed, double ySpeed, double rot, boolean fieldRelative,
+            Translation2d centerOfRotationMeters) {
+                */
     }
 
 }
