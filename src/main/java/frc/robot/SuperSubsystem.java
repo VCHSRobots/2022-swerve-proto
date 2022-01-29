@@ -25,7 +25,45 @@ import edu.wpi.first.wpilibj.util.Color;
 /** Add your docs here. */
 public class SuperSubsystem {
 
-    public class IntakeE extends Base {
+    private SwerveDrive m_SwerveDrive;
+    private OI m_OI;
+    private Shooter m_shooter;
+    private Climber m_climber;
+    private Intake m_intake;
+    private RobotMap m_robotMap;
+
+
+    public SuperSubsystem(SwerveDrive swerveDrive, OI oi, Shooter shooter, Climber climber, Intake intake, RobotMap robotMap) {
+
+        m_SwerveDrive = swerveDrive;
+        m_OI = oi;
+        m_shooter = shooter;
+        m_climber = climber;
+        m_intake = intake;
+        m_robotMap = robotMap;
+
+    }
+    public void teleopPeriodic() {
+        if (m_OI.getSolenoidToggle()) {
+
+            
+            m_climber.leftSolenoid.toggle();
+            m_climber.rightSolenoid.toggle();
+
+        }
+
+        if(m_OI.getArmsUp()) {
+
+            m_climber.rightArm.set(ControlMode.PercentOutput, 0.25);
+        } 
+        if(m_OI.getArmsDown()) {
+
+        }
+
+    }
+
+
+   /* public class IntakeE extends Base {
 
         public void robotInit() {
         }
@@ -56,7 +94,7 @@ public class SuperSubsystem {
       
         public void testPeriodic() {
         }
-
-    }
+*/
+    
 
 }
