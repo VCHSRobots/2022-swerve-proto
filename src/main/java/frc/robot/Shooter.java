@@ -38,8 +38,8 @@ public class Shooter extends Base {
 
     // END SHUFFLEBOARD HELPERS
 
-    @Override
-    public void robotInit() {
+    //Robot Init
+    public void init() {
         ShootMotorTab.addNumber("Actual Top RPM", () -> getTopMotorRPM());
         ShootMotorTab.addNumber("Actual Bot RPM", () -> getBotMotorRPM());
 
@@ -106,29 +106,27 @@ public class Shooter extends Base {
     @Override
     public void teleopInit() {
     }
-
-    @Override
-    public void teleopPeriodic() {
+    
+    //Teleop Periodic
+    public void shootAndTurn(double getRightTriggerAxis, boolean getRightBumperF, boolean getLeftBumper) {
         // default all set outputs to 0
         double shootTopSpeed = 0;
         double shootBotSpeed = 0;
         double turntableSpeed = 0;
-
-        if (OI.getRightTriggerAxisForShoot() > 0.5) {
+        if (getRightTriggerAxis > 0.5) {
             shootTopSpeed = rpmToTicksPer100ms(ntTopRPM.getNumber(0).doubleValue());
             shootBotSpeed = rpmToTicksPer100ms(ntBotRPM.getNumber(0).doubleValue());
         }
-        if (OI.getRightBumperForTurntable()) {
+        if (getRightBumperF) {
             turntableSpeed = 0.07;
         }
-        if (OI.getLeftBumperForTurntable()) {
+        if (getLeftBumper) {
             turntableSpeed = -0.07;
         }
 
         ShootTalonTop.set(ControlMode.Velocity, shootTopSpeed);
         ShootTalonBot.set(ControlMode.Velocity, shootBotSpeed);
         TurnTableTalon.set(ControlMode.PercentOutput, turntableSpeed);
-
     }
 
     public double rpmToTicksPer100ms(double rpm) {
