@@ -12,14 +12,16 @@ public class SuperStructure extends Base {
     private Intake m_Intake;
     private Shooter m_Shooter;
     private ColorSensor m_ColorSensor;
+    private Climber m_Climber;
 
-    public SuperStructure (SwerveDrive swerveDrive, OI oi, Intake intake, Shooter shooter, ColorSensor colorSensor) {
+    public SuperStructure (SwerveDrive swerveDrive, OI oi, Intake intake, Shooter shooter, ColorSensor colorSensor, Climber climber) {
         
         m_SwerveDrive = swerveDrive;
         m_OI = oi;
         m_Intake = intake;
         m_Shooter = shooter;
         m_ColorSensor = colorSensor;
+        m_Climber = climber;
 
     }
 
@@ -30,6 +32,8 @@ public class SuperStructure extends Base {
         m_Intake.init();
         m_Shooter.init();
         m_ColorSensor.init();
+
+        m_Climber.init();
 
     }
 
@@ -47,6 +51,7 @@ public class SuperStructure extends Base {
         m_SwerveDrive.driveWithXbox(m_OI.getDriveY(), m_OI.getDriveX(), OI.xboxDrive.getLeftTriggerAxis(), OI.xboxDrive.getRightTriggerAxis(), OI.xboxDrive.getRightY(), OI.xboxDrive.getRightX());
         m_Intake.changeState(m_OI.startIntake());
         m_Shooter.shootAndTurn(m_OI.getRightTriggerAxisForShoot(), m_OI.getRightBumperForTurntable(), m_OI.getLeftBumperForTurntable());
+        m_Climber.tPeriodic(m_OI.getSolenoidToggle(), m_OI.getArmsUp(), m_OI.getArmsDown());
 
     }
 

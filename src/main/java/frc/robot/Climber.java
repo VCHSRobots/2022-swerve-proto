@@ -25,46 +25,45 @@ public class Climber extends Base{
     private static WPI_TalonFX rightArm;
     private static WPI_TalonFX neutralExtra;
 
-    static void solenoidToggle() {
-        leftSolenoid.toggle();
-        rightSolenoid.toggle();
-    }
+    //init
+    static void init() {
 
-    static void motorFollow() {
+        //init motors
+        leftArm = new WPI_TalonFX(RobotMap.kClimb_LeftArm_TalonFX);
+        rightArm = new WPI_TalonFX(RobotMap.kClimb_RightArm_TalonFX);
+        neutralExtra = new WPI_TalonFX(RobotMap.kClimb_NeutralExtra_TalonFX);
+        //init solenoids
+        leftSolenoid = new DoubleSolenoid(PneumaticsModuleType.CTREPCM, RobotMap.kClimb_LeftSolenoidForward, RobotMap.kClimb_LeftSolenoidReverse);
+        rightSolenoid = new DoubleSolenoid(PneumaticsModuleType.CTREPCM, RobotMap.kClimb_RightSolenoidForward, RobotMap.kClimb_RightSolenoidReverse);
+
+        //motors
         leftArm.follow(rightArm);
         neutralExtra.follow(rightArm);
-    }
-
-    static void solenoidInitSet() {
+        //solenoids
         leftSolenoid.set(Value.kReverse);
         rightSolenoid.set(Value.kReverse);
-
     }
 
-    static void armsUp() {
-
-        rightArm.set(ControlMode.PercentOutput, 0.25);
+    //teleop periodic
+    static void tPeriodic(boolean solenoidToggle, boolean armsUp, boolean armsDown) {
+        //solenoids
+        if(solenoidToggle) {
+            leftSolenoid.toggle();
+            rightSolenoid.toggle();
+        }
+        //motors
+        if(armsUp) {
+            rightArm.set(ControlMode.PercentOutput, 0.25);
+        }
+        if(armsDown) {
+            rightArm.set(ControlMode.PercentOutput, -0.25);
+        }
 
     }
-
-    static void armsDown() {
-
-        rightArm.set(ControlMode.PercentOutput, -0.25);
-
-    }
-
-    
 
 
   @Override
   public void robotInit() {    
-
-    leftArm = new WPI_TalonFX(RobotMap.kClimb_LeftArm_TalonFX);
-    rightArm = new WPI_TalonFX(RobotMap.kClimb_RightArm_TalonFX);
-    neutralExtra = new WPI_TalonFX(RobotMap.kClimb_NeutralExtra_TalonFX);
-
-    leftSolenoid = new DoubleSolenoid(PneumaticsModuleType.CTREPCM, RobotMap.kClimb_LeftSolenoidForward, RobotMap.kClimb_LeftSolenoidReverse);
-    rightSolenoid = new DoubleSolenoid(PneumaticsModuleType.CTREPCM, RobotMap.kClimb_RightSolenoidForward, RobotMap.kClimb_RightSolenoidReverse);
 
     leftSolenoid.set(Value.kReverse);
     rightSolenoid.set(Value.kReverse);

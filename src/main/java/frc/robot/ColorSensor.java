@@ -89,11 +89,11 @@ public class ColorSensor extends Base{
       
       ColorMatchResult match = m_colorMatcher.matchClosestColor(detectedColor);
   
-      // if(match.confidence > 0.8) {
-      //   ballDetected = true;
-      // } else {
-      //   ballDetected = false;
-      // }
+      if(match.confidence > 0.8) {
+        ballDetected = true;
+      } else {
+        ballDetected = false;
+      }
       
       if(detectedColor.red > 0.8) {
         redBallDetected = true;

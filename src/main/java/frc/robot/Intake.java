@@ -61,11 +61,12 @@ public class Intake extends Base {
 
     //Robot Init
     public void init() {
+        //motors
         m_roller.configFactoryDefault();
         m_roller.setNeutralMode(NeutralMode.Brake);
         m_roller.setInverted(false);
         m_roller.setSensorPhase(false);
-
+        //solenoids
         m_doublePCM.set(Value.kReverse);
     }
 
@@ -98,6 +99,11 @@ public class Intake extends Base {
                 break;
             case C:
 
+                
+                if(ColorSensor.ballDetected) {
+                    m_state = STATE.D;
+                }
+                
                 if(isChanging) {
                     m_motorSpeeds = -1;
                 } else {
@@ -121,6 +127,8 @@ public class Intake extends Base {
                         } else {
                             m_state = STATE.D;
                         }
+                    } else {
+
                     }
                 }
 
