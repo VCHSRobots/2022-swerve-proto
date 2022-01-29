@@ -71,5 +71,8 @@ public class OI {
     static public boolean getXButtonForToggleFeetToDist(){
         return xboxShooterTesting.getXButton();
     }
+    static public boolean getYButtonForShootRPM(){
+        return xboxShooterTesting.getYButton();
+    }
 
 }

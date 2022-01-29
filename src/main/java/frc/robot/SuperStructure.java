@@ -27,7 +27,7 @@ public class SuperStructure extends Base {
     public void robotInit() {
         m_SwerveDrive.robotInit();
         m_Intake.init();
-        m_Shooter.init();
+        m_Shooter.robotInit();
         m_ColorSensor.init();
 
         m_Climber.init();
@@ -47,7 +47,7 @@ public class SuperStructure extends Base {
 
         m_SwerveDrive.driveWithXbox(OI.getDriveY(), OI.getDriveX(), OI.xboxDrive.getLeftTriggerAxis(), OI.xboxDrive.getRightTriggerAxis(), OI.xboxDrive.getRightY(), OI.xboxDrive.getRightX());
         m_Intake.changeState(OI.startIntake());
-        m_Shooter.shootAndTurn(OI.getRightTriggerAxisForShoot(), OI.getRightBumperForTurntable(), OI.getLeftBumperForTurntable());
+        m_Shooter.teleopPeriodic(OI.getXButtonForToggleFeetToDist(), OI.getYButtonForShootRPM(), OI.getRightBumperForTurntable(), OI.getLeftBumperForTurntable());
         m_Climber.climberMove(OI.getSolenoidToggle(), OI.getArmsUp(), OI.getArmsDown());
 
     }

@@ -50,7 +50,7 @@ public class Shooter extends Base {
 
     // END SHUFFLEBOARD HELPERS
 
-    @Override
+    
     public void robotInit() {
         ShootMotorTab.addNumber("Actual Top RPM", () -> getTopMotorRPM()).withPosition(5, 2);
         ShootMotorTab.addNumber("Actual Bot RPM", () -> getBotMotorRPM()).withPosition(5, 3);
@@ -122,8 +122,7 @@ public class Shooter extends Base {
         m_state = STATE.NotShooting;
     }
 
-    public void teleopPeriodic(boolean distanceMode, boolean RPMMode, boolean rightSideTurnTable,
-            boolean leftSideTurnTable) {
+    public void teleopPeriodic(boolean distanceMode, boolean RPMMode, boolean rightSideTurnTable, boolean leftSideTurnTable) {
         // default all set outputs to 0
         double shootTopSpeed = 0;
         double shootBotSpeed = 0;
