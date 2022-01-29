@@ -9,6 +9,7 @@ public class OI {
     static xbox4415 xboxDrive = new xbox4415(0);
     static xbox4415 xboxClimb = new xbox4415(1);
     static xbox4415 xboxShooterTesting = new xbox4415(2);
+    static xbox4415 xboxIntakeTesting = new xbox4415(3);
 
     static public double getDriveY() {
         return xboxDrive.getLeftY();
@@ -43,7 +44,7 @@ public class OI {
     }
     
     static public boolean startIntake() {
-        return xboxDrive.getAButton();
+        return xboxIntakeTesting.getXButton();
     }
 
     static public double getRightTriggerAxisForShoot() {
