@@ -19,6 +19,10 @@ public class Shooter extends Base {
 
     NetworkTableEntry ntTopRPM = ShootMotorTab.add("Top RPM", 1000).getEntry();
     NetworkTableEntry ntBotRPM = ShootMotorTab.add("Bot RPM", 1000).getEntry();
+    // NetworkTableEntry ntFeetToBotRPM = ShootMotorTab.add("FeetToBotRPM",
+    // 13).getEntry();
+    // NetworkTableEntry ntFeetToTopRPM = ShootMotorTab.add("FeetToTopRPM",
+    // 13).getEntry();
 
     WPI_TalonFX ShootTalonTop = new WPI_TalonFX(RobotMap.kShoot_TopMotor_TalonFX);
     WPI_TalonFX ShootTalonBot = new WPI_TalonFX(RobotMap.kShoot_BottomMotor_TalonFX);
@@ -35,6 +39,14 @@ public class Shooter extends Base {
     private double getBotMotorRPM() {
         return ticksPer100msToRPM(ShootTalonBot.getSelectedSensorVelocity());
     }
+
+    // private double DistToFeetTopRPM() {
+    // return topfeettoRPM(ShootTalonTop.getSelectedSensorVelocity());
+    // }
+
+    // private double DistToFeetBotRPM() {
+    // return botfeettoRPM(ShootTalonBot.getSelectedSensorVelocity());
+    // }
 
     // END SHUFFLEBOARD HELPERS
 
@@ -69,7 +81,7 @@ public class Shooter extends Base {
         baseConfig.slot0.kI = 0.0;
         baseConfig.slot0.kD = 0.0;
         baseConfig.slot0.kF = 0.05;
-        baseConfig.slot0.kP = 0.03; // 0.03
+        baseConfig.slot0.kP = 0.035; // 0.03
 
         ShootTalonBot.configFactoryDefault();
         ShootTalonTop.configFactoryDefault();
@@ -113,11 +125,25 @@ public class Shooter extends Base {
         double shootTopSpeed = 0;
         double shootBotSpeed = 0;
         double turntableSpeed = 0;
-
+    
+        
         if (OI.getRightTriggerAxisForShoot() > 0.5) {
             shootTopSpeed = rpmToTicksPer100ms(ntTopRPM.getNumber(0).doubleValue());
             shootBotSpeed = rpmToTicksPer100ms(ntBotRPM.getNumber(0).doubleValue());
+
         }
+                // if(OI.getXButtonForToggleFeetToDist()){
+                //     if(OI.getRightTriggerAxisForShoot() > 0.5){
+                //     shootTopSpeed = rpmToTicksPer100ms(ntFeetToBotRPM.getNumber(0).doubleValue());
+                //     shootBotSpeed = rpmToTicksPer100ms(ntFeetToTopRPM.getNumber(0).doubleValue());
+                //     }
+                //     elseif{
+                // if (OI.getRightTriggerAxisForShoot() > 0.5) {
+                //      shootTopSpeed = rpmToTicksPer100ms(ntTopRPM.getNumber(0).doubleValue());
+                //      shootBotSpeed = rpmToTicksPer100ms(ntBotRPM.getNumber(0).doubleValue());
+                //   }
+
+       // }
         if (OI.getRightBumperForTurntable()) {
             turntableSpeed = 0.07;
         }
@@ -147,19 +173,35 @@ public class Shooter extends Base {
         double RPM = ticksPer100ms * secondsPerMinute * oneHundredMSPerSecond * rotationsPerTick;
         return RPM;
     }
-    
+
+    // public double topfeettoRPM(double topfeet) {
+    // double RPMquadtop = -1419.522 + 396.7329 * topfeet + -3.353022 * (topfeet *
+    // topfeet);
+    // return RPMquadtop;
+
+    //}
+
+    //public double botfeettoRPM(double botfeet) {
+    //    double RPMquadbot = 8225 - 784.9 * botfeet + 32.04 * (botfeet * botfeet);
+    //    return RPMquadbot;
+    //}
 
     /*
-    NOTE: NOT ACTUAL RPM, INPUTTED RPM
-    20 feet 5300 top 5600 bot
-    17 feet 9 inch 4300
-    15 feet 3900
-    13 feet 3130 top 3200 bot
-    11 feet 2800 top 3250 bot
-    9 feet 1600 top 4000 bot
-    7 feet 1270 top 4270 bot
-    top eq. y=-1,419.522+396.7329x+-3.353022x^2
-    bot eq. y=8225-784.9x+32.04x^2
-    */
+     * NOTE: NOT ACTUAL RPM, INPUTTED RPM
+     * 20 feet 5300 top 5600 bot
+     * 17 feet 9 inch 4300
+     * 15 feet 3900
+     * 13 feet 3130 top 3200 bot
+     * 11 feet 2800 top 3250 bot
+     * 9 feet 1600 top 4000 bot
+     * 7 feet 1270 top 4270 bot
+     * top eq. y=-1,419.522+396.7329x+-3.353022x^2
+     * bot eq. y=8225-784.9x+32.04x^2
+     * 
+     * 26feet 10inch
+     */
 
 }
+
+
+

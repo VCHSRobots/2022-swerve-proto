@@ -30,13 +30,13 @@ public class Robot extends TimedRobot {
   // TODO: double check what type of compressor module we are using
   // private final Compressor m_phCompressor = new Compressor(2, PneumaticsModuleType.REVPH);
 
-  public static SwerveDrive m_swerve = new SwerveDrive();
+  // public static SwerveDrive m_swerve = new SwerveDrive();
   public static Shooter m_shooter = new Shooter();
-  public static Intake  m_intake = new Intake();
-  public static ColorSensor m_colorSensor = new ColorSensor();
-  private final Base[] m_subsystems = { m_shooter, m_swerve, m_intake, m_colorSensor };
+  // public static Intake  m_intake = new Intake();
+  // public static ColorSensor m_colorSensor = new ColorSensor();
+  private final Base[] m_subsystems = { m_shooter };
 
-  private Auto autonomous = new Auto();
+  // private Auto autonomous = new Auto();
   
   /**
    * This function is run when the robot is first started up and should be used
@@ -56,11 +56,11 @@ public class Robot extends TimedRobot {
     Shuffleboard.getTab("main").add("swerve drive", m_subsystems[0]);
     Shuffleboard.getTab("main").add("xbox", OI.xboxDrive);
 
-    Shuffleboard.getTab("main").addNumber("pose/x", ()->m_swerve.getPose2d().getX());
-    Shuffleboard.getTab("main").addNumber("pose/y", ()->m_swerve.getPose2d().getY());
-    Shuffleboard.getTab("main").addNumber("pose/theta", ()->m_swerve.getPose2d().getRotation().getDegrees());
+    // Shuffleboard.getTab("main").addNumber("pose/x", ()->m_swerve.getPose2d().getX());
+    // Shuffleboard.getTab("main").addNumber("pose/y", ()->m_swerve.getPose2d().getY());
+    // Shuffleboard.getTab("main").addNumber("pose/theta", ()->m_swerve.getPose2d().getRotation().getDegrees());
 
-    autonomous.robotInit();
+    // autonomous.robotInit();
 
     CameraServer.startAutomaticCapture();
 
@@ -83,7 +83,7 @@ public class Robot extends TimedRobot {
       subsys.robotPeriodic();
     }
 
-    autonomous.robotPeriodic();
+    // autonomous.robotPeriodic();
   }
 
   /**
@@ -110,14 +110,14 @@ public class Robot extends TimedRobot {
       subsys.autonomousInit();
     }
 
-    autonomous.autonomousInit();
+    // autonomous.autonomousInit();
   }
 
   /** This function is called periodically during autonomous. */
   @Override
   public void autonomousPeriodic() {
 
-    autonomous.autonomousPeriodic();
+    // autonomous.autonomousPeriodic();
 
     for (Base subsys : m_subsystems) {
       subsys.autonomousPeriodic();

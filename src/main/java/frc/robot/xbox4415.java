@@ -24,5 +24,6 @@ public class xbox4415 extends XboxController implements Sendable {
         builder.addDoubleProperty("Left Trigger", ()->getLeftTriggerAxis(), null);
         builder.addDoubleProperty("Right Trigger", ()->getRightTriggerAxis(), null);
         builder.addDoubleProperty("POV", ()->getPOV(), null);
+        
     }
 }
