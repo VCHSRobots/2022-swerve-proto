@@ -30,21 +30,14 @@ public class Robot extends TimedRobot {
   // TODO: double check what type of compressor module we are using
   // private final Compressor m_phCompressor = new Compressor(2, PneumaticsModuleType.REVPH);
 
-  public static SwerveDrive m_swerve = new SwerveDrive();
-  public static Shooter m_shooter = new Shooter();
-  public static Intake  m_intake = new Intake();
-  public static ColorSensor m_colorSensor = new ColorSensor();
-  private final Base[] m_subsystems = { m_shooter, m_swerve, m_intake, m_colorSensor };
-
   //for superstructure
   SwerveDrive swerveDrive = new SwerveDrive();
-  OI oi = new OI();
   Intake intake = new Intake();
   Shooter shooter = new Shooter();
   ColorSensor colorSensor = new ColorSensor();
   Climber climber = new Climber();
 
-  SuperStructure superStructure = new SuperStructure(swerveDrive, oi, intake, shooter, colorSensor, climber);
+  SuperStructure superStructure = new SuperStructure(swerveDrive, intake, shooter, colorSensor, climber);
 
   private Auto autonomous = new Auto();
   
@@ -61,15 +54,11 @@ public class Robot extends TimedRobot {
     m_chooser.addOption("My Auto", kCustomAuto);
     SmartDashboard.putData("Auto choices", m_chooser);
 
-    for (Base subsys : m_subsystems) {
-      subsys.robotInit();
-    }
-    Shuffleboard.getTab("main").add("swerve drive", m_subsystems[0]);
     Shuffleboard.getTab("main").add("xbox", OI.xboxDrive);
 
-    Shuffleboard.getTab("main").addNumber("pose/x", ()->m_swerve.getPose2d().getX());
-    Shuffleboard.getTab("main").addNumber("pose/y", ()->m_swerve.getPose2d().getY());
-    Shuffleboard.getTab("main").addNumber("pose/theta", ()->m_swerve.getPose2d().getRotation().getDegrees());
+    Shuffleboard.getTab("main").addNumber("pose/x", ()->swerveDrive.getPose2d().getX());
+    Shuffleboard.getTab("main").addNumber("pose/y", ()->swerveDrive.getPose2d().getY());
+    Shuffleboard.getTab("main").addNumber("pose/theta", ()->swerveDrive.getPose2d().getRotation().getDegrees());
 
     autonomous.robotInit();
 
@@ -93,9 +82,6 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void robotPeriodic() {
-    for (Base subsys : m_subsystems) {
-      subsys.robotPeriodic();
-    }
 
     autonomous.robotPeriodic();
 
@@ -123,10 +109,6 @@ public class Robot extends TimedRobot {
   @Override
   public void autonomousInit() {
 
-    for (Base subsys : m_subsystems) {
-      subsys.autonomousInit();
-    }
-
     autonomous.autonomousInit();
 
     //SUPER STRUCTURE STUFF
@@ -139,10 +121,6 @@ public class Robot extends TimedRobot {
 
     autonomous.autonomousPeriodic();
 
-    for (Base subsys : m_subsystems) {
-      subsys.autonomousPeriodic();
-    }
-
     //SUPER STRUCTURE STUFF
     superStructure.autonomousPeriodic();
   }
@@ -150,10 +128,6 @@ public class Robot extends TimedRobot {
   /** This function is called once when teleop is enabled. */
   @Override
   public void teleopInit() {
-
-    for (Base subsys : m_subsystems) {
-      subsys.teleopInit();
-    }
 
     //SUPER STRUCTURE STUFF
     superStructure.teleopInit();
@@ -163,10 +137,6 @@ public class Robot extends TimedRobot {
   @Override
   public void teleopPeriodic() {
 
-    for (Base subsys : m_subsystems) {
-      subsys.teleopPeriodic();
-    }
-
     //SUPER STRUCTURE STUFF
     superStructure.teleopPeriodic();
   }
@@ -174,10 +144,6 @@ public class Robot extends TimedRobot {
   /** This function is called once when the robot is disabled. */
   @Override
   public void disabledInit() {
-    for (Base subsys : m_subsystems) {
-      subsys.disabledInit();
-    }
-
     //SUPER STRUCTURE STUFF
     superStructure.disabledInit();
   }
@@ -185,9 +151,6 @@ public class Robot extends TimedRobot {
   /** This function is called periodically when disabled. */
   @Override
   public void disabledPeriodic() {
-    for (Base subsys : m_subsystems) {
-      subsys.disabledPeriodic();
-    }
 
     //SUPER STRUCTURE STUFF
     superStructure.disabledPeriodic();
@@ -196,9 +159,6 @@ public class Robot extends TimedRobot {
   /** This function is called once when test mode is enabled. */
   @Override
   public void testInit() {
-    for (Base subsys : m_subsystems) {
-      subsys.testInit();
-    }
 
     //SUPER STRUCTURE STUFF
     superStructure.testInit();
@@ -207,9 +167,6 @@ public class Robot extends TimedRobot {
   /** This function is called periodically during test mode. */
   @Override
   public void testPeriodic() {
-    for (Base subsys : m_subsystems) {
-      subsys.testPeriodic();
-    }
 
     //SUPER STRUCTURE STUFF
     superStructure.testPeriodic();

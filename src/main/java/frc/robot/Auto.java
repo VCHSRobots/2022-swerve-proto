@@ -75,9 +75,9 @@ public class Auto {
             if (timer.get() < trajectory3.getTotalTimeSeconds()) {
                 // calculate speeds for trajectory
                 goal = (PathPlannerState) trajectory3.sample(timer.get());
-                adjustedSpeeds = controller.calculate(Robot.m_swerve.getPose2d(), goal, goal.holonomicRotation);
+                // adjustedSpeeds = controller.calculate(Robot.m_swerve.getPose2d(), goal, goal.holonomicRotation);
             }
-            Robot.m_swerve.driveFromChassisSpeeds(adjustedSpeeds);
+            // Robot.m_swerve.driveFromChassisSpeeds(adjustedSpeeds);
 
         } else {
             // pause traj
@@ -95,7 +95,7 @@ public class Auto {
                 if (timer.get() < trajectory1.getTotalTimeSeconds()) {
                     // calculate speeds for trajectory
                     goal = (PathPlannerState) trajectory1.sample(timer.get());
-                    adjustedSpeeds = controller.calculate(Robot.m_swerve.getPose2d(), goal, goal.holonomicRotation);
+                    // adjustedSpeeds = controller.calculate(Robot.m_swerve.getPose2d(), goal, goal.holonomicRotation);
 
                 }
                 // if the trajectory is over
@@ -125,7 +125,7 @@ public class Auto {
                 if (timer.get() < trajectory2.getTotalTimeSeconds()) {
                     // calc for trajectory
                     goal = (PathPlannerState) trajectory2.sample(timer.get());
-                    adjustedSpeeds = controller.calculate(Robot.m_swerve.getPose2d(), goal, goal.holonomicRotation);
+                    // adjustedSpeeds = controller.calculate(Robot.m_swerve.getPose2d(), goal, goal.holonomicRotation);
                 }
             }
             // end of auto...
@@ -143,7 +143,7 @@ public class Auto {
             SmartDashboard.putNumber("adjustedSpeeds/y", adjustedSpeeds.vyMetersPerSecond);
             SmartDashboard.putNumber("adjustedSpeeds/theta", adjustedSpeeds.omegaRadiansPerSecond);
 
-            Robot.m_swerve.driveFromChassisSpeeds(adjustedSpeeds);
+            // Robot.m_swerve.driveFromChassisSpeeds(adjustedSpeeds);
         }
     }
 
