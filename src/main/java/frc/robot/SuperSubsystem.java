@@ -30,34 +30,38 @@ public class SuperSubsystem {
     private Shooter m_shooter;
     private Climber m_climber;
     private Intake m_intake;
-    private RobotMap m_robotMap;
 
 
-    public SuperSubsystem(SwerveDrive swerveDrive, OI oi, Shooter shooter, Climber climber, Intake intake, RobotMap robotMap) {
+    public SuperSubsystem(SwerveDrive swerveDrive, OI oi, Shooter shooter, Climber climber, Intake intake) {
 
         m_SwerveDrive = swerveDrive;
         m_OI = oi;
         m_shooter = shooter;
         m_climber = climber;
         m_intake = intake;
-        m_robotMap = robotMap;
 
     }
-    public void teleopPeriodic() {
-        if (m_OI.getSolenoidToggle()) {
+    public void robotInit() {
 
+        m_climber.motorFollow();
+        m_climber.solenoidInitSet();
+    }
+
+    public void teleopPeriodic() {
+        //climber Superstructure Functions being called  
+        if (m_OI.getSolenoidToggle()) {
             
-            m_climber.leftSolenoid.toggle();
-            m_climber.rightSolenoid.toggle();
+            m_climber.solenoidToggle();
 
         }
 
         if(m_OI.getArmsUp()) {
 
-            m_climber.rightArm.set(ControlMode.PercentOutput, 0.25);
+            m_climber.armsUp();
+        
         } 
         if(m_OI.getArmsDown()) {
-
+            m_climber.armsDown();
         }
 
     }

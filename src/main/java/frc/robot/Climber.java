@@ -18,12 +18,40 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 /** Add your docs here. */
 public class Climber extends Base{
 
-    DoubleSolenoid leftSolenoid;
-    DoubleSolenoid rightSolenoid;
+    private static DoubleSolenoid leftSolenoid;
+    private static DoubleSolenoid rightSolenoid;
 
-    WPI_TalonFX leftArm;
-    WPI_TalonFX rightArm;
-    WPI_TalonFX neutralExtra;
+    private static WPI_TalonFX leftArm;
+    private static WPI_TalonFX rightArm;
+    private static WPI_TalonFX neutralExtra;
+
+    static void solenoidToggle() {
+        leftSolenoid.toggle();
+        rightSolenoid.toggle();
+    }
+
+    static void motorFollow() {
+        leftArm.follow(rightArm);
+        neutralExtra.follow(rightArm);
+    }
+
+    static void solenoidInitSet() {
+        leftSolenoid.set(Value.kReverse);
+        rightSolenoid.set(Value.kReverse);
+
+    }
+
+    static void armsUp() {
+
+        rightArm.set(ControlMode.PercentOutput, 0.25);
+
+    }
+
+    static void armsDown() {
+
+        rightArm.set(ControlMode.PercentOutput, -0.25);
+
+    }
 
     
 
@@ -43,6 +71,8 @@ public class Climber extends Base{
 
     leftArm.follow(rightArm);
     neutralExtra.follow(rightArm);
+    
+    
 
 
   }
@@ -69,6 +99,7 @@ public class Climber extends Base{
 
     @Override
     public void teleopPeriodic() {
+
         if (OI.getSolenoidToggle()) {
 
             leftSolenoid.toggle();
