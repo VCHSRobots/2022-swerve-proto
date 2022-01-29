@@ -26,9 +26,9 @@ public class Climber extends Base{
     private static WPI_TalonFX neutralExtra;
 
     //init
-    static void init() {
+    public void init() {
 
-        //init motors
+        //Init
         leftArm = new WPI_TalonFX(RobotMap.kClimb_LeftArm_TalonFX);
         rightArm = new WPI_TalonFX(RobotMap.kClimb_RightArm_TalonFX);
         neutralExtra = new WPI_TalonFX(RobotMap.kClimb_NeutralExtra_TalonFX);
@@ -44,8 +44,8 @@ public class Climber extends Base{
         rightSolenoid.set(Value.kReverse);
     }
 
-    //teleop periodic
-    static void tPeriodic(boolean solenoidToggle, boolean armsUp, boolean armsDown) {
+    //Teleop Periodic
+    public void climberMove(boolean solenoidToggle, boolean armsUp, boolean armsDown) {
         //solenoids
         if(solenoidToggle) {
             leftSolenoid.toggle();
@@ -57,63 +57,6 @@ public class Climber extends Base{
         }
         if(armsDown) {
             rightArm.set(ControlMode.PercentOutput, -0.25);
-        }
-
-    }
-
-
-  @Override
-  public void robotInit() {    
-
-    leftSolenoid.set(Value.kReverse);
-    rightSolenoid.set(Value.kReverse);
-
-    leftArm.follow(rightArm);
-    neutralExtra.follow(rightArm);
-    
-    
-
-
-  }
-
-    @Override
-    public void robotPeriodic() {
-
-    }
-
-    @Override
-    public void autonomousInit() {
-
-    }
-
-    @Override
-    public void autonomousPeriodic() {
-
-    }
-
-    @Override
-    public void teleopInit() {
-
-    }
-
-    @Override
-    public void teleopPeriodic() {
-
-        if (OI.getSolenoidToggle()) {
-
-            leftSolenoid.toggle();
-            rightSolenoid.toggle();
-
-        }
-
-        if (OI.getArmsUp()) {
-
-            rightArm.set(ControlMode.PercentOutput, 0.25);
-
-        } else if (OI.getArmsDown()) {
-
-            rightArm.set(ControlMode.PercentOutput, -0.25);
-
         }
 
     }

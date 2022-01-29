@@ -207,24 +207,9 @@ public class SwerveDrive extends Base {
         updateOdometry();
     }
 
-    @Override
-    public void autonomousInit() {
+    //autonomusInit
+    public void resetOdometry() {
         m_odometry.resetPosition(new Pose2d(), getGyroRotation2d());
-    }
-
-    @Override
-    public void autonomousPeriodic() {
-
-    }
-
-    @Override
-    public void teleopInit() {
-
-    }
-
-    @Override
-    public void testInit() {
-
     }
 
     //Test Periodic

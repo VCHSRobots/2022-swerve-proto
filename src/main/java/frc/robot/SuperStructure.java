@@ -48,17 +48,24 @@ public class SuperStructure extends Base {
     @Override
     public void teleopPeriodic() {
 
-        m_SwerveDrive.driveWithXbox(m_OI.getDriveY(), m_OI.getDriveX(), OI.xboxDrive.getLeftTriggerAxis(), OI.xboxDrive.getRightTriggerAxis(), OI.xboxDrive.getRightY(), OI.xboxDrive.getRightX());
+        m_SwerveDrive.driveWithXbox(m_OI.getDriveY(), m_OI.getDriveX(), m_OI.xboxDrive.getLeftTriggerAxis(), m_OI.xboxDrive.getRightTriggerAxis(), m_OI.xboxDrive.getRightY(), m_OI.xboxDrive.getRightX());
         m_Intake.changeState(m_OI.startIntake());
         m_Shooter.shootAndTurn(m_OI.getRightTriggerAxisForShoot(), m_OI.getRightBumperForTurntable(), m_OI.getLeftBumperForTurntable());
-        m_Climber.tPeriodic(m_OI.getSolenoidToggle(), m_OI.getArmsUp(), m_OI.getArmsDown());
+        m_Climber.climberMove(m_OI.getSolenoidToggle(), m_OI.getArmsUp(), m_OI.getArmsDown());
+
+    }
+
+    @Override
+    public void autonomousInit() {
+
+        m_SwerveDrive.resetOdometry();
 
     }
 
     @Override
     public void testPeriodic() {
 
-        m_SwerveDrive.test(OI.xboxDrive.getAButton());
+        m_SwerveDrive.test(m_OI.xboxDrive.getAButton());
 
     }
 

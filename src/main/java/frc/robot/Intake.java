@@ -99,38 +99,41 @@ public class Intake extends Base {
                 break;
             case C:
 
-                
+                m_motorSpeeds = .1;    
+
                 if(ColorSensor.ballDetected) {
                     m_state = STATE.D;
                 }
-                
-                if(isChanging) {
-                    m_motorSpeeds = -1;
-                } else {
 
-                    isChanging = false;   
-                    m_motorSpeeds = .1;
+                // SPIT BALL OUT IF BAD :))))))
 
-                    if(Constants.targetedBall == "blue") {
-                        if(ColorSensor.redBallDetected) {
-                            m_motorSpeeds = -1;
-                            isChanging = true;
-                            m_timer.schedule(m_change, 2500);
-                        } else {
-                            m_state = STATE.D;
-                        }
-                    } else if (Constants.targetedBall == "red"){
-                        if(ColorSensor.blueBallDetected) {
-                            m_motorSpeeds = -1;
-                            isChanging = true;
-                            m_timer.schedule(m_change, 2500);
-                        } else {
-                            m_state = STATE.D;
-                        }
-                    } else {
+                // if(isChanging) {
+                //     m_motorSpeeds = -1;
+                // } else {
 
-                    }
-                }
+                //     isChanging = false;   
+                //     m_motorSpeeds = .1;
+
+                //     if(Constants.targetedBall == "blue") {
+                //         if(ColorSensor.redBallDetected) {
+                //             m_motorSpeeds = -1;
+                //             isChanging = true;
+                //             m_timer.schedule(m_change, 2500);
+                //         } else {
+                //             m_state = STATE.D;
+                //         }
+                //     } else if (Constants.targetedBall == "red"){
+                //         if(ColorSensor.blueBallDetected) {
+                //             m_motorSpeeds = -1;
+                //             isChanging = true;
+                //             m_timer.schedule(m_change, 2500);
+                //         } else {
+                //             m_state = STATE.D;
+                //         }
+                //     } else {
+
+                //     }
+                // }
 
                 m_roller.set(ControlMode.PercentOutput, m_motorSpeeds);
                 m_mover.set(ControlMode.PercentOutput, m_motorSpeeds);

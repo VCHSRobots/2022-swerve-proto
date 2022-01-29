@@ -36,6 +36,16 @@ public class Robot extends TimedRobot {
   public static ColorSensor m_colorSensor = new ColorSensor();
   private final Base[] m_subsystems = { m_shooter, m_swerve, m_intake, m_colorSensor };
 
+  //for superstructure
+  SwerveDrive swerveDrive = new SwerveDrive();
+  OI oi = new OI();
+  Intake intake = new Intake();
+  Shooter shooter = new Shooter();
+  ColorSensor colorSensor = new ColorSensor();
+  Climber climber = new Climber();
+
+  SuperStructure superStructure = new SuperStructure(swerveDrive, oi, intake, shooter, colorSensor, climber);
+
   private Auto autonomous = new Auto();
   
   /**
@@ -43,6 +53,7 @@ public class Robot extends TimedRobot {
    * for any
    * initialization code.
    */
+
   @Override
   public void robotInit() {
 
@@ -64,6 +75,9 @@ public class Robot extends TimedRobot {
 
     CameraServer.startAutomaticCapture();
 
+    //SUPER STRUCTURE STUFF
+    superStructure.robotInit();
+
   }
 
   /**
@@ -84,6 +98,9 @@ public class Robot extends TimedRobot {
     }
 
     autonomous.robotPeriodic();
+
+    //SUPER STRUCTURE STUFF
+    superStructure.robotPeriodic();
   }
 
   /**
@@ -111,6 +128,9 @@ public class Robot extends TimedRobot {
     }
 
     autonomous.autonomousInit();
+
+    //SUPER STRUCTURE STUFF
+    superStructure.autonomousInit();
   }
 
   /** This function is called periodically during autonomous. */
@@ -123,8 +143,8 @@ public class Robot extends TimedRobot {
       subsys.autonomousPeriodic();
     }
 
-
-
+    //SUPER STRUCTURE STUFF
+    superStructure.autonomousPeriodic();
   }
 
   /** This function is called once when teleop is enabled. */
@@ -134,6 +154,9 @@ public class Robot extends TimedRobot {
     for (Base subsys : m_subsystems) {
       subsys.teleopInit();
     }
+
+    //SUPER STRUCTURE STUFF
+    superStructure.teleopInit();
   }
 
   /** This function is called periodically during operator control. */
@@ -143,6 +166,9 @@ public class Robot extends TimedRobot {
     for (Base subsys : m_subsystems) {
       subsys.teleopPeriodic();
     }
+
+    //SUPER STRUCTURE STUFF
+    superStructure.teleopPeriodic();
   }
 
   /** This function is called once when the robot is disabled. */
@@ -151,6 +177,9 @@ public class Robot extends TimedRobot {
     for (Base subsys : m_subsystems) {
       subsys.disabledInit();
     }
+
+    //SUPER STRUCTURE STUFF
+    superStructure.disabledInit();
   }
 
   /** This function is called periodically when disabled. */
@@ -159,6 +188,9 @@ public class Robot extends TimedRobot {
     for (Base subsys : m_subsystems) {
       subsys.disabledPeriodic();
     }
+
+    //SUPER STRUCTURE STUFF
+    superStructure.disabledPeriodic();
   }
 
   /** This function is called once when test mode is enabled. */
@@ -167,6 +199,9 @@ public class Robot extends TimedRobot {
     for (Base subsys : m_subsystems) {
       subsys.testInit();
     }
+
+    //SUPER STRUCTURE STUFF
+    superStructure.testInit();
   }
 
   /** This function is called periodically during test mode. */
@@ -175,5 +210,8 @@ public class Robot extends TimedRobot {
     for (Base subsys : m_subsystems) {
       subsys.testPeriodic();
     }
+
+    //SUPER STRUCTURE STUFF
+    superStructure.testPeriodic();
   }
 }
