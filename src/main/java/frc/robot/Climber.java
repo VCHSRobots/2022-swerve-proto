@@ -42,6 +42,8 @@ public class Climber extends Base{
         //solenoids
         leftSolenoid.set(Value.kReverse);
         rightSolenoid.set(Value.kReverse);
+
+        
     }
 
     //teleop periodic
@@ -57,63 +59,6 @@ public class Climber extends Base{
         }
         if(armsDown) {
             rightArm.set(ControlMode.PercentOutput, -0.25);
-        }
-
-    }
-
-
-  @Override
-  public void robotInit() {    
-
-    leftSolenoid.set(Value.kReverse);
-    rightSolenoid.set(Value.kReverse);
-
-    leftArm.follow(rightArm);
-    neutralExtra.follow(rightArm);
-    
-    
-
-
-  }
-
-    @Override
-    public void robotPeriodic() {
-
-    }
-
-    @Override
-    public void autonomousInit() {
-
-    }
-
-    @Override
-    public void autonomousPeriodic() {
-
-    }
-
-    @Override
-    public void teleopInit() {
-
-    }
-
-    @Override
-    public void teleopPeriodic() {
-
-        if (OI.getSolenoidToggle()) {
-
-            leftSolenoid.toggle();
-            rightSolenoid.toggle();
-
-        }
-
-        if (OI.getArmsUp()) {
-
-            rightArm.set(ControlMode.PercentOutput, 0.25);
-
-        } else if (OI.getArmsDown()) {
-
-            rightArm.set(ControlMode.PercentOutput, -0.25);
-
         }
 
     }
