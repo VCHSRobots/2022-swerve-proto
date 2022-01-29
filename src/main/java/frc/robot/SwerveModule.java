@@ -42,7 +42,7 @@ public class SwerveModule implements Sendable {
         private static final double kTurningRotPerMotorRot = 1 / 10.0;
 
         private static final double kModuleMaxAngularVelocity = 4 * SwerveDrive.kMaxAngularSpeed;
-        private static final double kModuleMaxAngularAcceleration = 12 * Math.PI; // radians per second squared
+        private static final double kModuleMaxAngularAcceleration = 5 * 12 * Math.PI; // radians per second squared
 
         public final WPI_TalonFX m_driveMotor;
         public final WPI_TalonFX m_turningMotor;
@@ -56,7 +56,7 @@ public class SwerveModule implements Sendable {
 
         // Gains are for example purposes only - must be determined for your own robot!
         private final ProfiledPIDController m_turningPIDController = new ProfiledPIDController(
-                        3.0,
+                        2.2,
                         0,
                         0,
                         new TrapezoidProfile.Constraints(
@@ -64,7 +64,7 @@ public class SwerveModule implements Sendable {
 
         // Gains are for example purposes only - must be determined for your own robot!
         private final SimpleMotorFeedforward m_driveFeedforward = new SimpleMotorFeedforward(0.4, 1.93); // 0.4, 1.93
-        private final SimpleMotorFeedforward m_turnFeedforward = new SimpleMotorFeedforward(0.1, 0.25);
+        private final SimpleMotorFeedforward m_turnFeedforward = new SimpleMotorFeedforward(0.35, 0.16); //0.1,0.25      
 
         private final SimpleMotorFeedforward m_driveFeedforwardIntegrated = new SimpleMotorFeedforward(0, 0);
 
