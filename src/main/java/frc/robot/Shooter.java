@@ -17,31 +17,42 @@ public class Shooter extends Base {
 
     ShuffleboardTab ShootMotorTab = Shuffleboard.getTab("Shooter");
 
-    NetworkTableEntry ntTopRPM = ShootMotorTab.add("Top RPM", 1000).getEntry();
-    NetworkTableEntry ntBotRPM = ShootMotorTab.add("Bot RPM", 1000).getEntry();
+    NetworkTableEntry ntBotRPM = ShootMotorTab.add("Bot RPM", 1000).withPosition(3, 3).withSize(1, 1).getEntry();
+    NetworkTableEntry ntFeetToBotRPM = ShootMotorTab.add("Feet To Bot RPM", 17).withPosition(4, 3).withSize(1, 1)
+            .getEntry();
 
-    WPI_TalonFX ShootTalonTop = new WPI_TalonFX(RobotMap.kShoot_TopMotor_TalonFX);
-    WPI_TalonFX ShootTalonBot = new WPI_TalonFX(RobotMap.kShoot_BottomMotor_TalonFX);
-    WPI_TalonFX TurnTableTalon = new WPI_TalonFX(RobotMap.kTurnTableMotor_TalonFX);
+    NetworkTableEntry ntTopRPM = ShootMotorTab.add("Top RPM", 1000).withPosition(3, 2).withSize(1, 1).getEntry();
+    NetworkTableEntry ntFeetToTopRPM = ShootMotorTab.add("Feet To Top RPM", 17).withPosition(4, 2).withSize(1, 1)
+            .getEntry();
+
+    WPI_TalonFX m_shootTalonTop = new WPI_TalonFX(RobotMap.kShoot_TopMotor_TalonFX);
+    WPI_TalonFX m_shootTalonBot = new WPI_TalonFX(RobotMap.kShoot_BottomMotor_TalonFX);
+    WPI_TalonFX m_turnTableTalon = new WPI_TalonFX(RobotMap.kTurnTableMotor_TalonFX);
 
     // SimpleMotorFeedforward m_ShootFeedForward = new SimpleMotorFeedforward(0.00,
     // 0.00045);
+    enum STATE {
+        NotShooting, SpinningUp, ShootingDistance, ShootingRPM
+    };
+
+    STATE m_state = STATE.NotShooting;
 
     // SHUFFLEBOARD HELPERS
     private double getTopMotorRPM() {
-        return ticksPer100msToRPM(ShootTalonTop.getSelectedSensorVelocity());
+        return ticksPer100msToRPM(m_shootTalonTop.getSelectedSensorVelocity());
     }
 
     private double getBotMotorRPM() {
-        return ticksPer100msToRPM(ShootTalonBot.getSelectedSensorVelocity());
+        return ticksPer100msToRPM(m_shootTalonBot.getSelectedSensorVelocity());
     }
 
     // END SHUFFLEBOARD HELPERS
 
     @Override
     public void robotInit() {
-        ShootMotorTab.addNumber("Actual Top RPM", () -> getTopMotorRPM());
-        ShootMotorTab.addNumber("Actual Bot RPM", () -> getBotMotorRPM());
+        ShootMotorTab.addNumber("Actual Top RPM", () -> getTopMotorRPM()).withPosition(5, 2);
+        ShootMotorTab.addNumber("Actual Bot RPM", () -> getBotMotorRPM()).withPosition(5, 3);
+        ShootMotorTab.addBoolean("Is Ok to Shoot", () -> IsOkToShoot()).withPosition(4, 1);
 
         TalonFXConfiguration baseConfig = new TalonFXConfiguration();
         baseConfig.closedloopRamp = 0.02;
@@ -69,25 +80,25 @@ public class Shooter extends Base {
         baseConfig.slot0.kI = 0.0;
         baseConfig.slot0.kD = 0.0;
         baseConfig.slot0.kF = 0.05;
-        baseConfig.slot0.kP = 0.03; // 0.03
+        baseConfig.slot0.kP = 0.038; // 0.03
 
-        ShootTalonBot.configFactoryDefault();
-        ShootTalonTop.configFactoryDefault();
-        TurnTableTalon.configFactoryDefault();
+        m_shootTalonBot.configFactoryDefault();
+        m_shootTalonTop.configFactoryDefault();
+        m_turnTableTalon.configFactoryDefault();
 
-        ShootTalonBot.configAllSettings(baseConfig);
-        ShootTalonTop.configAllSettings(baseConfig);
+        m_shootTalonBot.configAllSettings(baseConfig);
+        m_shootTalonTop.configAllSettings(baseConfig);
 
-        ShootTalonBot.setNeutralMode(NeutralMode.Coast);
-        ShootTalonTop.setNeutralMode(NeutralMode.Coast);
+        m_shootTalonBot.setNeutralMode(NeutralMode.Coast);
+        m_shootTalonTop.setNeutralMode(NeutralMode.Coast);
 
-        ShootTalonBot.setInverted(false);
-        ShootTalonTop.setInverted(false);
+        m_shootTalonBot.setInverted(false);
+        m_shootTalonTop.setInverted(false);
 
-        ShootTalonBot.setSensorPhase(false);
-        ShootTalonTop.setSensorPhase(false);
+        m_shootTalonBot.setSensorPhase(false);
+        m_shootTalonTop.setSensorPhase(false);
 
-        TurnTableTalon.configOpenloopRamp(0.1);
+        m_turnTableTalon.configOpenloopRamp(0.1);
 
     }
 
@@ -97,6 +108,7 @@ public class Shooter extends Base {
 
     @Override
     public void autonomousInit() {
+        m_state = STATE.NotShooting;
     }
 
     @Override
@@ -105,29 +117,45 @@ public class Shooter extends Base {
 
     @Override
     public void teleopInit() {
+        m_state = STATE.NotShooting;
     }
 
-    @Override
-    public void teleopPeriodic() {
+    public void teleopPeriodic(boolean distanceMode, boolean RPMMode, boolean rightSideTurnTable,
+            boolean leftSideTurnTable) {
         // default all set outputs to 0
         double shootTopSpeed = 0;
         double shootBotSpeed = 0;
         double turntableSpeed = 0;
 
-        if (OI.getRightTriggerAxisForShoot() > 0.5) {
+        if (distanceMode) {
+            m_state = STATE.ShootingDistance;
+        } else if (RPMMode) {
+            m_state = STATE.ShootingRPM;
+        } else {
+            m_state = STATE.NotShooting;
+        }
+
+        if (m_state == STATE.NotShooting) {
+            shootTopSpeed = 0;
+            shootTopSpeed = 0;
+        } else if (m_state == STATE.ShootingDistance) {
+            shootTopSpeed = topFeetToRPM(ntFeetToTopRPM.getNumber(0).doubleValue());
+            shootBotSpeed = botFeetToRPM(ntFeetToBotRPM.getNumber(0).doubleValue());
+        } else if (m_state == STATE.ShootingRPM) {
             shootTopSpeed = rpmToTicksPer100ms(ntTopRPM.getNumber(0).doubleValue());
             shootBotSpeed = rpmToTicksPer100ms(ntBotRPM.getNumber(0).doubleValue());
         }
-        if (OI.getRightBumperForTurntable()) {
+
+        if (rightSideTurnTable) {
             turntableSpeed = 0.07;
         }
-        if (OI.getLeftBumperForTurntable()) {
+        if (leftSideTurnTable) {
             turntableSpeed = -0.07;
         }
 
-        ShootTalonTop.set(ControlMode.Velocity, shootTopSpeed);
-        ShootTalonBot.set(ControlMode.Velocity, shootBotSpeed);
-        TurnTableTalon.set(ControlMode.PercentOutput, turntableSpeed);
+        m_shootTalonTop.set(ControlMode.Velocity, shootTopSpeed);
+        m_shootTalonBot.set(ControlMode.Velocity, shootBotSpeed);
+        m_turnTableTalon.set(ControlMode.PercentOutput, turntableSpeed);
 
     }
 
@@ -146,5 +174,22 @@ public class Shooter extends Base {
         double rotationsPerTick = 1.0 / 2048;
         double RPM = ticksPer100ms * secondsPerMinute * oneHundredMSPerSecond * rotationsPerTick;
         return RPM;
+    }
+
+    public double topFeetToRPM(double topfeet) {
+        double RPMquadtop = -1419.522 + 396.7329 * topfeet + -3.353022 * (topfeet * topfeet);
+        return RPMquadtop;
+    }
+
+    public double botFeetToRPM(double botfeet) {
+        double RPMquadbot = 8225 - 784.9 * botfeet + 32.04 * (botfeet * botfeet);
+        return RPMquadbot;
+    }
+
+    public boolean IsOkToShoot() {
+        double errorTopRPM = rpmToTicksPer100ms(m_shootTalonTop.getClosedLoopError());
+        double errorBotRPM = rpmToTicksPer100ms(m_shootTalonBot.getClosedLoopError());
+
+        return errorBotRPM > 150 && errorTopRPM > 150;
     }
 }

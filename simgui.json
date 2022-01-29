@@ -5,6 +5,8 @@
       "/LiveWindow/Ungrouped/PIDController[10]": "PIDController",
       "/LiveWindow/Ungrouped/PIDController[11]": "PIDController",
       "/LiveWindow/Ungrouped/PIDController[9]": "PIDController",
+      "/Shuffleboard/main/xController": "PIDController",
+      "/Shuffleboard/main/yController": "PIDController",
       "/SmartDashboard/Auto choices": "String Chooser"
     }
   }

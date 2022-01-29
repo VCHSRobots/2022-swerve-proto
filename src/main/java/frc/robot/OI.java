@@ -64,5 +64,8 @@ public class OI {
         return xboxShooterTesting.getRightBumper();
 
     }
+    static public boolean getXButtonForToggleFeetToDist(){
+        return xboxShooterTesting.getXButton();
+    }
 
 }
