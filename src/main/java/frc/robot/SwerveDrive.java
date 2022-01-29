@@ -65,12 +65,36 @@ public class SwerveDrive extends Base {
         m_gyro.reset();
     }
 
+    // Robot Init
+    public void robotInit() {
+        // SendableRegistry.add(m_frontLeft, "frontleft");
+        // SendableRegistry.add(m_frontRight, "frontright");
+        Shuffleboard.getTab("main").add("front left", m_frontLeft);
+        Shuffleboard.getTab("main").add("front right", m_frontRight);
+        Shuffleboard.getTab("main").add("back left", m_backLeft);
+        Shuffleboard.getTab("main").add("back right", m_backRight);
+    }
+
     public Rotation2d getGyroRotation2d() {
         return Rotation2d.fromDegrees(-m_gyro.getAngle());
     }
 
     public Pose2d getPose2d() {
         return m_odometry.getPoseMeters();
+    }
+
+    /**
+     * Method to drive the robot using joystick info.
+     *
+     * @param xSpeed        Speed of the robot in the x direction (forward).
+     * @param ySpeed        Speed of the robot in the y direction (sideways).
+     * @param rot           Angular rate of the robot.
+     * @param fieldRelative Whether the provided x and y speeds are relative to the
+     *                      field.
+     */
+    @SuppressWarnings("ParameterName")
+    public void drive(double xSpeed, double ySpeed, double rot, boolean fieldRelative) {
+        drive(xSpeed, ySpeed, rot, fieldRelative, new Translation2d());
     }
 
     /**
@@ -122,20 +146,22 @@ public class SwerveDrive extends Base {
                 m_backRight.getState());
     }
 
-    private void driveWithXbox() {
+    // Teleop Periodic
+    public void driveWithXbox(double driveY, double driveX, double leftTriggerAxis, double rightTriggerAxis,
+            double rightY, double rightX) {
         // set wheels to 1 Rot per sec, else drive normal
 
         // Get the x speed. We are inverting this because Xbox controllers return
         // negative values when we push forward.
         final var xSpeed = -m_xSpeedLimiter
-                .calculate(MathUtil.applyDeadband(OI.getDriveY(), Constants.xboxDeadband))
+                .calculate(MathUtil.applyDeadband(driveY, Constants.xboxDeadband))
                 * SwerveDrive.kMaxSpeed * 0.9;
 
         // Get the y speed or sideways/strafe speed. We are inverting this because
         // we want a positive value when we pull to the left. Xbox controllers
         // return positive values when you pull to the right by default.
         final var ySpeed = -m_ySpeedLimiter
-                .calculate(MathUtil.applyDeadband(OI.getDriveX(), Constants.xboxDeadband))
+                .calculate(MathUtil.applyDeadband(driveX, Constants.xboxDeadband))
                 * SwerveDrive.kMaxSpeed * 0.9;
 
         // Get the rate of angular rotation. We are inverting this because we want a
@@ -150,78 +176,43 @@ public class SwerveDrive extends Base {
         // final var centerOfRotationMeters = OI.getCenterOfRotationFrontLeft() ?
         // m_frontLeftLocation
         // : new Translation2d();
+        final var rot = -m_rotLimiter.calculate(MathUtil.applyDeadband(OI.getDriveRot(), Constants.xboxDeadband))
+                * SwerveDrive.kMaxAngularSpeed;
 
-        // START OF TEST DRIVE CODE
-        final var rot = -m_rotLimiter.calculate(MathUtil.applyDeadband(
-                -OI.xboxDrive.getLeftTriggerAxis() + OI.xboxDrive.getRightTriggerAxis(),
-                Constants.xboxDeadband)) * SwerveDrive.kMaxAngularSpeed;
-
-        final var centerOfRotationMeters = new Translation2d(0.75 * -OI.xboxDrive.getRightX(),
-                0.75 * OI.xboxDrive.getRightY())
-                        .rotateBy(new Rotation2d(Math.PI / 2.0));
-        // END OF TEST DRIVE CODE
+        final var centerOfRotationMeters = OI.getCenterOfRotationFrontLeft() ? m_frontLeftLocation
+                : (OI.getCenterOfRotationFrontRight() ? m_frontRightLocation : new Translation2d());
 
         drive(xSpeed, ySpeed, rot, m_fieldRelative, centerOfRotationMeters);
-    }
-
-    @Override
-    public void robotInit() {
-        // SendableRegistry.add(m_frontLeft, "frontleft");
-        // SendableRegistry.add(m_frontRight, "frontright");
-        Shuffleboard.getTab("main").add("front left", m_frontLeft);
-        Shuffleboard.getTab("main").add("front right", m_frontRight);
-        Shuffleboard.getTab("main").add("back left", m_backLeft);
-        Shuffleboard.getTab("main").add("back right", m_backRight);
     }
 
     @Override
     public void disabledInit() {
     }
 
-    @Override
-    public void robotPeriodic() {
-        if (OI.shouldSetFieldRelative()) {
+    // Robot Periodic
+    public void changeOdometry(boolean setFieldRelative, boolean setRobotRelative, boolean resetOdometry) {
+        if (setFieldRelative) {
             m_fieldRelative = true;
-        } else if (OI.shouldSetRobotRelative()) {
+        } else if (setRobotRelative) {
             m_fieldRelative = false;
         }
-        if (OI.getResetOdometry()) {
+        if (resetOdometry) {
             m_gyro.reset();
             m_odometry.resetPosition(new Pose2d(), getGyroRotation2d());
         }
         updateOdometry();
     }
 
-    @Override
-    public void autonomousInit() {
+    // autonomusInit
+    public void resetOdometry() {
         m_odometry.resetPosition(new Pose2d(), getGyroRotation2d());
     }
 
-    @Override
-    public void autonomousPeriodic() {
-
-    }
-
-    @Override
-    public void teleopInit() {
-
-    }
-
-    @Override
-    public void teleopPeriodic() {
-        driveWithXbox();
-    }
-
-    @Override
-    public void testInit() {
-
-    }
-
-    @Override
-    public void testPeriodic() {
+    // Test Periodic
+    public void test(boolean getAButton) {
 
         // ADD CODE TO TEST MOTORS HERE
-        if (OI.xboxDrive.getAButton()) {
+        if (getAButton) {
             m_frontLeft.m_turningMotor.set(ControlMode.PercentOutput, 0.03);
             m_frontRight.m_turningMotor.set(ControlMode.PercentOutput, 0.03);
             m_backLeft.m_turningMotor.set(ControlMode.PercentOutput, 0.03);

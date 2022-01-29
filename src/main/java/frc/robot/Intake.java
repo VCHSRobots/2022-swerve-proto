@@ -5,7 +5,6 @@
 package frc.robot;
 
 import java.util.TimerTask;
-import java.util.ResourceBundle.Control;
 import java.util.Timer;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
@@ -13,14 +12,12 @@ import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 
 import edu.wpi.first.networktables.NetworkTableEntry;
-import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
-import edu.wpi.first.wpilibj.util.Color;
 
 /** Add your docs here. */
 public class Intake extends Base {
@@ -59,26 +56,22 @@ public class Intake extends Base {
 
     STATE m_state = STATE.A;
 
-    @Override
-    public void robotInit() {
+    //Robot Init
+    public void init() {
+        //motors
         m_roller.configFactoryDefault();
         m_roller.setNeutralMode(NeutralMode.Brake);
         m_roller.setInverted(false);
         m_roller.setSensorPhase(false);
-
+        //solenoids
         m_doublePCM.set(Value.kReverse);
     }
 
-    @Override
-    public void robotPeriodic() {
-        ntIntakeSpeed.setDouble(m_roller.getMotorOutputPercent());
-    }
-
-    @Override
-    public void teleopPeriodic() {
+    //Teleop Periodic
+    public void changeState(boolean startIntake) {
         switch (m_state) {
             case A:
-                if (OI.startIntake()) {
+                if (startIntake) {
                     m_state = STATE.B;
                 }
 
@@ -103,31 +96,41 @@ public class Intake extends Base {
                 break;
             case C:
 
-                if(isChanging) {
-                    m_motorSpeeds = -1;
-                } else {
+                m_motorSpeeds = .1;    
 
-                    isChanging = false;   
-                    m_motorSpeeds = .1;
-
-                    if(Constants.targetedBall == "blue") {
-                        if(ColorSensor.redBallDetected) {
-                            m_motorSpeeds = -1;
-                            isChanging = true;
-                            m_timer.schedule(m_change, 2500);
-                        } else {
-                            m_state = STATE.D;
-                        }
-                    } else if (Constants.targetedBall == "red"){
-                        if(ColorSensor.blueBallDetected) {
-                            m_motorSpeeds = -1;
-                            isChanging = true;
-                            m_timer.schedule(m_change, 2500);
-                        } else {
-                            m_state = STATE.D;
-                        }
-                    }
+                if(ColorSensor.ballDetected) {
+                    m_state = STATE.D;
                 }
+
+                // SPIT BALL OUT IF BAD :))))))
+
+                // if(isChanging) {
+                //     m_motorSpeeds = -1;
+                // } else {
+
+                //     isChanging = false;   
+                //     m_motorSpeeds = .1;
+
+                //     if(Constants.targetedBall == "blue") {
+                //         if(ColorSensor.redBallDetected) {
+                //             m_motorSpeeds = -1;
+                //             isChanging = true;
+                //             m_timer.schedule(m_change, 2500);
+                //         } else {
+                //             m_state = STATE.D;
+                //         }
+                //     } else if (Constants.targetedBall == "red"){
+                //         if(ColorSensor.blueBallDetected) {
+                //             m_motorSpeeds = -1;
+                //             isChanging = true;
+                //             m_timer.schedule(m_change, 2500);
+                //         } else {
+                //             m_state = STATE.D;
+                //         }
+                //     } else {
+
+                //     }
+                // }
 
                 m_roller.set(ControlMode.PercentOutput, m_motorSpeeds);
                 m_mover.set(ControlMode.PercentOutput, m_motorSpeeds);

@@ -12,8 +12,6 @@ import edu.wpi.first.wpilibj.util.Color;
 
 import com.revrobotics.ColorSensorV3;
 import com.revrobotics.ColorMatchResult;
-import com.ctre.phoenix.motorcontrol.ControlMode;
-import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.revrobotics.ColorMatch;
 
 /** Add your docs here. */
@@ -63,14 +61,14 @@ public class ColorSensor extends Base{
     public static boolean redBallDetected = false;
     public static boolean blueBallDetected = false;
 
-    @Override
-    public void robotInit() {
+    //Robot Init
+    public void init() {
       m_colorMatcher.addColorMatch(Constants.kBlueBallColor);
       m_colorMatcher.addColorMatch(Constants.kRedBallColor);
     }
   
-    @Override
-    public void robotPeriodic() {
+    //Robot Periodic
+    public void checkColor() {
       /**
        * The method GetColor() returns a normalized color value from the sensor and can be
        * useful if outputting the color to an RGB LED or similar. To
@@ -89,11 +87,11 @@ public class ColorSensor extends Base{
       
       ColorMatchResult match = m_colorMatcher.matchClosestColor(detectedColor);
   
-      // if(match.confidence > 0.8) {
-      //   ballDetected = true;
-      // } else {
-      //   ballDetected = false;
-      // }
+      if(match.confidence > 0.8) {
+        ballDetected = true;
+      } else {
+        ballDetected = false;
+      }
       
       if(detectedColor.red > 0.8) {
         redBallDetected = true;

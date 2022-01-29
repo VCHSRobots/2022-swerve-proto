@@ -40,10 +40,7 @@ public class RobotMap {
     public static final int kClimb_RightSolenoidForward    = 6;
     public static final int kClimb_RightSolenoidReverse    = 7;
 
-
-
-
-     public static final int kIntake_Pnuematic1              = 0;
+    public static final int kIntake_Pnuematic1              = 0;
     public static final int kIntake_Pnuematic2              = 1;
 
     public static final int kShoot_BottomMotor_TalonFX     = 31;
