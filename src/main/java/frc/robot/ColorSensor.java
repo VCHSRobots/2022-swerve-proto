@@ -51,7 +51,6 @@ public class ColorSensor extends Base{
 
     ShuffleboardTab colorSensorTab = Shuffleboard.getTab("ColorSensor");
     NetworkTableEntry ntRedColor = colorSensorTab.add("Red", 0).getEntry();
-    NetworkTableEntry ntGreenColor = colorSensorTab.add("Green", 0).getEntry();
     NetworkTableEntry ntBlueColor = colorSensorTab.add("Blue", 0).getEntry();
     NetworkTableEntry ntConfidence = colorSensorTab.add("Confidence", 0).getEntry();
     NetworkTableEntry ntDetected = colorSensorTab.add("Detected Color", 0).getEntry();
@@ -110,7 +109,6 @@ public class ColorSensor extends Base{
        * sensor.
        */
       ntRedColor.setDouble(detectedColor.red);
-      ntGreenColor.setDouble(detectedColor.green);
       ntBlueColor.setDouble(detectedColor.blue);
       ntConfidence.setDouble(match.confidence);
       ntDetected.setString(colorString);
