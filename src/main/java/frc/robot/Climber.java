@@ -42,6 +42,8 @@ public class Climber extends Base{
         //solenoids
         leftSolenoid.set(Value.kReverse);
         rightSolenoid.set(Value.kReverse);
+
+        
     }
 
     //Teleop Periodic
