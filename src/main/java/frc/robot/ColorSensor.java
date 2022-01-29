@@ -93,13 +93,15 @@ public class ColorSensor extends Base{
         ballDetected = false;
       }
       
+      redBallDetected = false;
+      blueBallDetected = false;
+
       if(detectedColor.red > 0.8) {
         redBallDetected = true;
       } else if(detectedColor.blue > 0.8) {
         blueBallDetected = true;
       } else {
-        redBallDetected = false;
-        blueBallDetected = false;
+
       }
 
       /**
