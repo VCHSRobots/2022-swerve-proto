@@ -83,6 +83,20 @@ public class SwerveDrive extends Base {
      *                      field.
      */
     @SuppressWarnings("ParameterName")
+    public void drive(double xSpeed, double ySpeed, double rot, boolean fieldRelative) {
+        drive(xSpeed, ySpeed, rot, fieldRelative, new Translation2d());
+    }
+
+    /**
+     * Method to drive the robot using joystick info.
+     *
+     * @param xSpeed        Speed of the robot in the x direction (forward).
+     * @param ySpeed        Speed of the robot in the y direction (sideways).
+     * @param rot           Angular rate of the robot.
+     * @param fieldRelative Whether the provided x and y speeds are relative to the
+     *                      field.
+     */
+    @SuppressWarnings("ParameterName")
     public void drive(double xSpeed, double ySpeed, double rot, boolean fieldRelative,
             Translation2d centerOfRotationMeters) {
         m_lastChassisSpeedsDesired = fieldRelative

@@ -4,7 +4,7 @@
 
 package frc.robot;
 
-/** Add your docs here. */
+/** Add your docs here. **/
 public class OI {
     static xbox4415 xboxDrive = new xbox4415(0);
     static xbox4415 xboxClimb = new xbox4415(1);
@@ -36,6 +36,10 @@ public class OI {
 
     static public boolean getCenterOfRotationFrontLeft() {
         return xboxDrive.getLeftBumper();
+    }
+
+    static public boolean getCenterOfRotationFrontRight() {
+        return xboxDrive.getRightBumper();
     }
     
     static public boolean startIntake() {
