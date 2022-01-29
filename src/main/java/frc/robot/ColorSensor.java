@@ -63,14 +63,14 @@ public class ColorSensor extends Base{
     public static boolean redBallDetected = false;
     public static boolean blueBallDetected = false;
 
-    @Override
-    public void robotInit() {
+    //Robot Init
+    public void init() {
       m_colorMatcher.addColorMatch(Constants.kBlueBallColor);
       m_colorMatcher.addColorMatch(Constants.kRedBallColor);
     }
   
-    @Override
-    public void robotPeriodic() {
+    //Robot Periodic
+    public void checkColor() {
       /**
        * The method GetColor() returns a normalized color value from the sensor and can be
        * useful if outputting the color to an RGB LED or similar. To

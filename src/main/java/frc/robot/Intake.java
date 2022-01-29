@@ -59,8 +59,8 @@ public class Intake extends Base {
 
     STATE m_state = STATE.A;
 
-    @Override
-    public void robotInit() {
+    //Robot Init
+    public void init() {
         m_roller.configFactoryDefault();
         m_roller.setNeutralMode(NeutralMode.Brake);
         m_roller.setInverted(false);
@@ -69,16 +69,11 @@ public class Intake extends Base {
         m_doublePCM.set(Value.kReverse);
     }
 
-    @Override
-    public void robotPeriodic() {
-        ntIntakeSpeed.setDouble(m_roller.getMotorOutputPercent());
-    }
-
-    @Override
-    public void teleopPeriodic() {
+    //Teleop Periodic
+    public void changeState(boolean startIntake) {
         switch (m_state) {
             case A:
-                if (OI.startIntake()) {
+                if (startIntake) {
                     m_state = STATE.B;
                 }
 
