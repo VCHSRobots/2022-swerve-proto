@@ -83,6 +83,20 @@ public class SwerveDrive extends Base {
      *                      field.
      */
     @SuppressWarnings("ParameterName")
+    public void drive(double xSpeed, double ySpeed, double rot, boolean fieldRelative) {
+        drive(xSpeed, ySpeed, rot, fieldRelative, new Translation2d());
+    }
+
+    /**
+     * Method to drive the robot using joystick info.
+     *
+     * @param xSpeed        Speed of the robot in the x direction (forward).
+     * @param ySpeed        Speed of the robot in the y direction (sideways).
+     * @param rot           Angular rate of the robot.
+     * @param fieldRelative Whether the provided x and y speeds are relative to the
+     *                      field.
+     */
+    @SuppressWarnings("ParameterName")
     public void drive(double xSpeed, double ySpeed, double rot, boolean fieldRelative,
             Translation2d centerOfRotationMeters) {
         m_lastChassisSpeedsDesired = fieldRelative
@@ -142,24 +156,11 @@ public class SwerveDrive extends Base {
         // positive value when we pull to the left (remember, CCW is positive in
         // mathematics). Xbox controllers return positive values when you pull to
         // the right by default.
-        // final var rot =
-        // -m_rotLimiter.calculate(MathUtil.applyDeadband(OI.getDriveRot(),
-        // Constants.xboxDeadband))
-        // * SwerveDrive.kMaxAngularSpeed;
-
-        // final var centerOfRotationMeters = OI.getCenterOfRotationFrontLeft() ?
-        // m_frontLeftLocation
-        // : new Translation2d();
-
-        // START OF TEST DRIVE CODE
-        final var rot = -m_rotLimiter.calculate(MathUtil.applyDeadband(
-                -OI.xboxDrive.getLeftTriggerAxis() + OI.xboxDrive.getRightTriggerAxis(),
+        final var rot = -m_rotLimiter.calculate(MathUtil.applyDeadband(OI.getDriveRot(),
                 Constants.xboxDeadband)) * SwerveDrive.kMaxAngularSpeed;
 
-        final var centerOfRotationMeters = new Translation2d(0.75 * -OI.xboxDrive.getRightX(),
-                0.75 * OI.xboxDrive.getRightY())
-                        .rotateBy(new Rotation2d(Math.PI / 2.0));
-        // END OF TEST DRIVE CODE
+        final var centerOfRotationMeters = OI.getCenterOfRotationFrontLeft() ? m_frontLeftLocation
+                : (OI.getCenterOfRotationFrontRight() ? m_frontRightLocation : new Translation2d());
 
         drive(xSpeed, ySpeed, rot, m_fieldRelative, centerOfRotationMeters);
     }
