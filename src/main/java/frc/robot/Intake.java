@@ -98,39 +98,44 @@ public class Intake extends Base {
 
                 m_motorSpeeds = .1;    
 
+                // noob scritp (just detect aball)
+                /* 
                 if(ColorSensor.ballDetected) {
                     m_state = STATE.D;
                 }
+                */
 
-                // SPIT BALL OUT IF BAD :))))))
+                // SPIT BALL OUT IF BAD (WRONG COLOR) :))))))
+                if(isChanging) {
 
-                // if(isChanging) {
-                //     m_motorSpeeds = -1;
-                // } else {
+                    m_motorSpeeds = -1;
 
-                //     isChanging = false;   
-                //     m_motorSpeeds = .1;
+                } else {
 
-                //     if(Constants.targetedBall == "blue") {
-                //         if(ColorSensor.redBallDetected) {
-                //             m_motorSpeeds = -1;
-                //             isChanging = true;
-                //             m_timer.schedule(m_change, 2500);
-                //         } else {
-                //             m_state = STATE.D;
-                //         }
-                //     } else if (Constants.targetedBall == "red"){
-                //         if(ColorSensor.blueBallDetected) {
-                //             m_motorSpeeds = -1;
-                //             isChanging = true;
-                //             m_timer.schedule(m_change, 2500);
-                //         } else {
-                //             m_state = STATE.D;
-                //         }
-                //     } else {
+                    switch(Constants.targetedBallColor) {
+                        case blue:
+                            if(ColorSensor.redBallDetected) {
+                                m_motorSpeeds = -1;
+                                isChanging = true;
+                                //turns back to normal after 2.5 seconds
+                                m_timer.schedule(m_change, 2500);
+                            } else if (ColorSensor.blueBallDetected) {
+                                m_state = STATE.D;
+                            }
+                            break;
+                        case red:
+                            if(ColorSensor.blueBallDetected) {
+                                m_motorSpeeds = -1;
+                                isChanging = true;
+                                //turns back to normal after 2.5 seconds
+                                m_timer.schedule(m_change, 2500);
+                            } else if (ColorSensor.redBallDetected) {
+                                m_state = STATE.D;
+                            }
+                            break;
+                    }
 
-                //     }
-                // }
+                }
 
                 m_roller.set(ControlMode.PercentOutput, m_motorSpeeds);
                 m_mover.set(ControlMode.PercentOutput, m_motorSpeeds);
@@ -140,7 +145,7 @@ public class Intake extends Base {
 
                 break;
             case D:
-                // state changes to E after timer
+                // state changes to E after timer (inbetween state)
                 m_timer.schedule(m_changeToE, 500);
                 m_roller.set(ControlMode.PercentOutput, .1);
                 m_mover.set(ControlMode.PercentOutput, .1);
