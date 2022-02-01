@@ -13,8 +13,9 @@ public class SuperStructure extends Base {
     private ColorSensor m_ColorSensor;
     private Climber m_Climber;
 
-    public SuperStructure (SwerveDrive swerveDrive, Intake intake, Shooter shooter, ColorSensor colorSensor, Climber climber) {
-        
+    public SuperStructure(SwerveDrive swerveDrive, Intake intake, Shooter shooter, ColorSensor colorSensor,
+            Climber climber) {
+
         m_SwerveDrive = swerveDrive;
         m_Intake = intake;
         m_Shooter = shooter;
@@ -45,9 +46,11 @@ public class SuperStructure extends Base {
     @Override
     public void teleopPeriodic() {
 
-        m_SwerveDrive.driveWithXbox(OI.getDriveY(), OI.getDriveX(), OI.xboxDrive.getLeftTriggerAxis(), OI.xboxDrive.getRightTriggerAxis(), OI.xboxDrive.getRightY(), OI.xboxDrive.getRightX());
+        m_SwerveDrive.driveWithXbox(OI.getDriveY(), OI.getDriveX(), OI.xboxDrive.getLeftTriggerAxis(),
+                OI.xboxDrive.getRightTriggerAxis(), OI.xboxDrive.getRightY(), OI.xboxDrive.getRightX());
         m_Intake.changeState(OI.startIntake());
-        m_Shooter.teleopPeriodic(OI.getXButtonForToggleFeetToDist(), OI.getYButtonForShootRPM(), OI.getRightBumperForTurntable(), OI.getLeftBumperForTurntable());
+        m_Shooter.teleopPeriodic(OI.getXButtonForToggleFeetToDist(), OI.getYButtonForShootRPM(),
+                OI.getRightBumperForTurntable(), OI.getLeftBumperForTurntable());
         m_Climber.climberMove(OI.getSolenoidToggle(), OI.getArmsUp(), OI.getArmsDown());
 
     }
@@ -65,8 +68,5 @@ public class SuperStructure extends Base {
         m_SwerveDrive.test(OI.xboxDrive.getAButton());
 
     }
-
-
-    
 
 }

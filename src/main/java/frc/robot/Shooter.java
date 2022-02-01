@@ -19,9 +19,6 @@ public class Shooter extends Base {
     ShuffleboardTab ShootMotorTab = Shuffleboard.getTab("Shooter");
 
     NetworkTableEntry ntBotRPM = ShootMotorTab.add("Bot RPM", 1000).withPosition(3, 3).withSize(1, 1).getEntry();
-    NetworkTableEntry ntFeetToBotRPM = ShootMotorTab.add("Feet To Bot RPM", 17).withPosition(4, 3).withSize(1, 1)
-            .getEntry();
-
     NetworkTableEntry ntTopRPM = ShootMotorTab.add("Top RPM", 1000).withPosition(3, 2).withSize(1, 1).getEntry();
     NetworkTableEntry ntFeetToTopRPM = ShootMotorTab.add("Feet To Top RPM", 17).withPosition(4, 2).withSize(1, 1)
             .getEntry();
@@ -29,7 +26,6 @@ public class Shooter extends Base {
     WPI_TalonFX m_shootTalonTop = new WPI_TalonFX(RobotMap.kShoot_TopMotor_TalonFX);
     WPI_TalonFX m_shootTalonBot = new WPI_TalonFX(RobotMap.kShoot_BottomMotor_TalonFX);
     WPI_TalonFX m_turnTableTalon = new WPI_TalonFX(RobotMap.kTurnTableMotor_TalonFX);
-
 
     // SimpleMotorFeedforward m_ShootFeedForward = new SimpleMotorFeedforward(0.00,
     // 0.00045);
@@ -50,7 +46,6 @@ public class Shooter extends Base {
 
     // END SHUFFLEBOARD HELPERS
 
-    
     public void robotInit() {
         ShootMotorTab.addNumber("Actual Top RPM", () -> getTopMotorRPM()).withPosition(5, 2);
         ShootMotorTab.addNumber("Actual Bot RPM", () -> getBotMotorRPM()).withPosition(5, 3);
@@ -122,7 +117,8 @@ public class Shooter extends Base {
         m_state = STATE.NotShooting;
     }
 
-    public void teleopPeriodic(boolean distanceMode, boolean RPMMode, boolean rightSideTurnTable, boolean leftSideTurnTable) {
+    public void teleopPeriodic(boolean distanceMode, boolean RPMMode, boolean rightSideTurnTable,
+            boolean leftSideTurnTable) {
         // default all set outputs to 0
         double shootTopSpeed = 0;
         double shootBotSpeed = 0;
@@ -140,11 +136,12 @@ public class Shooter extends Base {
             shootTopSpeed = 0;
             shootTopSpeed = 0;
         } else if (m_state == STATE.ShootingDistance) {
-            shootTopSpeed = topFeetToRPM(ntFeetToTopRPM.getNumber(0).doubleValue());
-            shootBotSpeed = botFeetToRPM(ntFeetToBotRPM.getNumber(0).doubleValue());
+            setSpeedsDist(ntFeetToTopRPM.getNumber(0).doubleValue());
+            System.out.println("AHAA");
+
         } else if (m_state == STATE.ShootingRPM) {
-            shootTopSpeed = rpmToTicksPer100ms(ntTopRPM.getNumber(0).doubleValue());
-            shootBotSpeed = rpmToTicksPer100ms(ntBotRPM.getNumber(0).doubleValue());
+            setSpeedsRPM(topFeetToRPM(ntTopRPM.getNumber(0).doubleValue()), ntBotRPM.getNumber(0).doubleValue());
+            System.out.println("ME ABOUT");
         }
 
         if (rightSideTurnTable) {
@@ -153,11 +150,27 @@ public class Shooter extends Base {
         if (leftSideTurnTable) {
             turntableSpeed = -0.07;
         }
+        m_turnTableTalon.set(ControlMode.PercentOutput, turntableSpeed);
+
+    }
+
+    public void setSpeedsRPM(double topRPM, double botRPM) {
+        setShootSpeeds(rpmToTicksPer100ms(topRPM),
+                botFeetToRPM(botRPM));
+
+    }
+
+    // NOT METERS CHANGE TO METER
+    public void setSpeedsDist(double distanceFeet) {
+        setShootSpeeds(topFeetToRPM(distanceFeet),
+                botFeetToRPM(distanceFeet));
+
+    }
+
+    public void setShootSpeeds(double shootTopSpeed, double shootBotSpeed) {
 
         m_shootTalonTop.set(ControlMode.Velocity, shootTopSpeed);
         m_shootTalonBot.set(ControlMode.Velocity, shootBotSpeed);
-        m_turnTableTalon.set(ControlMode.PercentOutput, turntableSpeed);
-
     }
 
     public double rpmToTicksPer100ms(double rpm) {
