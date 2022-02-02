@@ -50,7 +50,7 @@ public class Climber extends Base{
     }
 
     //Teleop Periodic
-    public void climberMove(boolean solenoidToggle, boolean armsUp, boolean armsDown, boolean bottomLimitReset) {
+    public void climberMove(boolean solenoidToggle, boolean armsUp, boolean armsDown) {
         //solenoids
         if(solenoidToggle) {
             leftSolenoid.toggle();

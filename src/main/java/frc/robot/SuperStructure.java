@@ -62,6 +62,7 @@ public class SuperStructure extends Base {
         m_Shooter.TurnTable(OI.getRightBumperForTurntable(), OI.getLeftBumperForTurntable());
         m_Climber.climberMove(OI.getSolenoidToggle(), OI.getArmsUp(), OI.getArmsDown());
 
+
         if (OI.getYButtonForShootRPM()) {
             // turn shooter on in rpm mode
             m_Shooter.shootingRPM(ntTopRPM.getNumber(0).doubleValue(), ntBotRPM.getNumber(0).doubleValue());
