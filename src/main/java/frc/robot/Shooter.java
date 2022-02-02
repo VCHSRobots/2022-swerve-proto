@@ -15,7 +15,7 @@ import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.networktables.NetworkTableEntry;
 
 public class Shooter extends Base {
-
+    // Shuffleboard Tabs and NetworkTableEntries.
     ShuffleboardTab ShootMotorTab = Shuffleboard.getTab("Shooter");
 
     NetworkTableEntry ntBotRPM = ShootMotorTab.add("Bot RPM", 1000).withPosition(3, 3).withSize(1, 1).getEntry();
@@ -26,6 +26,7 @@ public class Shooter extends Base {
     WPI_TalonFX m_shootTalonTop = new WPI_TalonFX(RobotMap.kShoot_TopMotor_TalonFX);
     WPI_TalonFX m_shootTalonBot = new WPI_TalonFX(RobotMap.kShoot_BottomMotor_TalonFX);
     WPI_TalonFX m_turnTableTalon = new WPI_TalonFX(RobotMap.kTurnTableMotor_TalonFX);
+    
 
     // SimpleMotorFeedforward m_ShootFeedForward = new SimpleMotorFeedforward(0.00,
     // 0.00045);
@@ -116,7 +117,7 @@ public class Shooter extends Base {
     public void teleopInit() {
         m_state = STATE.NotShooting;
     }
-
+    // Original Function for shooting RPM and distance.
     public void shooting(boolean distanceMode, boolean RPMMode) {
         // default all set outputs to 0
         double shootTopSpeed = 0;
@@ -143,7 +144,7 @@ public class Shooter extends Base {
         }
 
     }
-
+    // Shooting function with Distance. (NOT READY!!)
     public void shootingDist(double distanceMeters) {
         m_state = STATE.ShootingDistance;
         if (m_state == STATE.ShootingDistance) {
@@ -151,7 +152,7 @@ public class Shooter extends Base {
         }
 
     }
-
+    // Shooting function with RPM.
     public void shootingRPM(double topRPM, double botRPM) {
         m_state = STATE.ShootingRPM;
         if (m_state == STATE.ShootingRPM) {
@@ -160,7 +161,7 @@ public class Shooter extends Base {
         }
 
     }
-
+    // TurnTable Funtions.
     public void TurnTable(boolean rightSideTurnTable,
             boolean leftSideTurnTable) {
         double turntableSpeed = 0;
@@ -172,26 +173,26 @@ public class Shooter extends Base {
         }
         m_turnTableTalon.set(ControlMode.PercentOutput, turntableSpeed);
     }
-
+    // Sets speed for RPM.
     public void setSpeedsRPM(double topRPM, double botRPM) {
         setShootSpeeds(rpmToTicksPer100ms(topRPM),
                 botFeetToRPM(botRPM));
 
     }
 
-    // NOT METERS CHANGE TO METER
+    // Sets Speeds for Distance.
     public void setSpeedsDist(double distanceFeet) {
         setShootSpeeds(topFeetToRPM(distanceFeet),
                 botFeetToRPM(distanceFeet));
 
     }
-
+    // Sets doubles to Talons.
     public void setShootSpeeds(double shootTopSpeed, double shootBotSpeed) {
 
         m_shootTalonTop.set(ControlMode.Velocity, shootTopSpeed);
         m_shootTalonBot.set(ControlMode.Velocity, shootBotSpeed);
     }
-
+    // Converts RPM to Ticks/100MS.
     public double rpmToTicksPer100ms(double rpm) {
         double minutesPerSecond = 1.0 / 60.0;
         double secondsPer100ms = 1.0 / 10.0;
@@ -200,7 +201,7 @@ public class Shooter extends Base {
         return ticksPer100ms;
 
     }
-
+    // Converts Ticks/100MS to RPM.
     public double ticksPer100msToRPM(double ticksPer100ms) {
         double secondsPerMinute = 60.0;
         double oneHundredMSPerSecond = 10.0;
@@ -208,17 +209,17 @@ public class Shooter extends Base {
         double RPM = ticksPer100ms * secondsPerMinute * oneHundredMSPerSecond * rotationsPerTick;
         return RPM;
     }
-
+    // Equation for Top Motor.
     public double topFeetToRPM(double topfeet) {
         double RPMquadtop = -1419.522 + 396.7329 * topfeet + -3.353022 * (topfeet * topfeet);
         return RPMquadtop;
     }
-
+    // Equation for Bot Motor.
     public double botFeetToRPM(double botfeet) {
         double RPMquadbot = 8225 - 784.9 * botfeet + 32.04 * (botfeet * botfeet);
         return RPMquadbot;
     }
-
+    // Boolean that checks if shooter is reading to shoot at a good speed.
     public boolean IsOkToShoot() {
         double errorTopRPM = rpmToTicksPer100ms(m_shootTalonTop.getClosedLoopError());
         double errorBotRPM = rpmToTicksPer100ms(m_shootTalonBot.getClosedLoopError());
