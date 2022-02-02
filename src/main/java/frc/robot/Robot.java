@@ -6,6 +6,7 @@ package frc.robot;
 
 import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.wpilibj.Compressor;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
@@ -26,16 +27,18 @@ public class Robot extends TimedRobot {
   private static final String kCustomAuto = "My Auto";
   private String m_autoSelected;
   private final SendableChooser<String> m_chooser = new SendableChooser<>();
+  
+  public static final DriverStation.Alliance m_alliance = DriverStation.getAlliance();
 
   // TODO: double check what type of compressor module we are using
   // private final Compressor m_phCompressor = new Compressor(2, PneumaticsModuleType.REVPH);
 
   //for superstructure
-  SwerveDrive swerveDrive = new SwerveDrive();
-  Intake intake = new Intake();
-  Shooter shooter = new Shooter();
-  ColorSensor colorSensor = new ColorSensor();
-  Climber climber = new Climber();
+  private final SwerveDrive swerveDrive = new SwerveDrive();
+  private final Intake intake = new Intake();
+  private final Shooter shooter = new Shooter();
+  private final ColorSensor colorSensor = new ColorSensor();
+  private final Climber climber = new Climber();
 
   SuperStructure superStructure = new SuperStructure(swerveDrive, intake, shooter, colorSensor, climber);
 

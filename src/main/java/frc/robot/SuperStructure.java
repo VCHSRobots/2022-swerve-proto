@@ -3,6 +3,9 @@
 // the WPILib BSD license file in the root directory of this project.
 
 package frc.robot;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
+import edu.wpi.first.networktables.NetworkTableEntry;
 
 /** Add your docs here. */
 public class SuperStructure extends Base {
@@ -12,6 +15,12 @@ public class SuperStructure extends Base {
     private Shooter m_Shooter;
     private ColorSensor m_ColorSensor;
     private Climber m_Climber;
+    ShuffleboardTab ShootMotor1Tab = Shuffleboard.getTab("Shooter1");
+
+    NetworkTableEntry ntBotRPM = ShootMotor1Tab.add("Bot RPM", 1000).withPosition(3, 3).withSize(1, 1).getEntry();
+    NetworkTableEntry ntTopRPM = ShootMotor1Tab.add("Top RPM", 1000).withPosition(3, 2).withSize(1, 1).getEntry();
+    NetworkTableEntry ntFeetToRPM = ShootMotor1Tab.add("Feet To Top RPM", 17).withPosition(4, 2).withSize(1, 1)
+            .getEntry();
 
     public SuperStructure(SwerveDrive swerveDrive, Intake intake, Shooter shooter, ColorSensor colorSensor,
             Climber climber) {
@@ -49,9 +58,31 @@ public class SuperStructure extends Base {
         m_SwerveDrive.driveWithXbox(OI.getDriveY(), OI.getDriveX(), OI.xboxDrive.getLeftTriggerAxis(),
                 OI.xboxDrive.getRightTriggerAxis(), OI.xboxDrive.getRightY(), OI.xboxDrive.getRightX());
         m_Intake.changeState(OI.startIntake());
-        m_Shooter.teleopPeriodic(OI.getXButtonForToggleFeetToDist(), OI.getYButtonForShootRPM(),
-                OI.getRightBumperForTurntable(), OI.getLeftBumperForTurntable());
+
+        m_Shooter.TurnTable(OI.getRightBumperForTurntable(), OI.getLeftBumperForTurntable());
         m_Climber.climberMove(OI.getSolenoidToggle(), OI.getArmsUp(), OI.getArmsDown());
+
+        
+        if (OI.getYButtonForShootRPM()) {
+            // turn shooter on in rpm mode
+            m_Shooter.shootingRPM(ntTopRPM.getNumber(0).doubleValue(), ntBotRPM.getNumber(0).doubleValue());
+            
+
+            if (m_Shooter.IsOkToShoot()) {
+                // Load shooter
+                m_Intake.loadShooter();
+            }
+        } else if (OI.getXButtonForToggleFeetToDist()) {
+            // turn shooter on in Dist
+            m_Shooter.shootingDist(ntFeetToRPM.getNumber(0).doubleValue());
+
+            if (m_Shooter.IsOkToShoot()) {
+                // load shooter
+            }
+
+        } else {
+
+        }
 
     }
 
