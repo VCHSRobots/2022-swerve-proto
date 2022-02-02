@@ -69,7 +69,7 @@ public class SuperStructure extends Base {
             
 
             if (m_Shooter.IsOkToShoot()) {
-                // Load shooter
+                // load shooter
                 m_Intake.loadShooter();
             }
         } else if (OI.getXButtonForToggleFeetToDist()) {
@@ -78,10 +78,12 @@ public class SuperStructure extends Base {
 
             if (m_Shooter.IsOkToShoot()) {
                 // load shooter
+                m_Intake.loadShooter();
             }
 
         } else {
-
+            // resets load shooter
+            m_Intake.turnOffLoadShooter();
         }
 
     }

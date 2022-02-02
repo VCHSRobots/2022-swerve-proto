@@ -24,6 +24,8 @@ import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 /** Add your docs here. */
 public class Intake extends Base {
 
+    private double m_defaultMotorSpeed = .1;
+
     private double m_motorSpeeds = 0;
     private boolean isChanging = false;
 
@@ -31,7 +33,7 @@ public class Intake extends Base {
     private TimerTask m_changeToE = new TimerTask() {
         @Override
         public void run() {
-            m_state = STATE.E;
+            m_state = STATE.A;
         };
     };
     private TimerTask m_change = new TimerTask() {
@@ -49,8 +51,10 @@ public class Intake extends Base {
 
     DigitalInput m_digitalInput = new DigitalInput(0);
 
-    ShuffleboardTab intakeMotortab = Shuffleboard.getTab("Intake");
-    NetworkTableEntry ntIntakeSpeed = intakeMotortab.add("speed", 0.1).getEntry();
+    ShuffleboardTab intakeMotortab = Shuffleboard.getTab("Intake Motors");
+    NetworkTableEntry ntIntakeSpeed = intakeMotortab.add("intake", 0.1).getEntry();
+    NetworkTableEntry ntMoverSpeed = intakeMotortab.add("mover", 0.1).getEntry();
+    NetworkTableEntry ntShooterLoaderSpeed = intakeMotortab.add("shooter loader", 0.1).getEntry();
 
     enum STATE {
         A, B, C, D, E;
@@ -72,8 +76,10 @@ public class Intake extends Base {
     // Teleop Periodic
     public void changeState(boolean startIntake) {
         switch (m_state) {
-            // intake and load off, intake up
             case A:
+
+                // intake and load off, intake up
+
                 if (startIntake) {
                     m_state = STATE.B;
                 }
@@ -85,17 +91,18 @@ public class Intake extends Base {
                 m_doublePCM.set(Value.kReverse);
 
                 break;
-            // intake, bt, and load ON
-            // intake down
             case B:
+                // intake, bt, and load ON
+                // intake down
+
                 // ball detected right before shooter, go to next state
                 if (m_digitalInput.get()) {
                     m_state = STATE.C;
                 }
 
-                m_intake.set(ControlMode.PercentOutput, .1);
-                m_mover.set(ControlMode.PercentOutput, .1);
-                m_shooterLoader.set(ControlMode.PercentOutput, .1);
+                m_intake.set(ControlMode.PercentOutput, m_defaultMotorSpeed);
+                m_mover.set(ControlMode.PercentOutput, m_defaultMotorSpeed);
+                m_shooterLoader.set(ControlMode.PercentOutput, m_defaultMotorSpeed);
 
                 m_doublePCM.set(Value.kForward);
 
@@ -105,13 +112,6 @@ public class Intake extends Base {
                 // intake down
 
                 m_motorSpeeds = .1;
-
-                // noob scritp (just detect aball)
-                /*
-                 * if(ColorSensor.ballDetected) {
-                 * m_state = STATE.D;
-                 * }
-                 */
 
                 // SPIT BALL OUT IF BAD (WRONG COLOR) :))))))
                 if (isChanging) {
@@ -134,7 +134,7 @@ public class Intake extends Base {
                             if (ColorSensor.blueBallDetected) {
                                 m_motorSpeeds = -.3;
                                 isChanging = true;
-                                // turns back to normal after 2.5 seconds
+                                // turns back to normal (isChanging = False) after 2.5 seconds
                                 m_timer.schedule(m_change, 2500);
                             } else if (ColorSensor.redBallDetected) {
                                 m_state = STATE.D;
@@ -149,7 +149,7 @@ public class Intake extends Base {
 
                 m_intake.set(ControlMode.PercentOutput, m_motorSpeeds);
                 m_mover.set(ControlMode.PercentOutput, m_motorSpeeds);
-                m_shooterLoader.set(ControlMode.PercentOutput, m_motorSpeeds);
+                m_shooterLoader.set(ControlMode.PercentOutput, 0);
 
                 m_doublePCM.set(Value.kForward);
 
@@ -157,33 +157,52 @@ public class Intake extends Base {
             case D:
                 // state changes to E after timer (inbetween state)
                 m_timer.schedule(m_changeToE, 500);
-                m_intake.set(ControlMode.PercentOutput, .1);
-                m_mover.set(ControlMode.PercentOutput, .1);
+                m_intake.set(ControlMode.PercentOutput, m_defaultMotorSpeed);
+                m_mover.set(ControlMode.PercentOutput, m_defaultMotorSpeed);
                 m_shooterLoader.set(ControlMode.PercentOutput, 0);
 
                 m_doublePCM.set(Value.kForward);
 
                 break;
             case E:
-                m_doublePCM.set(Value.kReverse);
-
+                // start loading balls into shooter (loadShooter)
+                // stops when no more shooter buttons are pressed
                 m_intake.set(ControlMode.PercentOutput, 0);
-                m_mover.set(ControlMode.PercentOutput, 0);
-                m_shooterLoader.set(ControlMode.PercentOutput, 0);
+                m_mover.set(ControlMode.PercentOutput, .1);
+                m_shooterLoader.set(ControlMode.PercentOutput, .1);
+
                 break;
         }
+
+        // sets nt values for motors
+        setNTValues();
 
     }
 
     // Turns on shooter intake and mover to put balls in shooter.
     // Used in OI to coordinate shooting.
     public void loadShooter() {
+        m_state = STATE.E;
+    }
+
+    // Goes back to the first state
+    public void turnOffLoadShooter() {
+        if(m_state == STATE.E) {
+            m_state = STATE.A;
+        }
     }
 
     // spit out ball
     public void reverseIntake() {
         m_mover.set(ControlMode.PercentOutput, -0.3);
         m_intake.set(ControlMode.PercentOutput, -0.3);
+    }
+    
+    // sends motor values to shuffleboard
+    public void setNTValues() {
+        ntIntakeSpeed.setDouble(m_intake.getMotorOutputPercent());
+        ntMoverSpeed.setDouble(m_mover.getMotorOutputPercent());
+        ntShooterLoaderSpeed.setDouble(m_shooterLoader.getMotorOutputPercent());
     }
 
 }

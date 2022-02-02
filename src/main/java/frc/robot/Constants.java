@@ -19,12 +19,5 @@ public class Constants {
     public static final Color kBlueBallColor = new Color(0.143, 0.427, 0.429);
     public static final Color kRedBallColor = new Color(0.561, 0.232, 0.114);
 
-    enum BALLCOLORS {
-        blue, red
-    }
-
-    //set targeted color here :) nice yes
-    public static final BALLCOLORS targetedBallColor = BALLCOLORS.blue;
-
     public static final double xboxDeadband = 0.09;
 }
