@@ -6,6 +6,7 @@ package frc.robot;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
@@ -20,16 +21,22 @@ public class Climber extends Base{
     private static WPI_TalonFX rightArm;
     private static WPI_TalonFX neutralExtra;
 
+    private static DigitalInput bottomLimit;
+    private static DigitalInput topLimit;
+
     //init
     public void init() {
 
-        //Init
+        //init motorss
         leftArm = new WPI_TalonFX(RobotMap.kClimb_LeftArm_TalonFX);
         rightArm = new WPI_TalonFX(RobotMap.kClimb_RightArm_TalonFX);
         neutralExtra = new WPI_TalonFX(RobotMap.kClimb_NeutralExtra_TalonFX);
         //init solenoids
         leftSolenoid = new DoubleSolenoid(PneumaticsModuleType.CTREPCM, RobotMap.kClimb_LeftSolenoidForward, RobotMap.kClimb_LeftSolenoidReverse);
         rightSolenoid = new DoubleSolenoid(PneumaticsModuleType.CTREPCM, RobotMap.kClimb_RightSolenoidForward, RobotMap.kClimb_RightSolenoidReverse);
+        //init limit switches
+        bottomLimit = new DigitalInput(RobotMap.kBottomLimitSwitch);
+        topLimit = new DigitalInput(RobotMap.kTopLimitSwitch);    
 
         //motors
         leftArm.follow(rightArm);
@@ -37,12 +44,13 @@ public class Climber extends Base{
         //solenoids
         leftSolenoid.set(Value.kReverse);
         rightSolenoid.set(Value.kReverse);
+        
 
         
     }
 
     //Teleop Periodic
-    public void climberMove(boolean solenoidToggle, boolean armsUp, boolean armsDown) {
+    public void climberMove(boolean solenoidToggle, boolean armsUp, boolean armsDown, boolean bottomLimitReset) {
         //solenoids
         if(solenoidToggle) {
             leftSolenoid.toggle();
@@ -54,6 +62,11 @@ public class Climber extends Base{
         }
         if(armsDown) {
             rightArm.set(ControlMode.PercentOutput, -0.25);
+        }
+        //limit switch
+        if(bottomLimit.get()) {
+            rightArm.setSelectedSensorPosition(0);
+
         }
 
     }

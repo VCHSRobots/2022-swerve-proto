@@ -22,7 +22,7 @@ public class SuperStructure extends Base {
     NetworkTableEntry ntTopRPM = ShootMotorTab.add("Top RPM", 1000).withPosition(3, 2).withSize(1, 1).getEntry();
     NetworkTableEntry ntFeetToRPM = ShootMotorTab.add("Feet To Top RPM", 17).withPosition(4, 2).withSize(1, 1)
             .getEntry();
-
+            
     public SuperStructure(SwerveDrive swerveDrive, Intake intake, Shooter shooter, ColorSensor colorSensor,
             Climber climber) {
 

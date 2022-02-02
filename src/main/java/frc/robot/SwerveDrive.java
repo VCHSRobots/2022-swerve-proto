@@ -185,6 +185,16 @@ public class SwerveDrive extends Base {
         drive(xSpeed, ySpeed, rot, m_fieldRelative, centerOfRotationMeters);
     }
 
+    //Robot Init
+    /*public void robotInit() {
+     /*   // SendableRegistry.add(m_frontLeft, "frontleft");
+        // SendableRegistry.add(m_frontRight, "frontright");
+        Shuffleboard.getTab("main").add("front left", m_frontLeft);
+        Shuffleboard.getTab("main").add("front right", m_frontRight);
+        Shuffleboard.getTab("main").add("back left", m_backLeft);
+        Shuffleboard.getTab("main").add("back right", m_backRight); 
+    } */
+
     @Override
     public void disabledInit() {
     }
