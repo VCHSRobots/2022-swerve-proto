@@ -47,4 +47,7 @@ public class RobotMap {
     public static final int kShoot_TopMotor_TalonFX        = 32;
     public static final int kTurnTableMotor_TalonFX        = 33;
 
+    public static final int kBottomLimitSwitch = 0;
+    public static final int kTopLimitSwitch = 1;
+
 }
