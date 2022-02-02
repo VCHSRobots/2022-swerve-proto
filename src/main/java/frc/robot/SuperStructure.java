@@ -70,7 +70,7 @@ public class SuperStructure extends Base {
 
             if (m_Shooter.IsOkToShoot()) {
                 // Load shooter
-
+                m_Intake.loadShooter();
             }
         } else if (OI.getXButtonForToggleFeetToDist()) {
             // turn shooter on in Dist
