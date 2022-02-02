@@ -31,11 +31,11 @@ public class Robot extends TimedRobot {
   // private final Compressor m_phCompressor = new Compressor(2, PneumaticsModuleType.REVPH);
 
   //for superstructure
-  SwerveDrive swerveDrive = new SwerveDrive();
-  Intake intake = new Intake();
-  Shooter shooter = new Shooter();
-  ColorSensor colorSensor = new ColorSensor();
-  Climber climber = new Climber();
+  private final SwerveDrive swerveDrive = new SwerveDrive();
+  private final Intake intake = new Intake();
+  private final Shooter shooter = new Shooter();
+  private final ColorSensor colorSensor = new ColorSensor();
+  private final Climber climber = new Climber();
 
   SuperStructure superStructure = new SuperStructure(swerveDrive, intake, shooter, colorSensor, climber);
 

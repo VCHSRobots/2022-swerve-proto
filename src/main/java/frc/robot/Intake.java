@@ -164,5 +164,10 @@ public class Intake extends Base {
         }
 
     }
+    
+    // Turns on shooter intake and mover to put balls in shooter.
+    // Used in OI to coordinate shooting.
+    public void loadShooter(){
+    }
 
 }

@@ -20,7 +20,7 @@ public class Shooter extends Base {
 
     NetworkTableEntry ntBotRPM = ShootMotorTab.add("Bot RPM", 1000).withPosition(3, 3).withSize(1, 1).getEntry();
     NetworkTableEntry ntTopRPM = ShootMotorTab.add("Top RPM", 1000).withPosition(3, 2).withSize(1, 1).getEntry();
-    NetworkTableEntry ntFeetToTopRPM = ShootMotorTab.add("Feet To Top RPM", 17).withPosition(4, 2).withSize(1, 1)
+    NetworkTableEntry ntFeetToRPM = ShootMotorTab.add("Feet To Top RPM", 17).withPosition(4, 2).withSize(1, 1)
             .getEntry();
 
     WPI_TalonFX m_shootTalonTop = new WPI_TalonFX(RobotMap.kShoot_TopMotor_TalonFX);
@@ -117,12 +117,10 @@ public class Shooter extends Base {
         m_state = STATE.NotShooting;
     }
 
-    public void teleopPeriodic(boolean distanceMode, boolean RPMMode, boolean rightSideTurnTable,
-            boolean leftSideTurnTable) {
+    public void shooting(boolean distanceMode, boolean RPMMode) {
         // default all set outputs to 0
         double shootTopSpeed = 0;
         double shootBotSpeed = 0;
-        double turntableSpeed = 0;
 
         if (distanceMode) {
             m_state = STATE.ShootingDistance;
@@ -136,14 +134,36 @@ public class Shooter extends Base {
             shootTopSpeed = 0;
             shootTopSpeed = 0;
         } else if (m_state == STATE.ShootingDistance) {
-            setSpeedsDist(ntFeetToTopRPM.getNumber(0).doubleValue());
+            setSpeedsDist(ntFeetToRPM.getNumber(0).doubleValue());
             System.out.println("AHAA");
 
         } else if (m_state == STATE.ShootingRPM) {
-            setSpeedsRPM(topFeetToRPM(ntTopRPM.getNumber(0).doubleValue()), ntBotRPM.getNumber(0).doubleValue());
+            setSpeedsRPM(ntTopRPM.getNumber(0).doubleValue(), ntBotRPM.getNumber(0).doubleValue());
             System.out.println("ME ABOUT");
         }
 
+    }
+
+    public void shootingDist(double distanceMeters) {
+        m_state = STATE.ShootingDistance;
+        if (m_state == STATE.ShootingDistance) {
+            setSpeedsDist(distanceMeters);
+        }
+
+    }
+
+    public void shootingRPM(double topRPM, double botRPM) {
+        m_state = STATE.ShootingRPM;
+        if (m_state == STATE.ShootingRPM) {
+            setSpeedsRPM(topRPM, botRPM);
+            System.out.println("ME ABOUT");
+        }
+
+    }
+
+    public void TurnTable(boolean rightSideTurnTable,
+            boolean leftSideTurnTable) {
+        double turntableSpeed = 0;
         if (rightSideTurnTable) {
             turntableSpeed = 0.07;
         }
@@ -151,7 +171,6 @@ public class Shooter extends Base {
             turntableSpeed = -0.07;
         }
         m_turnTableTalon.set(ControlMode.PercentOutput, turntableSpeed);
-
     }
 
     public void setSpeedsRPM(double topRPM, double botRPM) {
