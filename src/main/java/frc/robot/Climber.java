@@ -6,10 +6,13 @@ package frc.robot;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 
+import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 
 /** Add your docs here. */
 public class Climber extends Base{
@@ -23,11 +26,15 @@ public class Climber extends Base{
 
     private static DigitalInput bottomLimit;
     private static DigitalInput topLimit;
+    public static double encoderValue;
+
+    ShuffleboardTab ClimberTab = Shuffleboard.getTab("Climber Encoder");
+    NetworkTableEntry ntClimberEncoderValue = ClimberTab.add("Climber Encoder Value", encoderValue).withPosition(2, 2).withSize(1, 1).getEntry();
 
     //init
     public void init() {
 
-        //init motorss
+        //init motors
         leftArm = new WPI_TalonFX(RobotMap.kClimb_LeftArm_TalonFX);
         rightArm = new WPI_TalonFX(RobotMap.kClimb_RightArm_TalonFX);
         neutralExtra = new WPI_TalonFX(RobotMap.kClimb_NeutralExtra_TalonFX);
@@ -44,6 +51,10 @@ public class Climber extends Base{
         //solenoids
         leftSolenoid.set(Value.kReverse);
         rightSolenoid.set(Value.kReverse);
+
+        //encoder Value
+        encoderValue = rightArm.getSelectedSensorPosition();
+
         
 
         
