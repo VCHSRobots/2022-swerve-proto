@@ -78,6 +78,7 @@ public class SuperStructure extends Base {
 
             if (m_Shooter.IsOkToShoot()) {
                 // load shooter
+                m_Intake.loadShooter();
             }
 
         } else {
