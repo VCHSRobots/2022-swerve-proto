@@ -5,9 +5,7 @@
 package frc.robot;
 
 import edu.wpi.first.cameraserver.CameraServer;
-import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -27,11 +25,6 @@ public class Robot extends TimedRobot {
   private static final String kCustomAuto = "My Auto";
   private String m_autoSelected;
   private final SendableChooser<String> m_chooser = new SendableChooser<>();
-  
-  public static final DriverStation.Alliance m_alliance = DriverStation.getAlliance();
-
-  // TODO: double check what type of compressor module we are using
-  // private final Compressor m_phCompressor = new Compressor(2, PneumaticsModuleType.REVPH);
 
   //for superstructure
   private final SwerveDrive swerveDrive = new SwerveDrive();
