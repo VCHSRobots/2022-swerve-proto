@@ -54,8 +54,11 @@ public class OI {
         return xboxDrive.getBackButton();
     }
 
-    static public boolean getSolenoidToggle() {
+    static public boolean getSolenoidReverse() {
         return xboxClimb.getAButtonPressed();
+    }
+    static public boolean getSolenoidForward() {
+        return xboxClimb.getBButtonPressed();
     }
 
     static public boolean getArmsUp(){

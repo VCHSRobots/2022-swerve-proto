@@ -16,71 +16,82 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 
 /** Add your docs here. */
-public class Climber extends Base{
+public class Climber extends Base {
 
     private DoubleSolenoid m_solenoid;
 
-    private WPI_TalonFX leftArm;
-    private WPI_TalonFX rightArm;
+    private WPI_TalonFX m_master;
+    private WPI_TalonFX m_follower;
 
     private DigitalInput bottomLimit;
     private DigitalInput topLimit;
     public double encoderValue;
 
     ShuffleboardTab ClimberTab = Shuffleboard.getTab("Climber Encoder");
-    NetworkTableEntry ntClimberEncoderValue = ClimberTab.add("Climber Encoder Value", encoderValue).withPosition(2, 2).withSize(1, 1).getEntry();
+    NetworkTableEntry ntClimberEncoderValue = ClimberTab.add("Climber Encoder Value", encoderValue).withPosition(2, 2)
+            .withSize(1, 1).getEntry();
 
-    //init
+    // init
     public void robotInit() {
 
-        //init motors
-        leftArm = new WPI_TalonFX(RobotMap.kClimb_LeftArm_TalonFX);
-        rightArm = new WPI_TalonFX(RobotMap.kClimb_RightArm_TalonFX);
+        // init motors
+        m_master = new WPI_TalonFX(RobotMap.kClimb_master_TalonFX);
+        m_follower = new WPI_TalonFX(RobotMap.kClimb_follower_TalonFX);
 
         // motor configs
-        leftArm.configFactoryDefault();
-        rightArm.configFactoryDefault();
+        m_master.configFactoryDefault();
+        m_follower.configFactoryDefault();
 
-        leftArm.setNeutralMode(NeutralMode.Brake);
-        rightArm.setNeutralMode(NeutralMode.Brake);
+        m_master.setNeutralMode(NeutralMode.Brake);
+        m_follower.setNeutralMode(NeutralMode.Brake);
 
-        leftArm.setInverted(false);
-        rightArm.setInverted(false);
+        m_master.setInverted(false);
+        m_follower.setInverted(false);
 
-        //init solenoids
-        m_solenoid = new DoubleSolenoid(PneumaticsModuleType.REVPH, RobotMap.kClimb_SolenoidForward, RobotMap.kClimb_SolenoidReverse);
-        
-        //init limit switches
+        // init solenoids
+        m_solenoid = new DoubleSolenoid(PneumaticsModuleType.REVPH, RobotMap.kClimb_SolenoidForward,
+                RobotMap.kClimb_SolenoidReverse);
+
+        // init limit switches
         bottomLimit = new DigitalInput(RobotMap.kClimber_BottomLimitSwitch);
         topLimit = new DigitalInput(RobotMap.kClimber_TopLimitSwitch);
 
-        //motors
-        leftArm.follow(rightArm);
+        // motors
+        m_follower.follow(m_master);
 
-        //solenoids
+        // solenoids
         m_solenoid.set(Value.kReverse);
 
-        //encoder Value
-        encoderValue = rightArm.getSelectedSensorPosition();        
+        // encoder Value
+        encoderValue = m_follower.getSelectedSensorPosition();
     }
 
-    //Teleop Periodic
-    public void climberMove(boolean shortHookBack, boolean armsUp, boolean armsDown) {
-        //solenoids
-        if(shortHookBack) {
-            m_solenoid.set(Value.kReverse);
-        } else {
-            m_solenoid.set(Value.kForward);
-        }
-        //motors
-        if(armsUp) {
-            rightArm.set(ControlMode.PercentOutput, 0.15);
-        } else {
-            rightArm.set(ControlMode.PercentOutput, -0.15);
-        }
-        //limit switch
-        if(bottomLimit.get()) {
-            rightArm.setSelectedSensorPosition(0);
+    // Teleop Periodic
+    public void climberMove() {
+        // limit switch
+        if (bottomLimit.get()) {
+            m_follower.setSelectedSensorPosition(0);
         }
     }
+
+    public void hooksForward() {
+        m_solenoid.set(Value.kForward);
+
+
+    }
+
+    public void hooksReverse() {
+        m_solenoid.set(Value.kReverse);
+
+    }
+
+    public void armsUp() {
+        m_master.set(ControlMode.PercentOutput, 0.15);
+    }
+
+    public void armsDown() {
+
+        m_master.set(ControlMode.PercentOutput, -0.15);
+    }
+
 }
