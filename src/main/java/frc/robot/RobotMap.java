@@ -29,9 +29,8 @@ public class RobotMap {
     public static final int kIntake_mover_TalonFX           = 10;
     public static final int kIntake_shooterInput_TalonFX    = 15;
 
-    public static final int kClimb_LeftArm_TalonFX          = 21;
-    public static final int kClimb_RightArm_TalonFX         = 22;
-    public static final int kClimb_NeutralExtra_TalonFX     = 23; //extra talon for climber, may or may not be used. since purpose has not been finalized, its "neutral" for now
+    public static final int kClimb_master_TalonFX          = 21;
+    public static final int kClimb_follower_TalonFX         = 22;
     
     public static final int kShoot_BottomMotor_TalonFX     = 31;
     public static final int kShoot_TopMotor_TalonFX        = 32;
