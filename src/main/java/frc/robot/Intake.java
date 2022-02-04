@@ -16,7 +16,6 @@ import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
-import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
@@ -46,10 +45,10 @@ public class Intake extends Base {
     public final WPI_TalonFX m_intake = new WPI_TalonFX(RobotMap.kIntake_roller_TalonFX);
     public final WPI_TalonFX m_mover = new WPI_TalonFX(RobotMap.kIntake_mover_TalonFX);
     public final WPI_TalonFX m_shooterLoader = new WPI_TalonFX(RobotMap.kIntake_shooterInput_TalonFX);
-    public final DoubleSolenoid m_doublePCM = new DoubleSolenoid(PneumaticsModuleType.CTREPCM,
+    public final DoubleSolenoid m_doublePCM = new DoubleSolenoid(PneumaticsModuleType.REVPH,
             RobotMap.kIntake_Pnuematic1, RobotMap.kIntake_Pnuematic2);
 
-    DigitalInput m_digitalInput = new DigitalInput(0);
+    DigitalInput m_digitalInput = new DigitalInput(RobotMap.kIntake_LoaderDIO);
 
     ShuffleboardTab intakeMotortab = Shuffleboard.getTab("Intake Motors");
     NetworkTableEntry ntIntakeSpeed = intakeMotortab.add("intake", 0.1).getEntry();

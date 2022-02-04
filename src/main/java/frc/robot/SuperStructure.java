@@ -4,6 +4,11 @@
 
 package frc.robot;
 
+import edu.wpi.first.wpilibj.Compressor;
+import edu.wpi.first.wpilibj.PneumaticHub;
+import edu.wpi.first.wpilibj.PneumaticsModuleType;
+import edu.wpi.first.wpilibj.PowerDistribution;
+import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.networktables.NetworkTableEntry;
@@ -16,6 +21,9 @@ public class SuperStructure extends Base {
     private Shooter m_Shooter;
     private ColorSensor m_ColorSensor;
     private Climber m_Climber;
+    
+    private final Compressor m_phCompressor = new Compressor(PneumaticsModuleType.REVPH);
+    private final PneumaticHub m_ph = new PneumaticHub();
 
     ShuffleboardTab ShootMotorTab = Shuffleboard.getTab("ShooterSuper");
     NetworkTableEntry ntBotRPM = ShootMotorTab.add("Bot RPM", 1000).withPosition(3, 3).withSize(1, 1).getEntry();
@@ -36,12 +44,15 @@ public class SuperStructure extends Base {
 
     @Override
     public void robotInit() {
+        m_phCompressor.disable();
         m_SwerveDrive.robotInit();
         m_Intake.init();
         m_Shooter.robotInit();
         m_ColorSensor.init();
-        m_Climber.init();
+        m_Climber.robotInit();
 
+        Shuffleboard.getTab("super").add("compressor", m_phCompressor);
+        Shuffleboard.getTab("super").addNumber("compressor/pressure", ()->m_phCompressor.getPressure());
     }
 
     @Override
@@ -94,9 +105,17 @@ public class SuperStructure extends Base {
     }
 
     @Override
-    public void testPeriodic() {
+    public void disabledInit() {
+        m_phCompressor.disable();
+    }
 
-        m_SwerveDrive.test(OI.xboxDrive.getAButton());
+    @Override
+    public void testInit() {
+        m_phCompressor.enableAnalog(80, 90);
+    }
+
+    @Override
+    public void testPeriodic() {
 
     }
     
