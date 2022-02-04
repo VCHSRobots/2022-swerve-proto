@@ -86,12 +86,16 @@ public class Climber extends Base {
     }
 
     public void armsUp() {
-        m_master.set(ControlMode.PercentOutput, 0.15);
+        m_master.set(ControlMode.PercentOutput, 0.4);
     }
 
     public void armsDown() {
 
-        m_master.set(ControlMode.PercentOutput, -0.15);
+        m_master.set(ControlMode.PercentOutput, -0.4);
+    }
+
+    public void armsStop() {
+        m_master.set(ControlMode.PercentOutput, 0);
     }
 
 }

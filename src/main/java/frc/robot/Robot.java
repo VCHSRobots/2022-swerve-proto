@@ -28,12 +28,12 @@ public class Robot extends TimedRobot {
 
   //for superstructure
   private final SwerveDrive swerveDrive = new SwerveDrive();
-  private final Intake intake = new Intake();
-  private final Shooter shooter = new Shooter();
-  private final ColorSensor colorSensor = new ColorSensor();
+  // private final Intake intake = new Intake();
+  // private final Shooter shooter = new Shooter();
+  // private final ColorSensor colorSensor = new ColorSensor();
   private final Climber climber = new Climber();
 
-  SuperStructure superStructure = new SuperStructure(swerveDrive, intake, shooter, colorSensor, climber);
+  SuperStructure superStructure = new SuperStructure(swerveDrive, climber);
 
   private Auto autonomous = new Auto();
   
@@ -58,7 +58,7 @@ public class Robot extends TimedRobot {
 
     autonomous.robotInit();
 
-    CameraServer.startAutomaticCapture();
+    // CameraServer.startAutomaticCapture();
 
     //SUPER STRUCTURE STUFF
     superStructure.robotInit();
