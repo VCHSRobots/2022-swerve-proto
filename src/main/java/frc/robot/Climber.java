@@ -20,7 +20,7 @@ public class Climber extends Base{
     private static DoubleSolenoid leftSolenoid;
     private static DoubleSolenoid rightSolenoid;
 
-    private static WPI_TalonFX leftArm;
+    private static WPI_TalonFX leftArm; 
     private static WPI_TalonFX rightArm;
     private static WPI_TalonFX neutralExtra;
 
@@ -61,7 +61,7 @@ public class Climber extends Base{
     }
 
     //Teleop Periodic
-    public void climberMove(boolean solenoidToggle, boolean armsUp, boolean armsDown, boolean bottomLimitReset) {
+    public void climberMove(boolean solenoidToggle, boolean armsUp, boolean armsDown) {
         //solenoids
         if(solenoidToggle) {
             leftSolenoid.toggle();
@@ -77,8 +77,8 @@ public class Climber extends Base{
         //limit switch
         if(bottomLimit.get()) {
             rightArm.setSelectedSensorPosition(0);
-
         }
+        encoderValue = rightArm.getSelectedSensorPosition();
 
     }
 

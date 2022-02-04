@@ -55,7 +55,7 @@ public class SuperStructure extends Base {
         m_SwerveDrive.driveWithXbox(OI.getDriveY(), OI.getDriveX(), OI.xboxDrive.getLeftTriggerAxis(), OI.xboxDrive.getRightTriggerAxis(), OI.xboxDrive.getRightY(), OI.xboxDrive.getRightX());
         m_Intake.changeState(OI.startIntake());
        // m_Shooter.shootAndTurn(OI.getRightTriggerAxisForShoot(), OI.getRightBumperForTurntable(), OI.getLeftBumperForTurntable());
-      m_Climber.climberMove(OI.getSolenoidToggle(), OI.getArmsUp(), OI.getArmsDown(), false);
+      m_Climber.climberMove(OI.getSolenoidToggle(), OI.getArmsUp(), OI.getArmsDown());
 
     }
 
