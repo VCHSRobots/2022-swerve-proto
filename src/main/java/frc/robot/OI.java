@@ -32,7 +32,7 @@ public class OI {
     }
 
     static public boolean getResetOdometry() {
-        return xboxDrive.getStartButton();
+        return xboxDrive.getPOV() == 180;
     }
 
     static public boolean getCenterOfRotationFrontLeft() {
@@ -42,16 +42,16 @@ public class OI {
     static public boolean getCenterOfRotationFrontRight() {
         return xboxDrive.getRightBumper();
     }
-    
+
     static public boolean startIntake() {
-        return xboxIntakeTesting.getXButton();
+        return xboxDrive.getAButton();
     }
 
     static public double getRightTriggerAxisForShoot() {
         return xboxShooterTesting.getRightTriggerAxis();
     }
     static public boolean getLeftBumperForTurntable(){
-        return xboxShooterTesting.getLeftBumper();
+        return xboxDrive.getBackButton();
     }
 
     static public boolean getSolenoidToggle() {
@@ -66,14 +66,14 @@ public class OI {
         return xboxClimb.getLeftBumper();
     }
     static public boolean getRightBumperForTurntable(){
-        return xboxShooterTesting.getRightBumper();
+        return xboxDrive.getStartButton();
 
     }
     static public boolean getXButtonForToggleFeetToDist(){
-        return xboxShooterTesting.getXButton();
+        return xboxDrive.getXButton();
     }
     static public boolean getYButtonForShootRPM(){
-        return xboxShooterTesting.getYButton();
+        return xboxDrive.getYButton();
     }
     
 
