@@ -9,6 +9,8 @@ import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 
 import edu.wpi.first.networktables.NetworkTableEntry;
+import edu.wpi.first.wpilibj.AnalogInput;
+import edu.wpi.first.wpilibj.AnalogTrigger;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -17,6 +19,7 @@ import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import frc.robot.RobotMap;
+import frc.robot.subsystems.ColorSensor;
 import edu.wpi.first.wpilibj.Timer;
 
 /** Add your docs here. */
@@ -34,7 +37,10 @@ public class Intake extends Base {
     public final DoubleSolenoid m_doublePCM = new DoubleSolenoid(PneumaticsModuleType.REVPH,
             RobotMap.kIntake_Pnuematic1, RobotMap.kIntake_Pnuematic2);
 
-    DigitalInput m_digitalInput = new DigitalInput(RobotMap.kIntake_LoaderDIO);
+    private final ColorSensor m_colorSensor = new ColorSensor();
+
+    private final DigitalInput m_loadDIO = new DigitalInput(RobotMap.kIntake_LoadDIO);
+    private final DigitalInput m_middleDIO = new DigitalInput(RobotMap.kIntake_MiddleDIO);
 
     ShuffleboardTab intakeMotortab = Shuffleboard.getTab("Intake Motors");
     NetworkTableEntry ntIntakeSpeed = intakeMotortab.add("intake actual", 0.15).getEntry();
@@ -48,18 +54,37 @@ public class Intake extends Base {
 
     STATE m_state = STATE.A;
 
+    public Intake() {
+        m_colorSensor.init();
+
+        m_intake.configFactoryDefault();
+        m_mover.configFactoryDefault();
+        m_shooterLoader.configFactoryDefault();
+
+        m_intake.setInverted(true);
+        m_mover.setInverted(false);
+        m_shooterLoader.setInverted(false);
+
+        m_intake.setNeutralMode(NeutralMode.Brake);
+        m_mover.setNeutralMode(NeutralMode.Brake);
+        m_shooterLoader.setNeutralMode(NeutralMode.Brake);
+
+        // add to shuffleboard
+        intakeMotortab.addBoolean("Ball at Middle", () -> !m_middleDIO.get());
+        intakeMotortab.addBoolean("Ball at Load", () -> !m_loadDIO.get());
+    }
+
     // Robot Init
     public void init() {
-        // motors
-        m_intake.configFactoryDefault();
-        m_intake.setNeutralMode(NeutralMode.Brake);
-        m_intake.setInverted(false);
-        m_intake.setSensorPhase(false);
         // solenoids
         m_doublePCM.set(Value.kReverse);
 
-        intakeMotortab.addBoolean("loadDIO", () -> m_digitalInput.get());
+    }
 
+    @Override
+    public void robotPeriodic() {
+        m_colorSensor.checkColor();
+        m_colorSensor.updateNT();
     }
 
     // Teleop Periodic
@@ -73,6 +98,14 @@ public class Intake extends Base {
                     m_state = STATE.B;
                 }
 
+                if (stopIntake) {
+                    // don't care
+                }
+
+                if (isBallAtLoad() || isBallAtMiddle()) {
+                    // don't care
+                }
+
                 m_intake.set(ControlMode.PercentOutput, 0);
                 m_mover.set(ControlMode.PercentOutput, 0);
                 m_shooterLoader.set(ControlMode.PercentOutput, 0);
@@ -83,18 +116,21 @@ public class Intake extends Base {
             case B:
                 // intake, bt, and load ON
                 // intake down
-
-                // ball detected right before shooter, go to next state
-                if (m_digitalInput.get()) {
-                    m_state = STATE.C;
+                if (startIntake) {
+                    // don't care
                 }
 
                 if (stopIntake) {
                     m_state = STATE.A;
                 }
 
+                // ball detected right before shooter, go to next state
+                if (isBallAtLoad()) {
+                    m_state = STATE.C;
+                }
+
                 m_intake.set(ControlMode.PercentOutput, ntMotorSpeed.getDouble(0.0));
-                m_mover.set(ControlMode.PercentOutput, ntMotorSpeed.getDouble(0.0));   
+                m_mover.set(ControlMode.PercentOutput, ntMotorSpeed.getDouble(0.0));
                 m_shooterLoader.set(ControlMode.PercentOutput, ntMotorSpeed.getDouble(0.0));
 
                 m_doublePCM.set(Value.kForward);
@@ -103,9 +139,23 @@ public class Intake extends Base {
             case C:
                 // intake, mover, ON, loader OFF
                 // intake down
-                if (stopIntake || m_timer.get() > .2) {
+                if (stopIntake) {
                     m_state = STATE.A;
-                    m_timer.reset();
+                }
+                
+                // inputs
+                if (startIntake) {
+                    // don't care
+                }
+                if (stopIntake) {
+                    m_state = STATE.A;
+                }
+                if (isBallAtLoad()) {
+                    // don't care, ball already there
+                }
+                if (isBallAtMiddle()){
+                    // 2nd ball loaded, stop intaking
+                    m_state = STATE.A;
                 }
 
                 // SPIT BALL OUT IF BAD (WRONG COLOR) :))))))
@@ -113,7 +163,7 @@ public class Intake extends Base {
 
                 m_intake.set(ControlMode.PercentOutput, kDefaultMotorSpeed);
                 m_mover.set(ControlMode.PercentOutput, kDefaultMotorSpeed);
-                m_shooterLoader.set(ControlMode.PercentOutput, kDefaultMotorSpeed); // TODO: change this to 0 with sensor TODO:
+                m_shooterLoader.set(ControlMode.PercentOutput, 0);
 
                 m_doublePCM.set(Value.kForward);
 
@@ -133,8 +183,8 @@ public class Intake extends Base {
                 // start loading balls into shooter (loadShooter)
                 // stops when no more shooter buttons are pressed
                 m_intake.set(ControlMode.PercentOutput, 0);
-                m_mover.set(ControlMode.PercentOutput, .1);
-                m_shooterLoader.set(ControlMode.PercentOutput, .1);
+                m_mover.set(ControlMode.PercentOutput, kDefaultMotorSpeed);
+                m_shooterLoader.set(ControlMode.PercentOutput, kDefaultMotorSpeed);
 
                 break;
         }
@@ -168,6 +218,15 @@ public class Intake extends Base {
         ntIntakeSpeed.setDouble(m_intake.getMotorOutputPercent());
         ntMoverSpeed.setDouble(m_mover.getMotorOutputPercent());
         ntShooterLoaderSpeed.setDouble(m_shooterLoader.getMotorOutputPercent());
+    }
+
+    // helper functions so don't have to remember to invert DIO
+    public boolean isBallAtLoad() {
+        return !m_loadDIO.get();
+    }
+
+    public boolean isBallAtMiddle() {
+        return !m_middleDIO.get();
     }
 
     private void colorPlaceholder() {

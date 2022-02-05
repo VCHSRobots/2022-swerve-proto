@@ -46,8 +46,8 @@ public class ColorSensor extends Base {
    * with given confidence range.
    */
   private final ColorMatch m_colorMatcher = new ColorMatch();
-  ColorMatchResult m_match;
-  Color m_detectedColor;
+  ColorMatchResult m_match = new ColorMatchResult(new Color(1,1,1), 0.3);
+  Color m_detectedColor = new Color(0.1, 0.1, 0.1);
 
   ShuffleboardTab colorSensorTab = Shuffleboard.getTab("ColorSensor");
   NetworkTableEntry ntRedColor = colorSensorTab.add("Red", 0).getEntry();

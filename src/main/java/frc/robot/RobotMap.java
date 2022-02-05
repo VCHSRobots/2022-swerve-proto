@@ -59,6 +59,8 @@ public class RobotMap {
     // DIO //
     public static final int kClimber_BottomLimitSwitch = 0;
     public static final int kClimber_TopLimitSwitch = 1;
-    public static final int kIntake_LoaderDIO = 2;
+    public static final int kIntake_LoadDIO = 3;
+    public static final int kIntake_MiddleDIO = 2;
+    public static final int kShooter_TurretZeroDIO = 4;
     // END DIO //
 }
