@@ -47,6 +47,10 @@ public class OI {
         return xboxDrive.getAButton();
     }
 
+    static public boolean stopIntake() {
+        return xboxDrive.getBButton();
+    }
+
     static public double getRightTriggerAxisForShoot() {
         return xboxShooterTesting.getRightTriggerAxis();
     }
