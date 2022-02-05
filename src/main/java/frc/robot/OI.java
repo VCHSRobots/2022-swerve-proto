@@ -72,11 +72,15 @@ public class OI {
         return xboxDrive.getStartButton();
 
     }
-    static public boolean getXButtonForToggleFeetToDist(){
+    static public boolean getXButtonForShootDist(){
         return xboxDrive.getXButton();
     }
     static public boolean getYButtonForShootRPM(){
         return xboxDrive.getYButton();
+    }
+
+    static public boolean getXorYforShootingReleased() {
+        return xboxDrive.getXButtonReleased() || xboxDrive.getYButtonReleased();
     }
     
 

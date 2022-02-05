@@ -69,8 +69,9 @@ public class SuperStructure extends Base {
 
         m_SwerveDrive.driveWithXbox(OI.getDriveY(), OI.getDriveX(), OI.xboxDrive.getLeftTriggerAxis(),
                 OI.xboxDrive.getRightTriggerAxis(), OI.xboxDrive.getRightY(), OI.xboxDrive.getRightX());
-        m_Intake.changeState(OI.startIntake());
 
+        // intake control
+        m_Intake.changeState(OI.startIntake());
         m_Shooter.TurnTable(OI.getRightBumperForTurntable(), OI.getLeftBumperForTurntable());
 
         //
@@ -81,20 +82,24 @@ public class SuperStructure extends Base {
 
             if (m_Shooter.IsOkToShoot()) {
                 // Load shooter
-                m_Intake.loadShooter();
+                // m_Intake.loadShooter();
 
             }
-        } else if (OI.getXButtonForToggleFeetToDist()) {
+        } else if (OI.getXButtonForShootDist()) {
             // turn shooter on in Dist
             m_Shooter.shootingDist(ntFeetToRPM.getNumber(0).doubleValue());
 
             if (m_Shooter.IsOkToShoot()) {
                 // load shooter
-                m_Intake.loadShooter();
+                // m_Intake.loadShooter();
             }
         } else {
             m_Shooter.shootingRPM(0, 0);
             m_Shooter.shootingDist(0);
+        }
+
+        if (OI.getXorYforShootingReleased()) {
+            m_Intake.turnOffLoadShooter();
         }
         // climberControl(OI.getSolenoidReverse(), OI.getSolenoidForward(), OI.getArmsUp(), OI.getArmsDown());
 
