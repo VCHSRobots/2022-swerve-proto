@@ -51,9 +51,6 @@ public class OI {
         return xboxDrive.getBButton();
     }
 
-    static public double getRightTriggerAxisForShoot() {
-        return xboxShooterTesting.getRightTriggerAxis();
-    }
     static public boolean getLeftBumperForTurntable(){
         return xboxDrive.getBackButton();
     }
