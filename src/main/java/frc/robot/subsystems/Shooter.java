@@ -134,11 +134,11 @@ public class Shooter extends Base {
             shootTopSpeed = 0;
         } else if (m_state == STATE.ShootingDistance) {
             setSpeedsDist(ntFeetToRPM.getNumber(0).doubleValue());
-            System.out.println("AHAA");
+            
 
         } else if (m_state == STATE.ShootingRPM) {
             setSpeedsRPM(ntTopRPM.getNumber(0).doubleValue(), ntBotRPM.getNumber(0).doubleValue());
-            System.out.println("ME ABOUT");
+            
         }
 
     }
@@ -155,7 +155,7 @@ public class Shooter extends Base {
         m_state = STATE.ShootingRPM;
         if (m_state == STATE.ShootingRPM) {
             setSpeedsRPM(topRPM, botRPM);
-            System.out.println("ME ABOUT");
+            
         }
 
     }
@@ -174,7 +174,7 @@ public class Shooter extends Base {
     // Sets speed for RPM.
     public void setSpeedsRPM(double topRPM, double botRPM) {
         setShootSpeeds(rpmToTicksPer100ms(topRPM),
-                botFeetToRPM(botRPM));
+                rpmToTicksPer100ms(botRPM));
 
     }
 
@@ -223,5 +223,8 @@ public class Shooter extends Base {
         double errorBotRPM = rpmToTicksPer100ms(m_shootTalonBot.getClosedLoopError());
 
         return errorBotRPM > 150 && errorTopRPM > 150;
+    }
+    public void turnMotorsOff() {
+        setShootSpeeds(0, 0);
     }
 }

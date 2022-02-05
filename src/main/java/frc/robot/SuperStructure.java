@@ -26,7 +26,8 @@ public class SuperStructure extends Base {
     private final Compressor m_phCompressor = new Compressor(PneumaticsModuleType.REVPH);
     private final PneumaticHub m_ph = new PneumaticHub();
 
-    ShuffleboardTab ShootMotorTab = Shuffleboard.getTab("ShooterSuper");
+    ShuffleboardTab ShootMotorTab = Shuffleboard.getTab("Shooter");
+    
     NetworkTableEntry ntBotRPM = ShootMotorTab.add("Bot RPM", 1000).withPosition(3, 3).withSize(1, 1).getEntry();
     NetworkTableEntry ntTopRPM = ShootMotorTab.add("Top RPM", 1000).withPosition(3, 2).withSize(1, 1).getEntry();
     NetworkTableEntry ntFeetToRPM = ShootMotorTab.add("Feet To Top RPM", 17).withPosition(4, 2).withSize(1, 1)
@@ -94,14 +95,14 @@ public class SuperStructure extends Base {
                 // m_Intake.loadShooter();
             }
         } else {
-            m_Shooter.shootingRPM(0, 0);
-            m_Shooter.shootingDist(0);
+            
         }
 
         if (OI.getXorYforShootingReleased()) {
             m_Intake.turnOffLoadShooter();
         }
         // climberControl(OI.getSolenoidReverse(), OI.getSolenoidForward(), OI.getArmsUp(), OI.getArmsDown());
+
 
 
     }
