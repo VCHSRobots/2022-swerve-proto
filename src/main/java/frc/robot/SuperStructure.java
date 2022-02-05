@@ -20,14 +20,13 @@ public class SuperStructure extends Base {
     private SwerveDrive m_SwerveDrive;
     private Intake m_Intake;
     private Shooter m_Shooter;
-    private ColorSensor m_ColorSensor;
     // private Climber m_Climber;
 
     private final Compressor m_phCompressor = new Compressor(PneumaticsModuleType.REVPH);
     private final PneumaticHub m_ph = new PneumaticHub();
 
     ShuffleboardTab ShootMotorTab = Shuffleboard.getTab("ShooterSuper");
-    
+
     NetworkTableEntry ntBotRPM = ShootMotorTab.add("Bot RPM", 1000).withPosition(3, 3).withSize(1, 1).getEntry();
     NetworkTableEntry ntTopRPM = ShootMotorTab.add("Top RPM", 1000).withPosition(3, 2).withSize(1, 1).getEntry();
     NetworkTableEntry ntFeetToRPM = ShootMotorTab.add("Feet To Top RPM", 17).withPosition(4, 2).withSize(1, 1)
@@ -58,8 +57,7 @@ public class SuperStructure extends Base {
     public void robotPeriodic() {
 
         m_SwerveDrive.changeOdometry(OI.shouldSetFieldRelative(), OI.shouldSetRobotRelative(), OI.getResetOdometry());
-        
-
+        m_Intake.robotPeriodic();
     }
 
     @Override
@@ -71,7 +69,6 @@ public class SuperStructure extends Base {
 
         // intake control
         m_Intake.changeState(OI.startIntake(), OI.stopIntake());
-        m_Shooter.TurnTable(OI.getRightBumperForTurntable(), OI.getLeftBumperForTurntable());
 
         //
 
@@ -99,9 +96,15 @@ public class SuperStructure extends Base {
         if (OI.getXorYforShootingReleased()) {
             m_Intake.turnOffLoadShooter();
         }
-        // climberControl(OI.getSolenoidReverse(), OI.getSolenoidForward(), OI.getArmsUp(), OI.getArmsDown());
+        if (OI.getRightTriggerforTurnTable()) {
+            m_Shooter.setTurnTableToZero();
 
+        } else {
+            m_Shooter.TurnTable(OI.getRightBumperForTurntable(), OI.getLeftBumperForTurntable());
 
+        }
+        // climberControl(OI.getSolenoidReverse(), OI.getSolenoidForward(),
+        // OI.getArmsUp(), OI.getArmsDown());
 
     }
 
@@ -126,25 +129,24 @@ public class SuperStructure extends Base {
     public void testPeriodic() {
         climberControl(OI.getSolenoidReverse(), OI.getSolenoidForward(), OI.getArmsUp(), OI.getArmsDown());
 
-
     }
 
     private void climberControl(boolean shortHookBack, boolean shortHookForward, boolean armsUp, boolean armsDown) {
 
         // solenoids
         // if (shortHookBack) {
-        //     m_Climber.hooksReverse();
+        // m_Climber.hooksReverse();
         // } else if (shortHookForward) {
-        //     m_Climber.hooksForward();
+        // m_Climber.hooksForward();
         // }
         // // motors
         // if (armsUp) {
-        //     m_Climber.armsUp();
+        // m_Climber.armsUp();
         // } else if (armsDown) {
-        //     m_Climber.armsDown();
-    
+        // m_Climber.armsDown();
+
         // } else {
-        //     m_Climber.armsStop();
+        // m_Climber.armsStop();
         // }
 
     }
