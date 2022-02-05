@@ -4,8 +4,11 @@
 
 package frc.robot.subsystems;
 
+import java.nio.file.Path;
+
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.kauailabs.navx.frc.AHRS;
+import com.pathplanner.lib.PathPlannerTrajectory.PathPlannerState;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.filter.SlewRateLimiter;
@@ -81,6 +84,12 @@ public class SwerveDrive extends Base {
 
     public Rotation2d getGyroRotation2d() {
         return Rotation2d.fromDegrees(-m_gyro.getAngle());
+    }
+
+    public void setPose2d(PathPlannerState pose) {
+        m_gyro.reset();
+        m_gyro.setAngleAdjustment(-pose.holonomicRotation.getDegrees());
+        m_odometry.resetPosition(pose.poseMeters, getGyroRotation2d());
     }
 
     public Pose2d getPose2d() {

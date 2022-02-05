@@ -11,16 +11,25 @@ import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import frc.robot.subsystems.*;
 import edu.wpi.first.networktables.NetworkTableEntry;
 
 /** Add your docs here. */
 public class SuperStructure extends Base {
 
+    private static final String kDefaultAuto = "Auto1";
+    private static final String kCustomAuto = "Auto2";
+    private static final String kCustomAuto1 = "strafeleft";
+    private String m_autoSelected;
+    private final SendableChooser<String> m_chooser = new SendableChooser<>();
+
     private SwerveDrive m_SwerveDrive;
     private Intake m_Intake;
     private Shooter m_Shooter;
     // private Climber m_Climber;
+
+    private Auto m_auto = new Auto();
 
     private final Compressor m_phCompressor = new Compressor(PneumaticsModuleType.REVPH);
     private final PneumaticHub m_ph = new PneumaticHub();
@@ -48,9 +57,16 @@ public class SuperStructure extends Base {
         m_Intake.init();
         m_Shooter.robotInit();
         // m_Climber.robotInit();
+        m_auto.robotInit();
 
         Shuffleboard.getTab("super").add("compressor", m_phCompressor);
         Shuffleboard.getTab("super").addNumber("compressor/pressure", () -> m_phCompressor.getPressure());
+
+        // auto chooser
+        m_chooser.setDefaultOption("Auto1", kDefaultAuto);
+        m_chooser.addOption("Auto2", kCustomAuto);
+        m_chooser.addOption("strafeleft", kCustomAuto1);
+        Shuffleboard.getTab("Auto").add("Auto Choose", m_chooser);
     }
 
     @Override
@@ -58,6 +74,7 @@ public class SuperStructure extends Base {
 
         m_SwerveDrive.changeOdometry(OI.shouldSetFieldRelative(), OI.shouldSetRobotRelative(), OI.getResetOdometry());
         m_Intake.robotPeriodic();
+        m_auto.robotPeriodic();
     }
 
     @Override
@@ -105,14 +122,30 @@ public class SuperStructure extends Base {
         }
         // climberControl(OI.getSolenoidReverse(), OI.getSolenoidForward(),
         // OI.getArmsUp(), OI.getArmsDown());
-
     }
 
     @Override
     public void autonomousInit() {
 
         m_SwerveDrive.resetOdometry();
+        if (m_chooser.getSelected() == "Auto1") {
+            m_SwerveDrive.setPose2d(m_auto.getInitialState_auto1());
+        } else if (m_chooser.getSelected() == "Auto2") {
+            m_SwerveDrive.setPose2d(m_auto.getInitialState_auto2());
+        } else if (m_chooser.getSelected() == "strafeleft") {
+            m_SwerveDrive.setPose2d(m_auto.getInitialState_auto3());
+        }
+    }
 
+    @Override
+    public void autonomousPeriodic() {
+        if (m_chooser.getSelected() == "Auto1") {
+            m_SwerveDrive.driveFromChassisSpeeds(m_auto.getNextChassisSpeeds_Auto1(m_SwerveDrive.getPose2d()));
+        } else if (m_chooser.getSelected() == "Auto2") {
+            m_SwerveDrive.driveFromChassisSpeeds(m_auto.getNextChassisSpeeds_Auto2(m_SwerveDrive.getPose2d()));
+        } else if (m_chooser.getSelected() == "strafeleft") {
+            m_SwerveDrive.driveFromChassisSpeeds(m_auto.getNextChassisSpeeds_Auto3(m_SwerveDrive.getPose2d()));
+        }
     }
 
     @Override
