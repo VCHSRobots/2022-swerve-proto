@@ -88,7 +88,7 @@ public class SwerveDrive extends Base {
 
     public void setPose2d(PathPlannerState pose) {
         m_gyro.reset();
-        m_gyro.setAngleAdjustment(-pose.holonomicRotation.getDegrees());
+        m_gyro.setAngleAdjustment(pose.holonomicRotation.getDegrees());
         m_odometry.resetPosition(pose.poseMeters, getGyroRotation2d());
     }
 
