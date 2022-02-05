@@ -22,24 +22,11 @@ import edu.wpi.first.wpilibj.Timer;
 /** Add your docs here. */
 public class Intake extends Base {
 
-    private double kDefaultMotorSpeed = .1;
+    private double kDefaultMotorSpeed = .25;
 
-    private double m_motorSpeeds = 0;
     private boolean isChanging = false;
 
     private Timer m_timer = new Timer();
-    // private TimerTask m_changeToE = new TimerTask() {
-    //     @Override
-    //     public void run() {
-    //         m_state = STATE.A;
-    //     };
-    // };
-    // private TimerTask m_change = new TimerTask() {
-    //     @Override
-    //     public void run() {
-    //         isChanging = false;
-    //     };
-    // };
 
     public final WPI_TalonFX m_intake = new WPI_TalonFX(RobotMap.kIntake_roller_TalonFX);
     public final WPI_TalonFX m_mover = new WPI_TalonFX(RobotMap.kIntake_mover_TalonFX);
@@ -50,9 +37,10 @@ public class Intake extends Base {
     DigitalInput m_digitalInput = new DigitalInput(RobotMap.kIntake_LoaderDIO);
 
     ShuffleboardTab intakeMotortab = Shuffleboard.getTab("Intake Motors");
-    NetworkTableEntry ntIntakeSpeed = intakeMotortab.add("intake", 0.1).getEntry();
-    NetworkTableEntry ntMoverSpeed = intakeMotortab.add("mover", 0.1).getEntry();
-    NetworkTableEntry ntShooterLoaderSpeed = intakeMotortab.add("shooter loader", 0.1).getEntry();
+    NetworkTableEntry ntIntakeSpeed = intakeMotortab.add("intake actual", 0.15).getEntry();
+    NetworkTableEntry ntMoverSpeed = intakeMotortab.add("mover actual", 0.15).getEntry();
+    NetworkTableEntry ntShooterLoaderSpeed = intakeMotortab.add("loader actual", 0.15).getEntry();
+    NetworkTableEntry ntMotorSpeed = intakeMotortab.add("set percent out", 0.15).getEntry();
 
     enum STATE {
         A, B, C, D, E;
@@ -70,7 +58,8 @@ public class Intake extends Base {
         // solenoids
         m_doublePCM.set(Value.kReverse);
 
-        intakeMotortab.addBoolean("loadDIO", ()->m_digitalInput.get());
+        intakeMotortab.addBoolean("loadDIO", () -> m_digitalInput.get());
+
     }
 
     // Teleop Periodic
@@ -104,9 +93,9 @@ public class Intake extends Base {
                     m_state = STATE.A;
                 }
 
-                m_intake.set(ControlMode.PercentOutput, kDefaultMotorSpeed);
-                m_mover.set(ControlMode.PercentOutput, kDefaultMotorSpeed);
-                m_shooterLoader.set(ControlMode.PercentOutput, kDefaultMotorSpeed);
+                m_intake.set(ControlMode.PercentOutput, ntMotorSpeed.getDouble(0.0));
+                m_mover.set(ControlMode.PercentOutput, ntMotorSpeed.getDouble(0.0));   
+                m_shooterLoader.set(ControlMode.PercentOutput, ntMotorSpeed.getDouble(0.0));
 
                 m_doublePCM.set(Value.kForward);
 
@@ -118,52 +107,13 @@ public class Intake extends Base {
                     m_state = STATE.A;
                     m_timer.reset();
                 }
-                m_motorSpeeds = .1;
 
                 // SPIT BALL OUT IF BAD (WRONG COLOR) :))))))
-                if (isChanging) {
+                // add spit out ball logic somewhere else
 
-                    m_motorSpeeds = -0.5;
-
-                } else {
-                    switch (DriverStation.getAlliance()) {
-                        case Blue:
-                            if (ColorSensor.redBallDetected) {
-                                m_motorSpeeds = -.3;
-                                isChanging = true;
-                                // turns back to normal (isChanging = False) after 2.5 seconds
-                            } else if (ColorSensor.blueBallDetected && m_timer.get() == 0) {
-                            
-                                // m_state = STATE.D;
-                                m_timer.reset();
-                                m_timer.start();
-
-                            }
-                            break;
-                        case Red:
-                            if (ColorSensor.blueBallDetected) {
-                                m_motorSpeeds = -.3;
-                                isChanging = true;
-                                // turns back to normal (isChanging = False) after 2.5 seconds
-                            } else if (ColorSensor.redBallDetected && m_timer.get() == 0) {
-                                // m_state = STATE.D;
-                                m_timer.reset();
-                                m_timer.start();
-
-                            }
-                            break;
-                        case Invalid:
-                            // m_state = STATE.D;
-                            m_timer.reset();
-                            m_timer.start();
-                            break;
-                    }
-
-                }
-
-                m_intake.set(ControlMode.PercentOutput, m_motorSpeeds);
-                m_mover.set(ControlMode.PercentOutput, m_motorSpeeds);
-                m_shooterLoader.set(ControlMode.PercentOutput, 0);
+                m_intake.set(ControlMode.PercentOutput, kDefaultMotorSpeed);
+                m_mover.set(ControlMode.PercentOutput, kDefaultMotorSpeed);
+                m_shooterLoader.set(ControlMode.PercentOutput, kDefaultMotorSpeed); // TODO: change this to 0 with sensor TODO:
 
                 m_doublePCM.set(Value.kForward);
 
@@ -218,6 +168,41 @@ public class Intake extends Base {
         ntIntakeSpeed.setDouble(m_intake.getMotorOutputPercent());
         ntMoverSpeed.setDouble(m_mover.getMotorOutputPercent());
         ntShooterLoaderSpeed.setDouble(m_shooterLoader.getMotorOutputPercent());
+    }
+
+    private void colorPlaceholder() {
+        switch (DriverStation.getAlliance()) {
+            case Blue:
+                if (ColorSensor.redBallDetected) {
+                    // m_motorSpeeds = -.3;
+                    isChanging = true;
+                    // turns back to normal (isChanging = False) after 2.5 seconds
+                } else if (ColorSensor.blueBallDetected && m_timer.get() == 0) {
+
+                    // m_state = STATE.D;
+                    m_timer.reset();
+                    m_timer.start();
+
+                }
+                break;
+            case Red:
+                if (ColorSensor.blueBallDetected) {
+                    // m_motorSpeeds = -.3;
+                    isChanging = true;
+                    // turns back to normal (isChanging = False) after 2.5 seconds
+                } else if (ColorSensor.redBallDetected && m_timer.get() == 0) {
+                    // m_state = STATE.D;
+                    m_timer.reset();
+                    m_timer.start();
+
+                }
+                break;
+            case Invalid:
+                // m_state = STATE.D;
+                m_timer.reset();
+                m_timer.start();
+                break;
+        }
     }
 
 }
