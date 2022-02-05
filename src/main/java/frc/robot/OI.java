@@ -83,6 +83,9 @@ public class OI {
     static public boolean getXorYforShootingReleased() {
         return xboxDrive.getXButtonReleased() || xboxDrive.getYButtonReleased();
     }
+    static public boolean getRightTriggerforTurnTable(){
+        return xboxDrive.getRightTriggerAxis() > 0.5;
+    }
     
 
 }
