@@ -33,12 +33,11 @@ public class SuperStructure extends Base {
     NetworkTableEntry ntFeetToRPM = ShootMotorTab.add("Feet To Top RPM", 17).withPosition(4, 2).withSize(1, 1)
             .getEntry();
 
-    public SuperStructure(SwerveDrive swerveDrive, Intake intake, Shooter shooter, ColorSensor colorSensor) {
+    public SuperStructure(SwerveDrive swerveDrive, Intake intake, Shooter shooter) {
 
         m_SwerveDrive = swerveDrive;
         m_Intake = intake;
         m_Shooter = shooter;
-        m_ColorSensor = colorSensor;
         // m_Climber = climber;
 
     }
@@ -49,7 +48,6 @@ public class SuperStructure extends Base {
         m_SwerveDrive.robotInit();
         m_Intake.init();
         m_Shooter.robotInit();
-        m_ColorSensor.init();
         // m_Climber.robotInit();
 
         Shuffleboard.getTab("super").add("compressor", m_phCompressor);
@@ -60,8 +58,7 @@ public class SuperStructure extends Base {
     public void robotPeriodic() {
 
         m_SwerveDrive.changeOdometry(OI.shouldSetFieldRelative(), OI.shouldSetRobotRelative(), OI.getResetOdometry());
-        m_ColorSensor.checkColor();
-        m_ColorSensor.updateNT();
+        
 
     }
 
@@ -84,7 +81,7 @@ public class SuperStructure extends Base {
 
             if (m_Shooter.IsOkToShoot()) {
                 // Load shooter
-                // m_Intake.loadShooter();
+                m_Intake.loadShooter();
 
             }
         } else if (OI.getXButtonForShootDist()) {
@@ -93,7 +90,7 @@ public class SuperStructure extends Base {
 
             if (m_Shooter.IsOkToShoot()) {
                 // load shooter
-                // m_Intake.loadShooter();
+                m_Intake.loadShooter();
             }
         } else {
             m_Shooter.turnOff();

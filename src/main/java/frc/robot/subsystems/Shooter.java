@@ -158,7 +158,7 @@ public class Shooter extends Base {
 
     public void turnOff() {
         m_shootTalonBot.setVoltage(0);
-        m_shootTalonBot.setVoltage(0);
+        m_shootTalonTop.setVoltage(0);
     }
 
     // TurnTable Funtions.
