@@ -24,7 +24,6 @@ public class Shooter extends Base {
     WPI_TalonFX m_shootTalonTop = new WPI_TalonFX(RobotMap.kShoot_TopMotor_TalonFX);
     WPI_TalonFX m_shootTalonBot = new WPI_TalonFX(RobotMap.kShoot_BottomMotor_TalonFX);
     WPI_TalonFX m_turnTableTalon = new WPI_TalonFX(RobotMap.kTurnTableMotor_TalonFX);
-    
 
     // SimpleMotorFeedforward m_ShootFeedForward = new SimpleMotorFeedforward(0.00,
     // 0.00045);
@@ -115,50 +114,53 @@ public class Shooter extends Base {
     public void teleopInit() {
         m_state = STATE.NotShooting;
     }
+
     // Original Function for shooting RPM and distance.
     public void shooting(boolean distanceMode, boolean RPMMode) {
         // default all set outputs to 0
         double shootTopSpeed = 0;
         double shootBotSpeed = 0;
 
-        if (distanceMode) {
-            m_state = STATE.ShootingDistance;
-        } else if (RPMMode) {
-            m_state = STATE.ShootingRPM;
-        } else {
-            m_state = STATE.NotShooting;
-        }
+        // if (distanceMode) {
+        //     m_state = STATE.ShootingDistance;
+        // } else if (RPMMode) {
+        //     m_state = STATE.ShootingRPM;
+        // } else {
+        //     m_state = STATE.NotShooting;
+        // }
 
-        if (m_state == STATE.NotShooting) {
-            shootTopSpeed = 0;
-            shootTopSpeed = 0;
-        } else if (m_state == STATE.ShootingDistance) {
-            setSpeedsDist(ntFeetToRPM.getNumber(0).doubleValue());
-            
+        // if (m_state == STATE.NotShooting) {
+        //     shootTopSpeed = 0;
+        //     shootTopSpeed = 0;
+        // } else if (m_state == STATE.ShootingDistance) {
+        //     setSpeedsDist(ntFeetToRPM.getNumber(0).doubleValue());
+        //     System.out.println("AHAA");
 
-        } else if (m_state == STATE.ShootingRPM) {
-            setSpeedsRPM(ntTopRPM.getNumber(0).doubleValue(), ntBotRPM.getNumber(0).doubleValue());
-            
-        }
+        // } else if (m_state == STATE.ShootingRPM) {
+        //     setSpeedsRPM(ntTopRPM.getNumber(0).doubleValue(), ntBotRPM.getNumber(0).doubleValue());
+        //     System.out.println("ME ABOUT");
+        // }
 
     }
+
     // Shooting function with Distance. (NOT READY!!)
     public void shootingDist(double distanceMeters) {
         m_state = STATE.ShootingDistance;
-        if (m_state == STATE.ShootingDistance) {
-            setSpeedsDist(distanceMeters);
-        }
+        setSpeedsDist(distanceMeters);
 
     }
+
     // Shooting function with RPM.
     public void shootingRPM(double topRPM, double botRPM) {
         m_state = STATE.ShootingRPM;
-        if (m_state == STATE.ShootingRPM) {
-            setSpeedsRPM(topRPM, botRPM);
-            
-        }
-
+        setSpeedsRPM(topRPM, botRPM);
     }
+
+    public void turnOff() {
+        m_shootTalonBot.setVoltage(0);
+        m_shootTalonBot.setVoltage(0);
+    }
+
     // TurnTable Funtions.
     public void TurnTable(boolean rightSideTurnTable,
             boolean leftSideTurnTable) {
@@ -171,11 +173,11 @@ public class Shooter extends Base {
         }
         m_turnTableTalon.set(ControlMode.PercentOutput, turntableSpeed);
     }
+
     // Sets speed for RPM.
     public void setSpeedsRPM(double topRPM, double botRPM) {
         setShootSpeeds(rpmToTicksPer100ms(topRPM),
                 rpmToTicksPer100ms(botRPM));
-
     }
 
     // Sets Speeds for Distance.
@@ -184,12 +186,14 @@ public class Shooter extends Base {
                 botFeetToRPM(distanceFeet));
 
     }
+
     // Sets doubles to Talons.
     public void setShootSpeeds(double shootTopSpeed, double shootBotSpeed) {
 
         m_shootTalonTop.set(ControlMode.Velocity, shootTopSpeed);
         m_shootTalonBot.set(ControlMode.Velocity, shootBotSpeed);
     }
+
     // Converts RPM to Ticks/100MS.
     public double rpmToTicksPer100ms(double rpm) {
         double minutesPerSecond = 1.0 / 60.0;
@@ -199,6 +203,7 @@ public class Shooter extends Base {
         return ticksPer100ms;
 
     }
+
     // Converts Ticks/100MS to RPM.
     public double ticksPer100msToRPM(double ticksPer100ms) {
         double secondsPerMinute = 60.0;
@@ -207,16 +212,19 @@ public class Shooter extends Base {
         double RPM = ticksPer100ms * secondsPerMinute * oneHundredMSPerSecond * rotationsPerTick;
         return RPM;
     }
+
     // Equation for Top Motor.
     public double topFeetToRPM(double topfeet) {
         double RPMquadtop = -1419.522 + 396.7329 * topfeet + -3.353022 * (topfeet * topfeet);
         return RPMquadtop;
     }
+
     // Equation for Bot Motor.
     public double botFeetToRPM(double botfeet) {
         double RPMquadbot = 8225 - 784.9 * botfeet + 32.04 * (botfeet * botfeet);
         return RPMquadbot;
     }
+
     // Boolean that checks if shooter is reading to shoot at a good speed.
     public boolean IsOkToShoot() {
         double errorTopRPM = rpmToTicksPer100ms(m_shootTalonTop.getClosedLoopError());

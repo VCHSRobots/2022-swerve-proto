@@ -26,7 +26,7 @@ public class SuperStructure extends Base {
     private final Compressor m_phCompressor = new Compressor(PneumaticsModuleType.REVPH);
     private final PneumaticHub m_ph = new PneumaticHub();
 
-    ShuffleboardTab ShootMotorTab = Shuffleboard.getTab("Shooter");
+    ShuffleboardTab ShootMotorTab = Shuffleboard.getTab("ShooterSuper");
     
     NetworkTableEntry ntBotRPM = ShootMotorTab.add("Bot RPM", 1000).withPosition(3, 3).withSize(1, 1).getEntry();
     NetworkTableEntry ntTopRPM = ShootMotorTab.add("Top RPM", 1000).withPosition(3, 2).withSize(1, 1).getEntry();
@@ -61,6 +61,7 @@ public class SuperStructure extends Base {
 
         m_SwerveDrive.changeOdometry(OI.shouldSetFieldRelative(), OI.shouldSetRobotRelative(), OI.getResetOdometry());
         m_ColorSensor.checkColor();
+        m_ColorSensor.updateNT();
 
     }
 
@@ -95,7 +96,7 @@ public class SuperStructure extends Base {
                 // m_Intake.loadShooter();
             }
         } else {
-            
+            m_Shooter.turnOff();
         }
 
         if (OI.getXorYforShootingReleased()) {
