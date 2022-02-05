@@ -11,7 +11,7 @@ import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
-import frc.robot.subsystems.Climber;
+import frc.robot.subsystems.*;
 import edu.wpi.first.networktables.NetworkTableEntry;
 
 /** Add your docs here. */

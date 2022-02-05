@@ -2,7 +2,7 @@
 // Copyright (c) FIRST and other WPILib contributors.
 // the WPILib BSD license file in the root directory of this project.
 
-package frc.robot;
+package frc.robot.subsystems;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.kauailabs.navx.frc.AHRS;
@@ -20,6 +20,10 @@ import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.robot.Constants;
+import frc.robot.OI;
+import frc.robot.RobotMap;
+import frc.robot.Constants.SwerveModuleOffsetRadians;
 
 /** Add your docs here. */
 public class SwerveDrive extends Base {
