@@ -71,7 +71,7 @@ public class SuperStructure extends Base {
                 OI.xboxDrive.getRightTriggerAxis(), OI.xboxDrive.getRightY(), OI.xboxDrive.getRightX());
 
         // intake control
-        m_Intake.changeState(OI.startIntake());
+        m_Intake.changeState(OI.startIntake(), OI.stopIntake());
         m_Shooter.TurnTable(OI.getRightBumperForTurntable(), OI.getLeftBumperForTurntable());
 
         //

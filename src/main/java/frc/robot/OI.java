@@ -46,7 +46,11 @@ public class OI {
     static public boolean startIntake() {
         return xboxDrive.getAButton();
     }
-    
+
+    static public boolean stopIntake() {
+        return xboxDrive.getBButton();
+    }
+
     static public boolean getLeftBumperForTurntable(){
         return xboxDrive.getBackButton();
     }

@@ -4,9 +4,6 @@
 
 package frc.robot;
 
-import java.util.TimerTask;
-import java.util.Timer;
-
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
@@ -19,30 +16,31 @@ import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
+import edu.wpi.first.wpilibj.Timer;
 import frc.robot.subsystems.Base;
 import frc.robot.subsystems.ColorSensor;
 
 /** Add your docs here. */
 public class Intake extends Base {
 
-    private double m_defaultMotorSpeed = .1;
+    private double kDefaultMotorSpeed = .1;
 
     private double m_motorSpeeds = 0;
     private boolean isChanging = false;
 
     private Timer m_timer = new Timer();
-    private TimerTask m_changeToE = new TimerTask() {
-        @Override
-        public void run() {
-            m_state = STATE.A;
-        };
-    };
-    private TimerTask m_change = new TimerTask() {
-        @Override
-        public void run() {
-            isChanging = false;
-        };
-    };
+    // private TimerTask m_changeToE = new TimerTask() {
+    //     @Override
+    //     public void run() {
+    //         m_state = STATE.A;
+    //     };
+    // };
+    // private TimerTask m_change = new TimerTask() {
+    //     @Override
+    //     public void run() {
+    //         isChanging = false;
+    //     };
+    // };
 
     public final WPI_TalonFX m_intake = new WPI_TalonFX(RobotMap.kIntake_roller_TalonFX);
     public final WPI_TalonFX m_mover = new WPI_TalonFX(RobotMap.kIntake_mover_TalonFX);
@@ -75,7 +73,7 @@ public class Intake extends Base {
     }
 
     // Teleop Periodic
-    public void changeState(boolean startIntake) {
+    public void changeState(boolean startIntake, boolean stopIntake) {
         switch (m_state) {
             case A:
 
@@ -101,9 +99,13 @@ public class Intake extends Base {
                     m_state = STATE.C;
                 }
 
-                m_intake.set(ControlMode.PercentOutput, m_defaultMotorSpeed);
-                m_mover.set(ControlMode.PercentOutput, m_defaultMotorSpeed);
-                m_shooterLoader.set(ControlMode.PercentOutput, m_defaultMotorSpeed);
+                if (stopIntake) {
+                    m_state = STATE.A;
+                }
+
+                m_intake.set(ControlMode.PercentOutput, kDefaultMotorSpeed);
+                m_mover.set(ControlMode.PercentOutput, kDefaultMotorSpeed);
+                m_shooterLoader.set(ControlMode.PercentOutput, kDefaultMotorSpeed);
 
                 m_doublePCM.set(Value.kForward);
 
@@ -111,7 +113,10 @@ public class Intake extends Base {
             case C:
                 // intake, mover, ON, loader OFF
                 // intake down
-
+                if (stopIntake || m_timer.get() > .2) {
+                    m_state = STATE.A;
+                    m_timer.reset();
+                }
                 m_motorSpeeds = .1;
 
                 // SPIT BALL OUT IF BAD (WRONG COLOR) :))))))
@@ -126,9 +131,12 @@ public class Intake extends Base {
                                 m_motorSpeeds = -.3;
                                 isChanging = true;
                                 // turns back to normal (isChanging = False) after 2.5 seconds
-                                m_timer.schedule(m_change, 2500);
-                            } else if (ColorSensor.blueBallDetected) {
-                                m_state = STATE.D;
+                            } else if (ColorSensor.blueBallDetected && m_timer.get() == 0) {
+                            
+                                // m_state = STATE.D;
+                                m_timer.reset();
+                                m_timer.start();
+
                             }
                             break;
                         case Red:
@@ -136,13 +144,17 @@ public class Intake extends Base {
                                 m_motorSpeeds = -.3;
                                 isChanging = true;
                                 // turns back to normal (isChanging = False) after 2.5 seconds
-                                m_timer.schedule(m_change, 2500);
-                            } else if (ColorSensor.redBallDetected) {
-                                m_state = STATE.D;
+                            } else if (ColorSensor.redBallDetected && m_timer.get() == 0) {
+                                // m_state = STATE.D;
+                                m_timer.reset();
+                                m_timer.start();
+
                             }
                             break;
                         case Invalid:
-                            m_state = STATE.D;
+                            // m_state = STATE.D;
+                            m_timer.reset();
+                            m_timer.start();
                             break;
                     }
 
@@ -157,12 +169,13 @@ public class Intake extends Base {
                 break;
             case D:
                 // state changes to E after timer (inbetween state)
-                m_timer.schedule(m_changeToE, 500);
-                m_intake.set(ControlMode.PercentOutput, m_defaultMotorSpeed);
-                m_mover.set(ControlMode.PercentOutput, m_defaultMotorSpeed);
-                m_shooterLoader.set(ControlMode.PercentOutput, 0);
+                // m_timer.schedule(m_changeToE, 200);
 
-                m_doublePCM.set(Value.kForward);
+                // m_intake.set(ControlMode.PercentOutput, kDefaultMotorSpeed);
+                // m_mover.set(ControlMode.PercentOutput, kDefaultMotorSpeed);
+                // m_shooterLoader.set(ControlMode.PercentOutput, 0);
+
+                // m_doublePCM.set(Value.kForward);
 
                 break;
             case E:
@@ -188,7 +201,7 @@ public class Intake extends Base {
 
     // Goes back to the first state
     public void turnOffLoadShooter() {
-        if(m_state == STATE.E) {
+        if (m_state == STATE.E) {
             m_state = STATE.A;
         }
     }
@@ -198,7 +211,7 @@ public class Intake extends Base {
         m_mover.set(ControlMode.PercentOutput, -0.3);
         m_intake.set(ControlMode.PercentOutput, -0.3);
     }
-    
+
     // sends motor values to shuffleboard
     public void setNTValues() {
         ntIntakeSpeed.setDouble(m_intake.getMotorOutputPercent());
