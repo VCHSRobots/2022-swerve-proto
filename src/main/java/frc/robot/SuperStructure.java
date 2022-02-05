@@ -60,6 +60,7 @@ public class SuperStructure extends Base {
 
         m_SwerveDrive.changeOdometry(OI.shouldSetFieldRelative(), OI.shouldSetRobotRelative(), OI.getResetOdometry());
         m_ColorSensor.checkColor();
+        m_ColorSensor.updateNT();
 
     }
 
@@ -94,8 +95,7 @@ public class SuperStructure extends Base {
                 // m_Intake.loadShooter();
             }
         } else {
-            m_Shooter.shootingRPM(0, 0);
-            m_Shooter.shootingDist(0);
+            m_Shooter.turnOff();
         }
 
         if (OI.getXorYforShootingReleased()) {

@@ -69,6 +69,8 @@ public class Intake extends Base {
         m_intake.setSensorPhase(false);
         // solenoids
         m_doublePCM.set(Value.kReverse);
+
+        intakeMotortab.addBoolean("loadDIO", ()->m_digitalInput.get());
     }
 
     // Teleop Periodic
