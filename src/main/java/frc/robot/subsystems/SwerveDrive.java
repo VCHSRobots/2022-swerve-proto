@@ -30,7 +30,7 @@ import frc.robot.Constants.SwerveModuleOffsetRadians;
 
 /** Add your docs here. */
 public class SwerveDrive extends Base {
-    public static final double kMaxSpeed = 2.0; // 3 meters per second
+    public static final double kMaxSpeed = 3.0; // 3 meters per second
     public static final double kMaxAngularSpeed = 3 * Math.PI; // 1 rotation per second
 
     private final SlewRateLimiter m_xSpeedLimiter = new SlewRateLimiter(5);
@@ -87,9 +87,10 @@ public class SwerveDrive extends Base {
     }
 
     public void setPose2d(PathPlannerState pose) {
-        m_gyro.reset();
-        m_gyro.setAngleAdjustment(pose.holonomicRotation.getDegrees());
+        // m_gyro.reset();
+        // m_gyro.setAngleAdjustment();
         m_odometry.resetPosition(pose.poseMeters, getGyroRotation2d());
+        // m_odometry.res
     }
 
     public Pose2d getPose2d() {
@@ -252,7 +253,7 @@ public class SwerveDrive extends Base {
     public void initSendable(SendableBuilder builder) {
         builder.setSmartDashboardType("Swerve Drive");
         builder.addBooleanProperty("Field Oriented", () -> m_fieldRelative, null);
-        builder.addDoubleProperty("Heading deg", () -> -m_gyro.getAngle(), null);
+        builder.addDoubleProperty("Rotation deg", () -> getGyroRotation2d().getDegrees(), null);
         builder.addDoubleProperty("Desired Vx m-s", () -> m_lastChassisSpeedsDesired.vxMetersPerSecond, null);
         builder.addDoubleProperty("Desired Vy m-s", () -> m_lastChassisSpeedsDesired.vyMetersPerSecond, null);
         builder.addDoubleProperty("Desired Rot rad-s", () -> m_lastChassisSpeedsDesired.omegaRadiansPerSecond, null);

@@ -59,6 +59,7 @@ public class SuperStructure extends Base {
         // m_Climber.robotInit();
         m_auto.robotInit();
 
+        Shuffleboard.getTab("super").add("swervedrie", m_SwerveDrive);
         Shuffleboard.getTab("super").add("compressor", m_phCompressor);
         Shuffleboard.getTab("super").addNumber("compressor/pressure", () -> m_phCompressor.getPressure());
 
@@ -126,8 +127,10 @@ public class SuperStructure extends Base {
 
     @Override
     public void autonomousInit() {
+        m_auto.autonomousInit();
 
         m_SwerveDrive.resetOdometry();
+
         if (m_chooser.getSelected() == "Auto1") {
             m_SwerveDrive.setPose2d(m_auto.getInitialState_auto1());
         } else if (m_chooser.getSelected() == "Auto2") {

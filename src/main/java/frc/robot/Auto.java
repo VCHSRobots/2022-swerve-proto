@@ -10,8 +10,11 @@ import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
+import edu.wpi.first.networktables.NetworkTableEntry;
+import edu.wpi.first.networktables.NetworkTablesJNI;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.subsystems.SwerveDrive;
 
@@ -22,21 +25,29 @@ public class Auto {
     PathPlannerTrajectory trajectory3;
 
     int m_currentAutoStep = 0;
-    PIDController xController = new PIDController(0.4, 0, 0);
-    PIDController yController = new PIDController(0.4, 0, 0);
-    static ProfiledPIDController thetaController = new ProfiledPIDController(2.5, 0, 0,
+    PIDController xController = new PIDController(0.5, 0, 0);
+    PIDController yController = new PIDController(0.5, 0, 0);
+    static ProfiledPIDController thetaController = new ProfiledPIDController(2.7, 0, 0,
             // new Constraints(0, 0));
             new Constraints(SwerveDrive.kMaxAngularSpeed, SwerveDrive.kMaxAngularSpeed));
     HolonomicDriveController controller;
     Timer timer = new Timer();
+    NetworkTableEntry ntGoalX = Shuffleboard.getTab("super").add("Goal/X", 0).getEntry(); 
+    NetworkTableEntry ntGoalY = Shuffleboard.getTab("super").add("Goal/Y", 0).getEntry();
+    NetworkTableEntry ntGoalRot = Shuffleboard.getTab("super").add("Goal/Rot", 0).getEntry();
+    NetworkTableEntry ntGoalHolRot = Shuffleboard.getTab("super").add("Goal/Hol Rot", 0).getEntry();
 
     public Auto() {
         thetaController.enableContinuousInput(-Math.PI, Math.PI);
         controller = new HolonomicDriveController(xController, yController, thetaController);
 
-        trajectory1 = PathPlanner.loadPath("auto1", 1, 1);
+        trajectory1 = PathPlanner.loadPath("auto1", 3, 3);
         trajectory2 = PathPlanner.loadPath("auto2", 1, 1);
         trajectory3 = PathPlanner.loadPath("strafeleft", 1, 1);
+
+        Shuffleboard.getTab("super").addNumber("timer", ()->timer.get());
+        
+
     }
 
     public void robotInit() {
@@ -105,6 +116,10 @@ public class Auto {
             goal = (PathPlannerState) trajectory.sample(timer.get());
             adjustedSpeeds = controller.calculate(currentPose, goal, goal.holonomicRotation);
         }
+        ntGoalX.setNumber(goal.poseMeters.getX());
+        ntGoalY.setNumber(goal.poseMeters.getY());
+        ntGoalRot.setNumber(goal.poseMeters.getRotation().getDegrees());
+        ntGoalHolRot.setNumber(goal.holonomicRotation.getDegrees());
         return adjustedSpeeds;
     }
 
