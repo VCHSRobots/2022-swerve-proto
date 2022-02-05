@@ -34,8 +34,8 @@ public class Auto {
         thetaController.enableContinuousInput(-Math.PI, Math.PI);
         controller = new HolonomicDriveController(xController, yController, thetaController);
 
-        trajectory1 = PathPlanner.loadPath("traj1", 2.5, 3);
-        trajectory2 = PathPlanner.loadPath("traj2", 2.5, 3);
+        trajectory1 = PathPlanner.loadPath("auto1", 1, 1);
+        trajectory2 = PathPlanner.loadPath("auto2", 1, 1);
         trajectory3 = PathPlanner.loadPath("testingaroundtable", 2, 2);
     }
 
