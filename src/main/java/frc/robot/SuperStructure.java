@@ -114,7 +114,7 @@ public class SuperStructure extends Base {
         if (OI.getXorYforShootingReleased()) {
             m_Intake.turnOffLoadShooter();
         }
-        if (OI.getRightTriggerforTurnTable()) {
+        if (!m_Shooter.m_hasBeenCalibrated){
             m_Shooter.setTurnTableToZero();
 
         } else {
