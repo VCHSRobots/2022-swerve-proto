@@ -86,14 +86,14 @@ public class SuperStructure extends Base {
     public void teleopPeriodic() {
         m_phCompressor.enableAnalog(90, 115);
 
-        m_SwerveDrive.driveWithXbox(OI.getDriveY(), OI.getDriveX(), OI.xboxDrive.getLeftTriggerAxis(),
-                OI.xboxDrive.getRightTriggerAxis(), OI.xboxDrive.getRightY(), OI.xboxDrive.getRightX());
+        // DRIVING CODE
+        m_SwerveDrive.driveWithXbox(OI.getDriveY(), OI.getDriveX(), OI.getDriveRot(), OI.getCenterOfRotationFrontLeft(),
+                OI.getCenterOfRotationFrontRight());
 
-        // intake control
+        // INTAKE STATE UPDATE
         m_Intake.changeState(OI.startIntake(), OI.stopIntake());
 
-        //
-
+        // INTAKE / SHOOTING
         if (OI.getYButtonForShootRPM()) {
             // turn shooter on in rpm mode
             m_Shooter.shootingRPM(ntTopRPM.getNumber(0).doubleValue(), ntBotRPM.getNumber(0).doubleValue());
@@ -115,16 +115,23 @@ public class SuperStructure extends Base {
             m_Shooter.turnOff();
         }
 
+        // when shooting released, stop loading
         if (OI.getXorYforShootingReleased()) {
             m_Intake.turnOffLoadShooter();
         }
-        if (!m_Shooter.m_hasBeenCalibrated){
+
+        // TURNTABLE
+        // if not zeroed, zero the turntable
+        if (!m_Shooter.m_hasBeenCalibrated) {
             m_Shooter.setTurnTableToZero();
 
         } else {
+            // manual control of turntable
             m_Shooter.TurnTable(OI.getRightBumperForTurntable(), OI.getLeftBumperForTurntable());
 
         }
+
+        // CLIMBER
         // climberControl(OI.getSolenoidReverse(), OI.getSolenoidForward(),
         // OI.getArmsUp(), OI.getArmsDown());
     }
@@ -153,7 +160,7 @@ public class SuperStructure extends Base {
             m_SwerveDrive.driveFromChassisSpeeds(m_auto.getNextChassisSpeeds_Auto1(m_SwerveDrive.getPose2d()));
 
             // shoot during auto
-            if(m_Timer.get() > 1.25 && m_Timer.get() < 5) {
+            if (m_Timer.get() > 1.25 && m_Timer.get() < 5) {
                 m_Shooter.shootingRPM(ntTopRPM.getNumber(0).doubleValue(), ntBotRPM.getNumber(0).doubleValue());
                 if (m_Shooter.IsOkToShoot()) {
                     m_Intake.loadShooter();

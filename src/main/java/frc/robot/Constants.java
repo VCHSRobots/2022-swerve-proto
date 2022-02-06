@@ -16,5 +16,5 @@ public class Constants {
         public static final double BACK_RIGHT = Units.degreesToRadians(172.0);
     }
 
-    public static final double xboxDeadband = 0.09;
+    public static final double xboxDeadband = 0.05;
 }

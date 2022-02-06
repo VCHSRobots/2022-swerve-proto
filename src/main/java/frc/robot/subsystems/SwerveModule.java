@@ -42,7 +42,7 @@ public class SwerveModule implements Sendable {
         private static final double kTurningRotPerMotorRot = 1 / 10.0;
 
         private static final double kModuleMaxAngularVelocity = 4 * SwerveDrive.kMaxAngularSpeed;
-        private static final double kModuleMaxAngularAcceleration = 5 * 12 * Math.PI; // radians per second squared
+        private static final double kModuleMaxAngularAcceleration = 12 * Math.PI; // radians per second squared
 
         public final WPI_TalonFX m_driveMotor;
         public final WPI_TalonFX m_turningMotor;
@@ -64,7 +64,7 @@ public class SwerveModule implements Sendable {
 
         // Gains are for example purposes only - must be determined for your own robot!
         private final SimpleMotorFeedforward m_driveFeedforward = new SimpleMotorFeedforward(0.4, 1.93); // 0.4, 1.93
-        private final SimpleMotorFeedforward m_turnFeedforward = new SimpleMotorFeedforward(0.35, 0.16); //0.1,0.25      
+        private final SimpleMotorFeedforward m_turnFeedforward = new SimpleMotorFeedforward(0.35, 0.16); // 0.1,0.25
 
         private final SimpleMotorFeedforward m_driveFeedforwardIntegrated = new SimpleMotorFeedforward(0, 0);
 
@@ -179,9 +179,6 @@ public class SwerveModule implements Sendable {
          * @return The current state of the module.
          */
         public SwerveModuleState getState() {
-                // Encoder driveEnc = new Encoder(4,5);
-                // return new SwerveModuleState(driveEnc.getRate(), new
-                // Rotation2d(m_turningEncoder.get()));
                 return new SwerveModuleState(getDriveRatePerSecond(),
                                 new Rotation2d(getTurningPositionRadians()));
         }
@@ -190,12 +187,6 @@ public class SwerveModule implements Sendable {
                 // return m_driveMotor.getSelectedSensorVelocity();
                 return m_driveMotor.getSelectedSensorVelocity() * 10 * kDriveMetersPerIntegratedTick;
         }
-
-        // private double getTurningRatePerSecond() {
-        // return m_turningEncoder.get
-        // return m_turningMotor.getSelectedSensorVelocity() * 10 *
-        // kTurningRadiansPerPulse;
-        // }
 
         private double getTurningPositionRadians() {
                 return Units.degreesToRadians(m_turningEncoder.getAbsolutePosition()) - m_turningEncoderOffset;
@@ -208,10 +199,16 @@ public class SwerveModule implements Sendable {
          */
         public void setDesiredState(SwerveModuleState desiredState) {
                 // Optimize the reference state to avoid spinning further than 90 degrees
-                SwerveModuleState state = SwerveModuleState.optimize(desiredState,
-                                new Rotation2d(getTurningPositionRadians()));
+                SwerveModuleState state = SwerveModuleState.optimize(desiredState, getState().angle);
 
                 m_desiredState = state;
+
+                // if requested state is of ~0 speed, then don't move wheels back to zero,
+                // just stop them
+                if (Math.abs(state.speedMetersPerSecond) < 0.002) {
+                        stop();
+                        return;
+                }
 
                 // Calculate the drive output from the drive PID controller.
                 final double driveOutput = m_drivePIDController.calculate(getDriveRatePerSecond(),
@@ -267,16 +264,23 @@ public class SwerveModule implements Sendable {
                                 DemandType.ArbitraryFeedForward, turnFeedforward);
         }
 
+        public void stop() {
+                m_turningMotor.set(ControlMode.PercentOutput, 0);
+                m_driveMotor.set(ControlMode.PercentOutput, 0);
+        }
+
         @Override
         public void initSendable(SendableBuilder builder) {
-                // builder.setSmartDashboardType("Swerve Module");
-                // builder.addDoubleProperty("Actual Drive m-s", () -> this.getDriveRatePerSecond(), null);
-                // builder.addDoubleProperty("Drive Position Meters",
-                //                 () -> (kDriveMetersPerIntegratedTick * m_driveMotor.getSelectedSensorPosition()), null);
-                // builder.addDoubleProperty("Actual Angle deg", () -> m_turningEncoder.getAbsolutePosition(), null);
-                // builder.addDoubleProperty("Actual Angle with offset deg",
-                //                 () -> Units.radiansToDegrees(getTurningPositionRadians()), null);
-                // builder.addDoubleProperty("Desired Drive m-s", () -> m_desiredState.speedMetersPerSecond, null);
-                // builder.addDoubleProperty("Desired Angle deg", () -> m_desiredState.angle.getDegrees(), null);
+                builder.setSmartDashboardType("Swerve Module");
+                builder.addDoubleProperty("Actual Drive m-s", () -> this.getDriveRatePerSecond(), null);
+                builder.addDoubleProperty("Drive Position Meters",
+                                () -> (kDriveMetersPerIntegratedTick *
+                                                m_driveMotor.getSelectedSensorPosition()),
+                                null);
+                builder.addDoubleProperty("Actual Angle deg", () -> m_turningEncoder.getAbsolutePosition(), null);
+                builder.addDoubleProperty("Actual Angle with offset deg",
+                                () -> Units.radiansToDegrees(getTurningPositionRadians()), null);
+                builder.addDoubleProperty("Desired Drive m-s", () -> m_desiredState.speedMetersPerSecond, null);
+                builder.addDoubleProperty("Desired Angle deg", () -> m_desiredState.angle.getDegrees(), null);
         }
 }

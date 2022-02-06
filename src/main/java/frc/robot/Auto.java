@@ -29,7 +29,7 @@ public class Auto {
     PIDController yController = new PIDController(0.5, 0, 0);
     static ProfiledPIDController thetaController = new ProfiledPIDController(2.7, 0, 0,
             // new Constraints(0, 0));
-            new Constraints(SwerveDrive.kMaxAngularSpeed, SwerveDrive.kMaxAngularSpeed));
+            new Constraints(SwerveDrive.kMaxAngularSpeed, 2 * SwerveDrive.kMaxAngularSpeed));
     HolonomicDriveController controller;
     Timer timer = new Timer();
     NetworkTableEntry ntGoalX = Shuffleboard.getTab("super").add("Goal/X", 0).getEntry(); 
