@@ -8,11 +8,13 @@ import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.PneumaticHub;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.PowerDistribution;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import frc.robot.subsystems.*;
+
 import edu.wpi.first.networktables.NetworkTableEntry;
 
 /** Add your docs here. */
@@ -28,6 +30,8 @@ public class SuperStructure extends Base {
     private Intake m_Intake;
     private Shooter m_Shooter;
     // private Climber m_Climber;
+
+    Timer m_Timer = new Timer();
 
     private Auto m_auto = new Auto();
 
@@ -138,12 +142,29 @@ public class SuperStructure extends Base {
         } else if (m_chooser.getSelected() == "strafeleft") {
             m_SwerveDrive.setPose2d(m_auto.getInitialState_auto3());
         }
+
+        m_Timer.reset();
+        m_Timer.start();
     }
 
     @Override
     public void autonomousPeriodic() {
         if (m_chooser.getSelected() == "Auto1") {
             m_SwerveDrive.driveFromChassisSpeeds(m_auto.getNextChassisSpeeds_Auto1(m_SwerveDrive.getPose2d()));
+
+            // shoot during auto
+            if(m_Timer.get() > 1.25 && m_Timer.get() < 5) {
+                m_Shooter.shootingRPM(ntTopRPM.getNumber(0).doubleValue(), ntBotRPM.getNumber(0).doubleValue());
+                if (m_Shooter.IsOkToShoot()) {
+                    m_Intake.loadShooter();
+                }
+            } else {
+                m_Shooter.turnOff();
+                m_Intake.turnOffLoadShooter();
+            }
+
+            m_Intake.changeState(false, false);
+
         } else if (m_chooser.getSelected() == "Auto2") {
             m_SwerveDrive.driveFromChassisSpeeds(m_auto.getNextChassisSpeeds_Auto2(m_SwerveDrive.getPose2d()));
         } else if (m_chooser.getSelected() == "strafeleft") {

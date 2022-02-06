@@ -161,8 +161,8 @@ public class Intake extends Base {
                 // SPIT BALL OUT IF BAD (WRONG COLOR) :))))))
                 // add spit out ball logic somewhere else
 
-                m_intake.set(ControlMode.PercentOutput, kDefaultMotorSpeed);
-                m_mover.set(ControlMode.PercentOutput, kDefaultMotorSpeed);
+                m_intake.set(ControlMode.PercentOutput, ntMotorSpeed.getDouble(0.0));
+                m_mover.set(ControlMode.PercentOutput, ntMotorSpeed.getDouble(0.0));
                 m_shooterLoader.set(ControlMode.PercentOutput, 0);
 
                 m_doublePCM.set(Value.kForward);
@@ -183,8 +183,8 @@ public class Intake extends Base {
                 // start loading balls into shooter (loadShooter)
                 // stops when no more shooter buttons are pressed
                 m_intake.set(ControlMode.PercentOutput, 0);
-                m_mover.set(ControlMode.PercentOutput, kDefaultMotorSpeed);
-                m_shooterLoader.set(ControlMode.PercentOutput, kDefaultMotorSpeed);
+                m_mover.set(ControlMode.PercentOutput, ntMotorSpeed.getDouble(0.0));
+                m_shooterLoader.set(ControlMode.PercentOutput, ntMotorSpeed.getDouble(0.0));
 
                 break;
         }
