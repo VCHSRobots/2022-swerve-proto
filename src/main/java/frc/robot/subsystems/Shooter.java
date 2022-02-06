@@ -88,9 +88,11 @@ public class Shooter extends Base {
 
         m_shootTalonBot.setNeutralMode(NeutralMode.Coast);
         m_shootTalonTop.setNeutralMode(NeutralMode.Coast);
+        m_turnTableTalon.setNeutralMode(NeutralMode.Brake);
 
         m_shootTalonBot.setInverted(false);
         m_shootTalonTop.setInverted(false);
+        m_turnTableTalon.setInverted(false);
 
         m_shootTalonBot.setSensorPhase(false);
         m_shootTalonTop.setSensorPhase(false);
@@ -232,7 +234,7 @@ public class Shooter extends Base {
         double errorTopRPM = rpmToTicksPer100ms(m_shootTalonTop.getClosedLoopError());
         double errorBotRPM = rpmToTicksPer100ms(m_shootTalonBot.getClosedLoopError());
 
-        return errorBotRPM < 50 && errorTopRPM < 50;
+        return errorBotRPM < 75 && errorTopRPM < 75;
     }
     public void turnMotorsOff() {
         setShootSpeeds(0, 0);
