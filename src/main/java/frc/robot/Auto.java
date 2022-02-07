@@ -28,7 +28,6 @@ public class Auto {
     PIDController xController = new PIDController(0.5, 0, 0);
     PIDController yController = new PIDController(0.5, 0, 0);
     static ProfiledPIDController thetaController = new ProfiledPIDController(2.7, 0, 0,
-            // new Constraints(0, 0));
             new Constraints(SwerveDrive.kMaxAngularSpeed, 2 * SwerveDrive.kMaxAngularSpeed));
     HolonomicDriveController controller;
     Timer timer = new Timer();

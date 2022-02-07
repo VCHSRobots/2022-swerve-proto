@@ -15,6 +15,10 @@ import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import frc.robot.subsystems.*;
 
+import com.pathplanner.lib.PathPlannerTrajectory.PathPlannerState;
+
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.networktables.NetworkTableEntry;
 
 /** Add your docs here. */
@@ -140,15 +144,19 @@ public class SuperStructure extends Base {
     public void autonomousInit() {
         m_auto.autonomousInit();
 
-        m_SwerveDrive.resetOdometry();
+        PathPlannerState state = new PathPlannerState();
+        state.poseMeters = new Pose2d();
+        state.holonomicRotation = new Rotation2d();
 
         if (m_chooser.getSelected() == "Auto1") {
-            m_SwerveDrive.setPose2d(m_auto.getInitialState_auto1());
+            state = m_auto.getInitialState_auto1();
         } else if (m_chooser.getSelected() == "Auto2") {
-            m_SwerveDrive.setPose2d(m_auto.getInitialState_auto2());
+            state = m_auto.getInitialState_auto2();
         } else if (m_chooser.getSelected() == "strafeleft") {
-            m_SwerveDrive.setPose2d(m_auto.getInitialState_auto3());
+            state = m_auto.getInitialState_auto3();
         }
+
+        m_SwerveDrive.resetOdometry(new Pose2d(state.poseMeters.getTranslation(), state.holonomicRotation));
 
         m_Timer.reset();
         m_Timer.start();

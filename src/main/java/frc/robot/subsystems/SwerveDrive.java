@@ -79,6 +79,18 @@ public class SwerveDrive extends Base {
         }).start();
     }
 
+    // Robot Init
+    public void robotInit() {
+        Shuffleboard.getTab("main").add("front left", m_frontLeft);
+        Shuffleboard.getTab("main").add("front right", m_frontRight);
+        Shuffleboard.getTab("main").add("back left", m_backLeft);
+        Shuffleboard.getTab("main").add("back right", m_backRight);
+    }
+
+    @Override
+    public void disabledInit() {
+    }
+
     public void zeroHeading() {
         m_gyro.reset();
     }
@@ -88,8 +100,8 @@ public class SwerveDrive extends Base {
         // return Rotation2d.fromDegrees(Math.IEEEremainder(m_gyro.getAngle(), 360));
     }
 
-    public void setPose2d(PathPlannerState pose) {
-        m_odometry.resetPosition(pose.poseMeters, getGyroRotation2d());
+    public void resetOdometry(Pose2d pose) {
+        m_odometry.resetPosition(pose, getGyroRotation2d());
     }
 
     public Pose2d getPose2d() {
@@ -197,18 +209,6 @@ public class SwerveDrive extends Base {
         drive(xSpeed, ySpeed, rot, m_fieldRelative, centerOfRotationMeters);
     }
 
-    // Robot Init
-    public void robotInit() {
-        Shuffleboard.getTab("main").add("front left", m_frontLeft);
-        Shuffleboard.getTab("main").add("front right", m_frontRight);
-        Shuffleboard.getTab("main").add("back left", m_backLeft);
-        Shuffleboard.getTab("main").add("back right", m_backRight);
-    }
-
-    @Override
-    public void disabledInit() {
-    }
-
     // Robot Periodic
     public void changeOdometry(boolean setFieldRelative, boolean setRobotRelative, boolean resetOdometry) {
         if (setFieldRelative) {
@@ -221,11 +221,6 @@ public class SwerveDrive extends Base {
             m_odometry.resetPosition(new Pose2d(), getGyroRotation2d());
         }
         updateOdometry();
-    }
-
-    // autonomusInit
-    public void resetOdometry() {
-        m_odometry.resetPosition(new Pose2d(), getGyroRotation2d());
     }
 
     // Test Periodic
