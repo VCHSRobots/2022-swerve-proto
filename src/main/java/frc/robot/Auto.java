@@ -23,6 +23,7 @@ public class Auto {
     PathPlannerTrajectory trajectory1;
     PathPlannerTrajectory trajectory2;
     PathPlannerTrajectory trajectory3;
+    PathPlannerTrajectory m_chosenTrajectory;
 
     int m_currentAutoStep = 0;
     PIDController xController = new PIDController(0.5, 0, 0);
@@ -30,7 +31,9 @@ public class Auto {
     static ProfiledPIDController thetaController = new ProfiledPIDController(2.7, 0, 0,
             new Constraints(SwerveDrive.kMaxAngularSpeed, 2 * SwerveDrive.kMaxAngularSpeed));
     HolonomicDriveController controller;
+
     Timer timer = new Timer();
+    
     NetworkTableEntry ntGoalX = Shuffleboard.getTab("super").add("Goal/X", 0).getEntry(); 
     NetworkTableEntry ntGoalY = Shuffleboard.getTab("super").add("Goal/Y", 0).getEntry();
     NetworkTableEntry ntGoalRot = Shuffleboard.getTab("super").add("Goal/Rot", 0).getEntry();
@@ -45,7 +48,6 @@ public class Auto {
         trajectory3 = PathPlanner.loadPath("strafeleft", 1, 1);
 
         Shuffleboard.getTab("super").addNumber("timer", ()->timer.get());
-        
 
     }
 
@@ -69,10 +71,6 @@ public class Auto {
         resetTimer();
         startTimer();
         m_currentAutoStep = 0;
-    }
-
-    private boolean getTablePath() {
-        return true;
     }
 
     private PathPlannerState getInitialState(PathPlannerTrajectory traj) {

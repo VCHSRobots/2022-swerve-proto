@@ -80,7 +80,6 @@ public class SuperStructure extends Base {
 
     @Override
     public void robotPeriodic() {
-
         m_SwerveDrive.changeOdometry(OI.shouldSetFieldRelative(), OI.shouldSetRobotRelative(), OI.getResetOdometry());
         m_Intake.robotPeriodic();
         m_auto.robotPeriodic();
@@ -123,8 +122,9 @@ public class SuperStructure extends Base {
         if (OI.getXorYforShootingReleased()) {
             m_Intake.turnOffLoadShooter();
         }
-        // climberControl(OI.getSolenoidReverse(), OI.getSolenoidForward(), OI.getArmsUp(), OI.getArmsDown());
-        if(OI.getZeroOfTurnTableTalon()){
+        // climberControl(OI.getSolenoidReverse(), OI.getSolenoidForward(),
+        // OI.getArmsUp(), OI.getArmsDown());
+        if (OI.getZeroOfTurnTableTalon()) {
             m_Shooter.setTurnTableToZero();
         }
 

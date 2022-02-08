@@ -61,7 +61,7 @@ public class Intake extends Base {
         m_mover.configFactoryDefault();
         m_shooterLoader.configFactoryDefault();
 
-        m_intake.setInverted(true);
+        m_intake.setInverted(false);
         m_mover.setInverted(false);
         m_shooterLoader.setInverted(false);
 
