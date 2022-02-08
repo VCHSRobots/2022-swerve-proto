@@ -11,7 +11,6 @@ import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import frc.robot.RobotMap;
-import edu.wpi.first.networktables.NetworkTableEntry;
 
 public class Shooter extends Base {
     // Shuffleboard Tabs and NetworkTableEntries.
@@ -48,8 +47,6 @@ public class Shooter extends Base {
         ShootMotorTab.addBoolean("Is Ok to Shoot", () -> IsOkToShoot()).withPosition(4, 1);
         ShootMotorTab.addNumber("Turn Table Position", () -> m_turnTableTalon.getSelectedSensorPosition());
         ShootMotorTab.addBoolean("Has Been Zero'ed", () -> m_hasBeenCalibrated);
-
-
 
         TalonFXConfiguration baseConfig = new TalonFXConfiguration();
         baseConfig.closedloopRamp = 0.02;
@@ -117,34 +114,6 @@ public class Shooter extends Base {
     @Override
     public void teleopInit() {
         m_state = STATE.NotShooting;
-    }
-
-    // Original Function for shooting RPM and distance.
-    public void shooting(boolean distanceMode, boolean RPMMode) {
-        // default all set outputs to 0
-        double shootTopSpeed = 0;
-        double shootBotSpeed = 0;
-
-        // if (distanceMode) {
-        //     m_state = STATE.ShootingDistance;
-        // } else if (RPMMode) {
-        //     m_state = STATE.ShootingRPM;
-        // } else {
-        //     m_state = STATE.NotShooting;
-        // }
-
-        // if (m_state == STATE.NotShooting) {
-        //     shootTopSpeed = 0;
-        //     shootTopSpeed = 0;
-        // } else if (m_state == STATE.ShootingDistance) {
-        //     setSpeedsDist(ntFeetToRPM.getNumber(0).doubleValue());
-        //     System.out.println("AHAA");
-
-        // } else if (m_state == STATE.ShootingRPM) {
-        //     setSpeedsRPM(ntTopRPM.getNumber(0).doubleValue(), ntBotRPM.getNumber(0).doubleValue());
-        //     System.out.println("ME ABOUT");
-        // }
-
     }
 
     // Shooting function with Distance. (NOT READY!!)
@@ -236,51 +205,35 @@ public class Shooter extends Base {
 
         return errorBotRPM < 75 && errorTopRPM < 75;
     }
+
     public void turnMotorsOff() {
         setShootSpeeds(0, 0);
     }
-    public boolean setTurnTableToZero(){
-        double turntableSpeed = 0;
-        if(getTurnTableZero()){
+
+    public boolean setTurnTableToZero() {
+        if (getTurnTableZero()) {
+            // 13 to 62, 52 to 231, GEAR RATIO: 21.19
             m_hasBeenCalibrated = true;
             m_turnTableTalon.setSelectedSensorPosition(0);
             m_turnTableTalon.configReverseSoftLimitThreshold(-10000);
             m_turnTableTalon.configForwardSoftLimitThreshold(12000);
             m_turnTableTalon.configForwardSoftLimitEnable(true);
             m_turnTableTalon.configReverseSoftLimitEnable(true);
+
             m_turnTableTalon.set(ControlMode.PercentOutput, 0);
             return true;
-        }else{
+        } else {
             m_turnTableTalon.set(ControlMode.PercentOutput, -0.07);
             return false;
         }
-        
+
     }
-    public boolean getTurnTableZero(){
+
+    public boolean getTurnTableZero() {
         return !m_TurnTableZero.get();
     }
-    public boolean setTurnTableToZero(){
-        double turntableSpeed = 0;
-        if(isAtZero()){
-            // Set turnt table talon pos to zero.
-            // Set limits and stop motor.
-            m_turnTableTalon.setSelectedSensorPosition(0);
-            m_turnTableTalon.configForwardSoftLimitThreshold(8500);
-            m_turnTableTalon.configReverseSoftLimitThreshold(-8500);
-            // 13 to 62, 52 to 231, GEAR RATIO: 21.19
-            return true;
-        }
-        else{
-            // move motor to find zero.
-            m_turnTableTalon.set(ControlMode.PercentOutput, 0.07);
-        } 
-        m_turnTableTalon.set(ControlMode.PercentOutput, turntableSpeed);
 
-        return false;
-    
-
-    }
-    public boolean isAtZero(){
+    public boolean isAtZero() {
         return !m_TurnTableZero.get();
     }
 }
