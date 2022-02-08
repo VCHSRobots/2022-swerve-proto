@@ -7,6 +7,7 @@ import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import com.ctre.phoenix.sensors.SensorInitializationStrategy;
 import com.ctre.phoenix.sensors.SensorVelocityMeasPeriod;
 
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import frc.robot.RobotMap;
@@ -24,6 +25,7 @@ public class Shooter extends Base {
     WPI_TalonFX m_shootTalonTop = new WPI_TalonFX(RobotMap.kShoot_TopMotor_TalonFX);
     WPI_TalonFX m_shootTalonBot = new WPI_TalonFX(RobotMap.kShoot_BottomMotor_TalonFX);
     WPI_TalonFX m_turnTableTalon = new WPI_TalonFX(RobotMap.kTurnTableMotor_TalonFX);
+    DigitalInput m_TurnTableZero = new DigitalInput(RobotMap.kShooter_TurretZeroDIO);
 
     // SimpleMotorFeedforward m_ShootFeedForward = new SimpleMotorFeedforward(0.00,
     // 0.00045);
@@ -231,5 +233,29 @@ public class Shooter extends Base {
         double errorBotRPM = rpmToTicksPer100ms(m_shootTalonBot.getClosedLoopError());
 
         return errorBotRPM > 150 && errorTopRPM > 150;
+    }
+    public boolean setTurnTableToZero(){
+        double turntableSpeed = 0;
+        if(isAtZero()){
+            // Set turnt table talon pos to zero.
+            // Set limits and stop motor.
+            m_turnTableTalon.setSelectedSensorPosition(0);
+            m_turnTableTalon.configForwardSoftLimitThreshold(8500);
+            m_turnTableTalon.configReverseSoftLimitThreshold(-8500);
+            // 13 to 62, 52 to 231, GEAR RATIO: 21.19
+            return true;
+        }
+        else{
+            // move motor to find zero.
+            m_turnTableTalon.set(ControlMode.PercentOutput, 0.07);
+        } 
+        m_turnTableTalon.set(ControlMode.PercentOutput, turntableSpeed);
+
+        return false;
+    
+
+    }
+    public boolean isAtZero(){
+        return !m_TurnTableZero.get();
     }
 }

@@ -99,6 +99,9 @@ public class SuperStructure extends Base {
             m_Intake.turnOffLoadShooter();
         }
         // climberControl(OI.getSolenoidReverse(), OI.getSolenoidForward(), OI.getArmsUp(), OI.getArmsDown());
+        if(OI.getZeroOfTurnTableTalon()){
+            m_Shooter.setTurnTableToZero();
+        }
 
 
     }
