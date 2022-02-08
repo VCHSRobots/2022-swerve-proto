@@ -4,8 +4,11 @@
 
 package frc.robot.subsystems;
 
+import java.nio.file.Path;
+
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.kauailabs.navx.frc.AHRS;
+import com.pathplanner.lib.PathPlannerTrajectory.PathPlannerState;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.filter.SlewRateLimiter;
@@ -15,6 +18,7 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
+import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.SPI;
@@ -27,7 +31,7 @@ import frc.robot.Constants.SwerveModuleOffsetRadians;
 
 /** Add your docs here. */
 public class SwerveDrive extends Base {
-    public static final double kMaxSpeed = 2.0; // 3 meters per second
+    public static final double kMaxSpeed = 3.0; // 3 meters per second
     public static final double kMaxAngularSpeed = 3 * Math.PI; // 1 rotation per second
 
     private final SlewRateLimiter m_xSpeedLimiter = new SlewRateLimiter(5);
@@ -57,7 +61,7 @@ public class SwerveDrive extends Base {
 
     private final SwerveDriveKinematics m_kinematics = new SwerveDriveKinematics(
             m_frontLeftLocation, m_frontRightLocation, m_backLeftLocation, m_backRightLocation);
-    private final SwerveDriveOdometry m_odometry = new SwerveDriveOdometry(m_kinematics, getGyroRotation2d());
+    private final SwerveDriveOdometry m_odometry = new SwerveDriveOdometry(m_kinematics, new Rotation2d(0));
 
     private boolean m_fieldRelative = false;
 
@@ -65,26 +69,50 @@ public class SwerveDrive extends Base {
     private ChassisSpeeds m_lastChassisSpeedsDesired = new ChassisSpeeds();
 
     public SwerveDrive() {
-        m_gyro.calibrate();
-        m_gyro.reset();
+        new Thread(() -> {
+            try {
+                Thread.sleep(1000);
+                zeroHeading();
+            } catch (Exception e) {
+
+            }
+        }).start();
     }
 
     // Robot Init
     public void robotInit() {
-        // SendableRegistry.add(m_frontLeft, "frontleft");
-        // SendableRegistry.add(m_frontRight, "frontright");
         Shuffleboard.getTab("main").add("front left", m_frontLeft);
         Shuffleboard.getTab("main").add("front right", m_frontRight);
         Shuffleboard.getTab("main").add("back left", m_backLeft);
         Shuffleboard.getTab("main").add("back right", m_backRight);
     }
 
+    @Override
+    public void disabledInit() {
+    }
+
+    public void zeroHeading() {
+        m_gyro.reset();
+    }
+
     public Rotation2d getGyroRotation2d() {
         return Rotation2d.fromDegrees(-m_gyro.getAngle());
+        // return Rotation2d.fromDegrees(Math.IEEEremainder(m_gyro.getAngle(), 360));
+    }
+
+    public void resetOdometry(Pose2d pose) {
+        m_odometry.resetPosition(pose, getGyroRotation2d());
     }
 
     public Pose2d getPose2d() {
         return m_odometry.getPoseMeters();
+    }
+
+    public void stopModules() {
+        m_frontLeft.stop();
+        m_frontRight.stop();
+        m_backLeft.stop();
+        m_backRight.stop();
     }
 
     /**
@@ -104,11 +132,16 @@ public class SwerveDrive extends Base {
     /**
      * Method to drive the robot using joystick info.
      *
-     * @param xSpeed        Speed of the robot in the x direction (forward).
-     * @param ySpeed        Speed of the robot in the y direction (sideways).
-     * @param rot           Angular rate of the robot.
-     * @param fieldRelative Whether the provided x and y speeds are relative to the
-     *                      field.
+     * @param xSpeed                 Speed of the robot in the x direction
+     *                               (forward).
+     * @param ySpeed                 Speed of the robot in the y direction
+     *                               (sideways).
+     * @param rot                    Angular rate of the robot.
+     * @param fieldRelative          Whether the provided x and y speeds are
+     *                               relative to the
+     *                               field.
+     * @param centerOfRotationMeters Point relative to center of robot around which
+     *                               to rotate. defaults to 0,0
      */
     @SuppressWarnings("ParameterName")
     public void drive(double xSpeed, double ySpeed, double rot, boolean fieldRelative,
@@ -127,17 +160,14 @@ public class SwerveDrive extends Base {
     public void driveFromChassisSpeeds(ChassisSpeeds chassisSpeed, Translation2d centerOfRotationMeters) {
         var swerveModuleStates = m_kinematics.toSwerveModuleStates(chassisSpeed, centerOfRotationMeters);
         SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, kMaxSpeed);
-        /* START OF TESTING ROTATION ONLY CODE */
-        // for (SwerveModuleState state : swerveModuleStates) {
-        // state.speedMetersPerSecond = 0;
-        // }
-        /* END OF TESTING ROTATION ONLY CODE */
-        m_frontLeft.setDesiredState(swerveModuleStates[0]);
-        m_frontRight.setDesiredState(swerveModuleStates[1]);
-        m_backLeft.setDesiredState(swerveModuleStates[2]);
-        m_backRight.setDesiredState(swerveModuleStates[3]);
+        setModuleStates(swerveModuleStates);
+    }
 
-        // updateOdometry(); // MOVED TO ROBOTPERIODIC()
+    public void setModuleStates(SwerveModuleState[] desiredStates) {
+        m_frontLeft.setDesiredState(desiredStates[0]);
+        m_frontRight.setDesiredState(desiredStates[1]);
+        m_backLeft.setDesiredState(desiredStates[2]);
+        m_backRight.setDesiredState(desiredStates[3]);
     }
 
     /** Updates the field relative position of the robot. */
@@ -151,10 +181,8 @@ public class SwerveDrive extends Base {
     }
 
     // Teleop Periodic
-    public void driveWithXbox(double driveY, double driveX, double leftTriggerAxis, double rightTriggerAxis,
-            double rightY, double rightX) {
-        // set wheels to 1 Rot per sec, else drive normal
-
+    public void driveWithXbox(double driveY, double driveX, double xboxRot, boolean frontLeftCOR,
+            boolean frontRightCOR) {
         // Get the x speed. We are inverting this because Xbox controllers return
         // negative values when we push forward.
         final var xSpeed = -m_xSpeedLimiter
@@ -172,35 +200,13 @@ public class SwerveDrive extends Base {
         // positive value when we pull to the left (remember, CCW is positive in
         // mathematics). Xbox controllers return positive values when you pull to
         // the right by default.
-        // final var rot =
-        // -m_rotLimiter.calculate(MathUtil.applyDeadband(OI.getDriveRot(),
-        // Constants.xboxDeadband))
-        // * SwerveDrive.kMaxAngularSpeed;
-
-        // final var centerOfRotationMeters = OI.getCenterOfRotationFrontLeft() ?
-        // m_frontLeftLocation
-        // : new Translation2d();
-        final var rot = -m_rotLimiter.calculate(MathUtil.applyDeadband(OI.getDriveRot(), Constants.xboxDeadband))
+        final var rot = -m_rotLimiter.calculate(MathUtil.applyDeadband(xboxRot, Constants.xboxDeadband))
                 * SwerveDrive.kMaxAngularSpeed;
 
-        final var centerOfRotationMeters = OI.getCenterOfRotationFrontLeft() ? m_frontLeftLocation
-                : (OI.getCenterOfRotationFrontRight() ? m_frontRightLocation : new Translation2d());
+        final var centerOfRotationMeters = frontLeftCOR ? m_frontLeftLocation
+                : (frontRightCOR ? m_frontRightLocation : new Translation2d());
 
         drive(xSpeed, ySpeed, rot, m_fieldRelative, centerOfRotationMeters);
-    }
-
-    //Robot Init
-    /*public void robotInit() {
-     /*   // SendableRegistry.add(m_frontLeft, "frontleft");
-        // SendableRegistry.add(m_frontRight, "frontright");
-        Shuffleboard.getTab("main").add("front left", m_frontLeft);
-        Shuffleboard.getTab("main").add("front right", m_frontRight);
-        Shuffleboard.getTab("main").add("back left", m_backLeft);
-        Shuffleboard.getTab("main").add("back right", m_backRight); 
-    } */
-
-    @Override
-    public void disabledInit() {
     }
 
     // Robot Periodic
@@ -211,15 +217,10 @@ public class SwerveDrive extends Base {
             m_fieldRelative = false;
         }
         if (resetOdometry) {
-            m_gyro.reset();
+            zeroHeading();
             m_odometry.resetPosition(new Pose2d(), getGyroRotation2d());
         }
         updateOdometry();
-    }
-
-    // autonomusInit
-    public void resetOdometry() {
-        m_odometry.resetPosition(new Pose2d(), getGyroRotation2d());
     }
 
     // Test Periodic
@@ -243,7 +244,7 @@ public class SwerveDrive extends Base {
     public void initSendable(SendableBuilder builder) {
         builder.setSmartDashboardType("Swerve Drive");
         builder.addBooleanProperty("Field Oriented", () -> m_fieldRelative, null);
-        builder.addDoubleProperty("Heading deg", () -> -m_gyro.getAngle(), null);
+        builder.addDoubleProperty("Rotation deg", () -> getGyroRotation2d().getDegrees(), null);
         builder.addDoubleProperty("Desired Vx m-s", () -> m_lastChassisSpeedsDesired.vxMetersPerSecond, null);
         builder.addDoubleProperty("Desired Vy m-s", () -> m_lastChassisSpeedsDesired.vyMetersPerSecond, null);
         builder.addDoubleProperty("Desired Rot rad-s", () -> m_lastChassisSpeedsDesired.omegaRadiansPerSecond, null);

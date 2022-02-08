@@ -17,15 +17,11 @@ public class Shooter extends Base {
     // Shuffleboard Tabs and NetworkTableEntries.
     ShuffleboardTab ShootMotorTab = Shuffleboard.getTab("Shooter");
 
-    NetworkTableEntry ntBotRPM = ShootMotorTab.add("Bot RPM", 1000).withPosition(3, 3).withSize(1, 1).getEntry();
-    NetworkTableEntry ntTopRPM = ShootMotorTab.add("Top RPM", 1000).withPosition(3, 2).withSize(1, 1).getEntry();
-    NetworkTableEntry ntFeetToRPM = ShootMotorTab.add("Feet To Top RPM", 17).withPosition(4, 2).withSize(1, 1)
-            .getEntry();
-
     WPI_TalonFX m_shootTalonTop = new WPI_TalonFX(RobotMap.kShoot_TopMotor_TalonFX);
     WPI_TalonFX m_shootTalonBot = new WPI_TalonFX(RobotMap.kShoot_BottomMotor_TalonFX);
     WPI_TalonFX m_turnTableTalon = new WPI_TalonFX(RobotMap.kTurnTableMotor_TalonFX);
     DigitalInput m_TurnTableZero = new DigitalInput(RobotMap.kShooter_TurretZeroDIO);
+    public boolean m_hasBeenCalibrated = false;
 
     // SimpleMotorFeedforward m_ShootFeedForward = new SimpleMotorFeedforward(0.00,
     // 0.00045);
@@ -50,6 +46,10 @@ public class Shooter extends Base {
         ShootMotorTab.addNumber("Actual Top RPM", () -> getTopMotorRPM()).withPosition(5, 2);
         ShootMotorTab.addNumber("Actual Bot RPM", () -> getBotMotorRPM()).withPosition(5, 3);
         ShootMotorTab.addBoolean("Is Ok to Shoot", () -> IsOkToShoot()).withPosition(4, 1);
+        ShootMotorTab.addNumber("Turn Table Position", () -> m_turnTableTalon.getSelectedSensorPosition());
+        ShootMotorTab.addBoolean("Has Been Zero'ed", () -> m_hasBeenCalibrated);
+
+
 
         TalonFXConfiguration baseConfig = new TalonFXConfiguration();
         baseConfig.closedloopRamp = 0.02;
@@ -88,9 +88,11 @@ public class Shooter extends Base {
 
         m_shootTalonBot.setNeutralMode(NeutralMode.Coast);
         m_shootTalonTop.setNeutralMode(NeutralMode.Coast);
+        m_turnTableTalon.setNeutralMode(NeutralMode.Brake);
 
         m_shootTalonBot.setInverted(false);
         m_shootTalonTop.setInverted(false);
+        m_turnTableTalon.setInverted(false);
 
         m_shootTalonBot.setSensorPhase(false);
         m_shootTalonTop.setSensorPhase(false);
@@ -232,7 +234,30 @@ public class Shooter extends Base {
         double errorTopRPM = rpmToTicksPer100ms(m_shootTalonTop.getClosedLoopError());
         double errorBotRPM = rpmToTicksPer100ms(m_shootTalonBot.getClosedLoopError());
 
-        return errorBotRPM > 150 && errorTopRPM > 150;
+        return errorBotRPM < 75 && errorTopRPM < 75;
+    }
+    public void turnMotorsOff() {
+        setShootSpeeds(0, 0);
+    }
+    public boolean setTurnTableToZero(){
+        double turntableSpeed = 0;
+        if(getTurnTableZero()){
+            m_hasBeenCalibrated = true;
+            m_turnTableTalon.setSelectedSensorPosition(0);
+            m_turnTableTalon.configReverseSoftLimitThreshold(-10000);
+            m_turnTableTalon.configForwardSoftLimitThreshold(12000);
+            m_turnTableTalon.configForwardSoftLimitEnable(true);
+            m_turnTableTalon.configReverseSoftLimitEnable(true);
+            m_turnTableTalon.set(ControlMode.PercentOutput, 0);
+            return true;
+        }else{
+            m_turnTableTalon.set(ControlMode.PercentOutput, -0.07);
+            return false;
+        }
+        
+    }
+    public boolean getTurnTableZero(){
+        return !m_TurnTableZero.get();
     }
     public boolean setTurnTableToZero(){
         double turntableSpeed = 0;

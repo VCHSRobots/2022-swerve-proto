@@ -22,11 +22,6 @@ import frc.robot.subsystems.*;
  * project.
  */
 public class Robot extends TimedRobot {
-  private static final String kDefaultAuto = "Default";
-  private static final String kCustomAuto = "My Auto";
-  private String m_autoSelected;
-  private final SendableChooser<String> m_chooser = new SendableChooser<>();
-
   //for superstructure
   private final SwerveDrive swerveDrive = new SwerveDrive();
   private final Intake intake = new Intake();
@@ -35,7 +30,6 @@ public class Robot extends TimedRobot {
 
   SuperStructure superStructure = new SuperStructure(swerveDrive, intake, shooter);
 
-  private Auto autonomous = new Auto();
   
   /**
    * This function is run when the robot is first started up and should be used
@@ -46,17 +40,12 @@ public class Robot extends TimedRobot {
   @Override
   public void robotInit() {
 
-    m_chooser.setDefaultOption("Default Auto", kDefaultAuto);
-    m_chooser.addOption("My Auto", kCustomAuto);
-    SmartDashboard.putData("Auto choices", m_chooser);
 
     Shuffleboard.getTab("main").add("xbox", OI.xboxDrive);
 
     Shuffleboard.getTab("main").addNumber("pose/x", ()->swerveDrive.getPose2d().getX());
     Shuffleboard.getTab("main").addNumber("pose/y", ()->swerveDrive.getPose2d().getY());
     Shuffleboard.getTab("main").addNumber("pose/theta", ()->swerveDrive.getPose2d().getRotation().getDegrees());
-
-    autonomous.robotInit();
 
     // CameraServer.startAutomaticCapture();
 
@@ -78,9 +67,6 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void robotPeriodic() {
-
-    autonomous.robotPeriodic();
-
     //SUPER STRUCTURE STUFF
     superStructure.robotPeriodic();
   }
@@ -104,9 +90,6 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void autonomousInit() {
-
-    autonomous.autonomousInit();
-
     //SUPER STRUCTURE STUFF
     superStructure.autonomousInit();
   }
@@ -114,9 +97,6 @@ public class Robot extends TimedRobot {
   /** This function is called periodically during autonomous. */
   @Override
   public void autonomousPeriodic() {
-
-    autonomous.autonomousPeriodic();
-
     //SUPER STRUCTURE STUFF
     superStructure.autonomousPeriodic();
   }
