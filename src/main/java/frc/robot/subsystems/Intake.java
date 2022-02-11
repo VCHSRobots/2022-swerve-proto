@@ -46,7 +46,7 @@ public class Intake extends Base {
     NetworkTableEntry ntIntakeSpeed = intakeMotortab.add("intake actual", 0.15).getEntry();
     NetworkTableEntry ntMoverSpeed = intakeMotortab.add("mover actual", 0.15).getEntry();
     NetworkTableEntry ntShooterLoaderSpeed = intakeMotortab.add("loader actual", 0.15).getEntry();
-    NetworkTableEntry ntMotorSpeed = intakeMotortab.add("set percent out", 0.15).getEntry();
+    NetworkTableEntry ntMotorSpeed = intakeMotortab.add("set percent out", 0.4).getEntry();
 
     enum STATE {
         A, B, C, D, E;
@@ -182,7 +182,7 @@ public class Intake extends Base {
             case E:
                 // start loading balls into shooter (loadShooter)
                 // stops when no more shooter buttons are pressed
-                m_intake.set(ControlMode.PercentOutput, 0);
+                m_intake.set(ControlMode.PercentOutput, ntMotorSpeed.getDouble(0.0));
                 m_mover.set(ControlMode.PercentOutput, ntMotorSpeed.getDouble(0.0));
                 m_shooterLoader.set(ControlMode.PercentOutput, ntMotorSpeed.getDouble(0.0));
 
