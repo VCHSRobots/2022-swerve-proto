@@ -10,6 +10,7 @@ public class Base implements Sendable {
 
   @Override
   public void initSendable(SendableBuilder builder) {
+  
   }
 
   /**

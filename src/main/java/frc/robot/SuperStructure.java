@@ -33,7 +33,7 @@ public class SuperStructure extends Base {
     private SwerveDrive m_SwerveDrive;
     private Intake m_Intake;
     private Shooter m_Shooter;
-    // private Climber m_Climber;
+    private Climber m_Climber;
 
     Timer m_Timer = new Timer();
 
@@ -49,12 +49,12 @@ public class SuperStructure extends Base {
     NetworkTableEntry ntFeetToRPM = ShootMotorTab.add("Feet To Top RPM", 17).withPosition(4, 2).withSize(1, 1)
             .getEntry();
 
-    public SuperStructure(SwerveDrive swerveDrive, Intake intake, Shooter shooter) {
+    public SuperStructure(SwerveDrive swerveDrive, Intake intake, Shooter shooter, Climber climber) {
 
         m_SwerveDrive = swerveDrive;
         m_Intake = intake;
         m_Shooter = shooter;
-        // m_Climber = climber;
+        m_Climber = climber;
 
     }
 
@@ -64,7 +64,7 @@ public class SuperStructure extends Base {
         m_SwerveDrive.robotInit();
         m_Intake.init();
         m_Shooter.robotInit();
-        // m_Climber.robotInit();
+        m_Climber.robotInit();
         m_auto.robotInit();
 
         Shuffleboard.getTab("super").add("swervedrie", m_SwerveDrive);
@@ -140,8 +140,8 @@ public class SuperStructure extends Base {
         }
 
         // CLIMBER
-        // climberControl(OI.getSolenoidReverse(), OI.getSolenoidForward(),
-        // OI.getArmsUp(), OI.getArmsDown());
+        climberControl(OI.getSolenoidReverse(), OI.getSolenoidForward(),
+                OI.getArmsUp(), OI.getArmsDown());
     }
 
     @Override
@@ -210,20 +210,20 @@ public class SuperStructure extends Base {
     private void climberControl(boolean shortHookBack, boolean shortHookForward, boolean armsUp, boolean armsDown) {
 
         // solenoids
-        // if (shortHookBack) {
-        // m_Climber.hooksReverse();
-        // } else if (shortHookForward) {
-        // m_Climber.hooksForward();
-        // }
-        // // motors
-        // if (armsUp) {
-        // m_Climber.armsUp();
-        // } else if (armsDown) {
-        // m_Climber.armsDown();
+        if (shortHookBack) {
+            m_Climber.hooksReverse();
+        } else if (shortHookForward) {
+            m_Climber.hooksForward();
+        }
+        // motors
+        if (armsUp) {
+            m_Climber.armsUp();
+        } else if (armsDown) {
+            m_Climber.armsDown();
 
-        // } else {
-        // m_Climber.armsStop();
-        // }
+        } else {
+            m_Climber.armsStop();
+        }
 
     }
 }

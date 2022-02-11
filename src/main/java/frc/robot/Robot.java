@@ -26,9 +26,9 @@ public class Robot extends TimedRobot {
   private final SwerveDrive swerveDrive = new SwerveDrive();
   private final Intake intake = new Intake();
   private final Shooter shooter = new Shooter();
-  // private final Climber climber = new Climber();
+  private final Climber climber = new Climber();
 
-  SuperStructure superStructure = new SuperStructure(swerveDrive, intake, shooter);
+  SuperStructure superStructure = new SuperStructure(swerveDrive, intake, shooter, climber);
 
   
   /**
