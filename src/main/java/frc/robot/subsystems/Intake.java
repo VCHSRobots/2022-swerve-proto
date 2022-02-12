@@ -31,9 +31,9 @@ public class Intake extends Base {
 
     private Timer m_timer = new Timer();
 
-    public final WPI_TalonFX m_intake = new WPI_TalonFX(RobotMap.kIntake_roller_TalonFX);
-    public final WPI_TalonFX m_mover = new WPI_TalonFX(RobotMap.kIntake_mover_TalonFX);
-    public final WPI_TalonFX m_shooterLoader = new WPI_TalonFX(RobotMap.kIntake_shooterInput_TalonFX);
+    public final WPI_TalonFX m_intake = new WPI_TalonFX(RobotMap.kIntake_roller_TalonFX, RobotMap.kCANivore_name);
+    public final WPI_TalonFX m_mover = new WPI_TalonFX(RobotMap.kIntake_mover_TalonFX, RobotMap.kCANivore_name);
+    public final WPI_TalonFX m_shooterLoader = new WPI_TalonFX(RobotMap.kIntake_shooterInput_TalonFX, RobotMap.kCANivore_name);
     public final DoubleSolenoid m_doublePCM = new DoubleSolenoid(PneumaticsModuleType.REVPH,
             RobotMap.kIntake_Pnuematic1, RobotMap.kIntake_Pnuematic2);
 
@@ -106,12 +106,6 @@ public class Intake extends Base {
                     // don't care
                 }
 
-                m_intake.set(ControlMode.PercentOutput, 0);
-                m_mover.set(ControlMode.PercentOutput, 0);
-                m_shooterLoader.set(ControlMode.PercentOutput, 0);
-
-                m_doublePCM.set(Value.kReverse);
-
                 break;
             case B:
                 // intake, bt, and load ON
@@ -128,12 +122,6 @@ public class Intake extends Base {
                 if (isBallAtLoad()) {
                     m_state = STATE.C;
                 }
-
-                m_intake.set(ControlMode.PercentOutput, ntMotorSpeed.getDouble(0.0));
-                m_mover.set(ControlMode.PercentOutput, ntMotorSpeed.getDouble(0.0));
-                m_shooterLoader.set(ControlMode.PercentOutput, ntMotorSpeed.getDouble(0.0));
-
-                m_doublePCM.set(Value.kForward);
 
                 break;
             case C:
@@ -157,6 +145,56 @@ public class Intake extends Base {
                     // 2nd ball loaded, stop intaking
                     m_state = STATE.A;
                 }
+
+                // SPIT BALL OUT IF BAD (WRONG COLOR) :))))))
+                // add spit out ball logic somewhere else
+
+                
+
+                break;
+            case D:
+                // state changes to E after timer (inbetween state)
+                // m_timer.schedule(m_changeToE, 200);
+
+                // m_intake.set(ControlMode.PercentOutput, kDefaultMotorSpeed);
+                // m_mover.set(ControlMode.PercentOutput, kDefaultMotorSpeed);
+                // m_shooterLoader.set(ControlMode.PercentOutput, 0);
+
+                // m_doublePCM.set(Value.kForward);
+
+                break;
+            case E:
+                // start loading balls into shooter (loadShooter)
+                // stops when no more shooter buttons are pressed
+                
+                break;
+        }
+
+        // actual motor states
+        switch (m_state) {
+            case A:
+                // intake and load off, intake up
+
+                m_intake.set(ControlMode.PercentOutput, 0);
+                m_mover.set(ControlMode.PercentOutput, 0);
+                m_shooterLoader.set(ControlMode.PercentOutput, 0);
+
+                m_doublePCM.set(Value.kReverse);
+
+                break;
+            case B:
+                // intake, bt, and load ON
+                // intake down
+                m_intake.set(ControlMode.PercentOutput, ntMotorSpeed.getDouble(0.0));
+                m_mover.set(ControlMode.PercentOutput, ntMotorSpeed.getDouble(0.0));
+                m_shooterLoader.set(ControlMode.PercentOutput, ntMotorSpeed.getDouble(0.0));
+
+                m_doublePCM.set(Value.kForward);
+
+                break;
+            case C:
+                // intake, mover, ON, loader OFF
+                // intake down
 
                 // SPIT BALL OUT IF BAD (WRONG COLOR) :))))))
                 // add spit out ball logic somewhere else
