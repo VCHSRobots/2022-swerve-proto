@@ -87,6 +87,9 @@ public class OI {
     static public boolean getZeroOfTurnTableTalon(){
         return xboxDrive.getRightTriggerAxis() > 0.5;
     }
+    static public boolean getZeroOfTurnTable(){
+        return xboxDrive.getLeftTriggerAxis() > 0.5;
+    }
     
 
 }

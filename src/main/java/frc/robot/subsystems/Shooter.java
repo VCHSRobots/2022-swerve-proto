@@ -1,5 +1,8 @@
 package frc.robot.subsystems;
 
+import java.lang.annotation.Target;
+import java.util.ResourceBundle.Control;
+
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.TalonFXConfiguration;
@@ -16,9 +19,9 @@ public class Shooter extends Base {
     // Shuffleboard Tabs and NetworkTableEntries.
     ShuffleboardTab ShootMotorTab = Shuffleboard.getTab("Shooter");
 
-    WPI_TalonFX m_shootTalonTop = new WPI_TalonFX(RobotMap.kShoot_TopMotor_TalonFX);
-    WPI_TalonFX m_shootTalonBot = new WPI_TalonFX(RobotMap.kShoot_BottomMotor_TalonFX);
-    WPI_TalonFX m_turnTableTalon = new WPI_TalonFX(RobotMap.kTurnTableMotor_TalonFX);
+    WPI_TalonFX m_shootTalonTop = new WPI_TalonFX(RobotMap.kShoot_TopMotor_TalonFX, RobotMap.kCANivore_name);
+    WPI_TalonFX m_shootTalonBot = new WPI_TalonFX(RobotMap.kShoot_BottomMotor_TalonFX, RobotMap.kCANivore_name);
+    WPI_TalonFX m_turnTableTalon = new WPI_TalonFX(RobotMap.kTurnTableMotor_TalonFX, RobotMap.kCANivore_name);
     DigitalInput m_TurnTableZero = new DigitalInput(RobotMap.kShooter_TurretZeroDIO);
     public boolean m_hasBeenCalibrated = false;
 
@@ -44,7 +47,7 @@ public class Shooter extends Base {
     public void robotInit() {
         ShootMotorTab.addNumber("Actual Top RPM", () -> getTopMotorRPM()).withPosition(5, 2);
         ShootMotorTab.addNumber("Actual Bot RPM", () -> getBotMotorRPM()).withPosition(5, 3);
-        ShootMotorTab.addBoolean("Is Ok to Shoot", () -> IsOkToShoot()).withPosition(4, 1);
+        // ShootMotorTab.addBoolean("Is Ok to Shoot", () -> IsOkToShoot()).withPosition(4, 1);
         ShootMotorTab.addNumber("Turn Table Position", () -> m_turnTableTalon.getSelectedSensorPosition());
         ShootMotorTab.addBoolean("Has Been Zero'ed", () -> m_hasBeenCalibrated);
         
@@ -55,8 +58,8 @@ public class Shooter extends Base {
         baseConfig.nominalOutputForward = 0.0;
         baseConfig.nominalOutputReverse = 0.0;
         baseConfig.openloopRamp = 0.01;
-        baseConfig.peakOutputForward = 1.0;
-        baseConfig.peakOutputReverse = -1.0;
+        baseConfig.peakOutputForward = 2.0;
+        baseConfig.peakOutputReverse = -2.0;
         baseConfig.statorCurrLimit.enable = true;
         baseConfig.statorCurrLimit.currentLimit = 30;
         baseConfig.statorCurrLimit.triggerThresholdCurrent = 30;
@@ -77,9 +80,9 @@ public class Shooter extends Base {
         baseConfig.slot0.kF = 0.05;
         baseConfig.slot0.kP = 0.038; // 0.03
 
-        m_shootTalonBot.configFactoryDefault();
-        m_shootTalonTop.configFactoryDefault();
-        m_turnTableTalon.configFactoryDefault();
+        m_shootTalonBot.configFactoryDefault(100);
+        m_shootTalonTop.configFactoryDefault(100);
+        m_turnTableTalon.configFactoryDefault(100);
 
         m_shootTalonBot.configAllSettings(baseConfig);
         m_shootTalonTop.configAllSettings(baseConfig);
@@ -203,9 +206,9 @@ public class Shooter extends Base {
     public boolean IsOkToShoot() {
         double errorTopRPM = ticksPer100msToRPM(m_shootTalonTop.getClosedLoopError());
         double errorBotRPM = ticksPer100msToRPM(m_shootTalonBot.getClosedLoopError());
-
-        return (errorBotRPM < 50 && errorTopRPM < 50);
-        
+        boolean isTopFast = ticksPer100msToRPM(m_shootTalonTop.getSelectedSensorVelocity()) > 1100;
+        boolean isBotFast = ticksPer100msToRPM(m_shootTalonBot.getSelectedSensorVelocity()) > 1100;
+        return errorBotRPM < 30 && errorTopRPM < 30 && isTopFast && isBotFast;
     }
     public double closedLoopErrorTop() {
         double errorTopRPMActual = ticksPer100msToRPM(m_shootTalonTop.getClosedLoopError());
@@ -246,4 +249,34 @@ public class Shooter extends Base {
     public boolean isAtZero() {
         return !m_TurnTableZero.get();
     }
-}
+
+    // function that offsets with target. corrects angle error.
+    public boolean targetFromVisionAngle(double angleError){
+        double target = 0;
+        double tt_speed = 0.1;
+        // double actualAngle = ticksPer100msToRPM(m_turnTableTalon.getSelectedSensorPosition());
+        //double targetError = angleError - target;
+        // if angleError absolute value within 1 degree
+        if(Math.abs(angleError) <= 1){
+            m_turnTableTalon.set(ControlMode.PercentOutput, 0);
+            return true;
+        } else if (angleError > 1) {
+            m_turnTableTalon.set(ControlMode.PercentOutput, -tt_speed);
+            return false;
+        }else if(angleError < -1){
+            m_turnTableTalon.set(ControlMode.PercentOutput, tt_speed);
+        }
+        return false;
+        
+            
+            // m_turnTableTalon.set(ControlMode.Velocity, ticksPer100msToRPM(m_turnTableTalon.getSelectedSensorPosition() + targetError));
+            
+        
+        
+            
+        }
+    }
+
+    
+
+

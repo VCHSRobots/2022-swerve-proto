@@ -36,8 +36,8 @@ public class Climber extends Base {
     public void robotInit() {
 
         // init motors
-        m_master = new WPI_TalonFX(RobotMap.kClimb_master_TalonFX);
-        m_follower = new WPI_TalonFX(RobotMap.kClimb_follower_TalonFX);
+        m_master = new WPI_TalonFX(RobotMap.kClimb_master_TalonFX, RobotMap.kCANivore_name);
+        m_follower = new WPI_TalonFX(RobotMap.kClimb_follower_TalonFX, RobotMap.kCANivore_name);
 
         // motor configs
         m_master.configFactoryDefault();
