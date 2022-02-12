@@ -48,6 +48,7 @@ public class SuperStructure extends Base {
     NetworkTableEntry ntTopRPM = ShootMotorTab.add("Top RPM", 1000).withPosition(3, 2).withSize(1, 1).getEntry();
     NetworkTableEntry ntFeetToRPM = ShootMotorTab.add("Feet To Top RPM", 17).withPosition(4, 2).withSize(1, 1)
             .getEntry();
+      
 
     public SuperStructure(SwerveDrive swerveDrive, Intake intake, Shooter shooter) {
 
@@ -70,7 +71,9 @@ public class SuperStructure extends Base {
         Shuffleboard.getTab("super").add("swervedrie", m_SwerveDrive);
         Shuffleboard.getTab("super").add("compressor", m_phCompressor);
         Shuffleboard.getTab("super").addNumber("compressor/pressure", () -> m_phCompressor.getPressure());
-
+        Shuffleboard.getTab("ShooterSuper").addBoolean("IsOkToShoot", () -> m_Shooter.IsOkToShoot());
+        Shuffleboard.getTab("ShooterSuper").addNumber("Closed Loop Error Top", () -> m_Shooter.closedLoopErrorTop());
+        Shuffleboard.getTab("ShooterSuper").addNumber("Closed Loop Error Bot", () -> m_Shooter.closedLoopErrorBot());
         // auto chooser
         m_chooser.setDefaultOption("Auto1", kDefaultAuto);
         m_chooser.addOption("Auto2", kCustomAuto);
@@ -138,6 +141,7 @@ public class SuperStructure extends Base {
             m_Shooter.TurnTable(OI.getRightBumperForTurntable(), OI.getLeftBumperForTurntable());
 
         }
+
 
         // CLIMBER
         // climberControl(OI.getSolenoidReverse(), OI.getSolenoidForward(),

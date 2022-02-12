@@ -47,6 +47,7 @@ public class Shooter extends Base {
         ShootMotorTab.addBoolean("Is Ok to Shoot", () -> IsOkToShoot()).withPosition(4, 1);
         ShootMotorTab.addNumber("Turn Table Position", () -> m_turnTableTalon.getSelectedSensorPosition());
         ShootMotorTab.addBoolean("Has Been Zero'ed", () -> m_hasBeenCalibrated);
+        
 
         TalonFXConfiguration baseConfig = new TalonFXConfiguration();
         baseConfig.closedloopRamp = 0.02;
@@ -200,10 +201,19 @@ public class Shooter extends Base {
 
     // Boolean that checks if shooter is reading to shoot at a good speed.
     public boolean IsOkToShoot() {
-        double errorTopRPM = rpmToTicksPer100ms(m_shootTalonTop.getClosedLoopError());
-        double errorBotRPM = rpmToTicksPer100ms(m_shootTalonBot.getClosedLoopError());
+        double errorTopRPM = ticksPer100msToRPM(m_shootTalonTop.getClosedLoopError());
+        double errorBotRPM = ticksPer100msToRPM(m_shootTalonBot.getClosedLoopError());
 
-        return errorBotRPM < 75 && errorTopRPM < 75;
+        return (errorBotRPM < 50 && errorTopRPM < 50);
+        
+    }
+    public double closedLoopErrorTop() {
+        double errorTopRPMActual = ticksPer100msToRPM(m_shootTalonTop.getClosedLoopError());
+        return errorTopRPMActual;
+    }    
+    public double closedLoopErrorBot() {
+        double errorBotRPMActual = ticksPer100msToRPM(m_shootTalonBot.getClosedLoopError());
+        return errorBotRPMActual;
     }
 
     public void turnMotorsOff() {

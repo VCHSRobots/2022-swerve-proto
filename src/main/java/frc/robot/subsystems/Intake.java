@@ -46,7 +46,7 @@ public class Intake extends Base {
     NetworkTableEntry ntIntakeSpeed = intakeMotortab.add("intake actual", 0.15).getEntry();
     NetworkTableEntry ntMoverSpeed = intakeMotortab.add("mover actual", 0.15).getEntry();
     NetworkTableEntry ntShooterLoaderSpeed = intakeMotortab.add("loader actual", 0.15).getEntry();
-    NetworkTableEntry ntMotorSpeed = intakeMotortab.add("set percent out", 0.15).getEntry();
+    NetworkTableEntry ntMotorSpeed = intakeMotortab.add("set percent out", 0.3).getEntry();
 
     enum STATE {
         A, B, C, D, E;
