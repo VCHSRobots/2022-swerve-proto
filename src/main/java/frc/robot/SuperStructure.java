@@ -34,6 +34,7 @@ public class SuperStructure extends Base {
     private Intake m_Intake;
     private Shooter m_Shooter;
     private Climber m_Climber;
+    private final VisionBall m_VisionBall;
 
     Timer m_Timer = new Timer();
 
@@ -56,6 +57,7 @@ public class SuperStructure extends Base {
         m_Intake = intake;
         m_Shooter = shooter;
         m_Climber = climber;
+        m_VisionBall = new VisionBall(m_SwerveDrive);
 
     }
 
@@ -67,6 +69,7 @@ public class SuperStructure extends Base {
         m_Shooter.robotInit();
         m_Climber.robotInit();
         m_auto.robotInit();
+        m_VisionBall.robotInit();
 
         Shuffleboard.getTab("super").add("swervedrie", m_SwerveDrive);
         Shuffleboard.getTab("super").add("compressor", m_phCompressor);
@@ -91,6 +94,12 @@ public class SuperStructure extends Base {
     @Override
     public void teleopPeriodic() {
         m_phCompressor.enableAnalog(90, 115);
+
+        // VISION GET BALL
+        if (OI.getVisionBallEngaged()) {
+            m_VisionBall.followBall();
+            return;
+        }
 
         // DRIVING CODE
         m_SwerveDrive.driveWithXbox(OI.getDriveY(), OI.getDriveX(), OI.getDriveRot(), OI.getCenterOfRotationFrontLeft(),
