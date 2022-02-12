@@ -32,11 +32,11 @@ public class Shooter extends Base {
 
     // SHUFFLEBOARD HELPERS
     private double getTopMotorRPM() {
-        return ticksPer100msToRPM(m_shootTalonTop.getSelectedSensorVelocity());
+        return ticksPer100msToRPM(m_shootTalonTop.getSelectedSensorVelocity(10));
     }
 
     private double getBotMotorRPM() {
-        return ticksPer100msToRPM(m_shootTalonBot.getSelectedSensorVelocity());
+        return ticksPer100msToRPM(m_shootTalonBot.getSelectedSensorVelocity(10));
     }
 
     // END SHUFFLEBOARD HELPERS
@@ -76,12 +76,12 @@ public class Shooter extends Base {
         baseConfig.slot0.kF = 0.05;
         baseConfig.slot0.kP = 0.038; // 0.03
 
-        m_shootTalonBot.configFactoryDefault();
-        m_shootTalonTop.configFactoryDefault();
-        m_turnTableTalon.configFactoryDefault();
+        m_shootTalonBot.configFactoryDefault(100);
+        m_shootTalonTop.configFactoryDefault(100);
+        m_turnTableTalon.configFactoryDefault(100);
 
-        m_shootTalonBot.configAllSettings(baseConfig);
-        m_shootTalonTop.configAllSettings(baseConfig);
+        m_shootTalonBot.configAllSettings(baseConfig, 100);
+        m_shootTalonTop.configAllSettings(baseConfig, 100);
 
         m_shootTalonBot.setNeutralMode(NeutralMode.Coast);
         m_shootTalonTop.setNeutralMode(NeutralMode.Coast);
@@ -94,7 +94,7 @@ public class Shooter extends Base {
         m_shootTalonBot.setSensorPhase(false);
         m_shootTalonTop.setSensorPhase(false);
 
-        m_turnTableTalon.configOpenloopRamp(0.1);
+        m_turnTableTalon.configOpenloopRamp(0.1, 100);
 
     }
 
@@ -215,10 +215,10 @@ public class Shooter extends Base {
             // 13 to 62, 52 to 231, GEAR RATIO: 21.19
             m_hasBeenCalibrated = true;
             m_turnTableTalon.setSelectedSensorPosition(0);
-            m_turnTableTalon.configReverseSoftLimitThreshold(-10000);
-            m_turnTableTalon.configForwardSoftLimitThreshold(12000);
-            m_turnTableTalon.configForwardSoftLimitEnable(true);
-            m_turnTableTalon.configReverseSoftLimitEnable(true);
+            m_turnTableTalon.configReverseSoftLimitThreshold(-10000, 100);
+            m_turnTableTalon.configForwardSoftLimitThreshold(12000, 100);
+            m_turnTableTalon.configForwardSoftLimitEnable(true, 100);
+            m_turnTableTalon.configReverseSoftLimitEnable(true, 100);
 
             m_turnTableTalon.set(ControlMode.PercentOutput, 0);
             return true;
