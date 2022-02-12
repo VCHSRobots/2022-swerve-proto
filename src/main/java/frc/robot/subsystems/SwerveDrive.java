@@ -31,7 +31,7 @@ import frc.robot.Constants.SwerveModuleOffsetRadians;
 
 /** Add your docs here. */
 public class SwerveDrive extends Base {
-    public static final double kMaxSpeed = 3.0; // 3 meters per second
+    public static final double kMaxSpeed = 3.5; // 3 meters per second
     public static final double kMaxAngularSpeed = 3 * Math.PI; // 1 rotation per second
 
     private final SlewRateLimiter m_xSpeedLimiter = new SlewRateLimiter(10);
@@ -187,14 +187,14 @@ public class SwerveDrive extends Base {
         // negative values when we push forward.
         final var xSpeed = -m_xSpeedLimiter
                 .calculate(MathUtil.applyDeadband(driveY, Constants.xboxDeadband))
-                * SwerveDrive.kMaxSpeed * 0.9;
+                * SwerveDrive.kMaxSpeed;
 
         // Get the y speed or sideways/strafe speed. We are inverting this because
         // we want a positive value when we pull to the left. Xbox controllers
         // return positive values when you pull to the right by default.
         final var ySpeed = -m_ySpeedLimiter
                 .calculate(MathUtil.applyDeadband(driveX, Constants.xboxDeadband))
-                * SwerveDrive.kMaxSpeed * 0.9;
+                * SwerveDrive.kMaxSpeed;
 
         // Get the rate of angular rotation. We are inverting this because we want a
         // positive value when we pull to the left (remember, CCW is positive in

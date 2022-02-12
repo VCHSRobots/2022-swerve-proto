@@ -73,7 +73,7 @@ public class Shooter extends Base {
         baseConfig.slot0.integralZone = 100;
         baseConfig.slot0.kI = 0.0;
         baseConfig.slot0.kD = 0.0;
-        baseConfig.slot0.kF = 0.05;
+        baseConfig.slot0.kF = 0.07;
         baseConfig.slot0.kP = 0.038; // 0.03
 
         m_shootTalonBot.configFactoryDefault(100);
@@ -202,8 +202,8 @@ public class Shooter extends Base {
     public boolean IsOkToShoot() {
         double errorTopRPM = ticksPer100msToRPM(m_shootTalonTop.getClosedLoopError());
         double errorBotRPM = ticksPer100msToRPM(m_shootTalonBot.getClosedLoopError());
-        boolean isTopFast = ticksPer100msToRPM(m_shootTalonTop.getSelectedSensorVelocity()) > 1100;
-        boolean isBotFast = ticksPer100msToRPM(m_shootTalonBot.getSelectedSensorVelocity()) > 1100;
+        boolean isTopFast = ticksPer100msToRPM(m_shootTalonTop.getSelectedSensorVelocity()) > 1500;
+        boolean isBotFast = ticksPer100msToRPM(m_shootTalonBot.getSelectedSensorVelocity()) > 1500;
         return errorBotRPM < 30 && errorTopRPM < 30 && isTopFast && isBotFast;
     }
 

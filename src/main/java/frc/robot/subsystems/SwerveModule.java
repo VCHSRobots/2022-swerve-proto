@@ -64,7 +64,7 @@ public class SwerveModule implements Sendable {
                                         kModuleMaxAngularVelocity, kModuleMaxAngularAcceleration));
 
         // Gains are for example purposes only - must be determined for your own robot!
-        private final SimpleMotorFeedforward m_driveFeedforward = new SimpleMotorFeedforward(0.4, 1.93); // 0.4, 1.93
+        private final SimpleMotorFeedforward m_driveFeedforward = new SimpleMotorFeedforward(0.4, 2.2); // 0.4, 1.93
         private final SimpleMotorFeedforward m_turnFeedforward = new SimpleMotorFeedforward(0.35, 0.19); // 0.1,0.25
 
         private final SimpleMotorFeedforward m_driveFeedforwardIntegrated = new SimpleMotorFeedforward(0, 0);
