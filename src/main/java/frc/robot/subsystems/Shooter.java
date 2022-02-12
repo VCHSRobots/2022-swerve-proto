@@ -16,9 +16,9 @@ public class Shooter extends Base {
     // Shuffleboard Tabs and NetworkTableEntries.
     ShuffleboardTab ShootMotorTab = Shuffleboard.getTab("Shooter");
 
-    WPI_TalonFX m_shootTalonTop = new WPI_TalonFX(RobotMap.kShoot_TopMotor_TalonFX);
-    WPI_TalonFX m_shootTalonBot = new WPI_TalonFX(RobotMap.kShoot_BottomMotor_TalonFX);
-    WPI_TalonFX m_turnTableTalon = new WPI_TalonFX(RobotMap.kTurnTableMotor_TalonFX);
+    WPI_TalonFX m_shootTalonTop = new WPI_TalonFX(RobotMap.kShoot_TopMotor_TalonFX, RobotMap.kCANivore_name);
+    WPI_TalonFX m_shootTalonBot = new WPI_TalonFX(RobotMap.kShoot_BottomMotor_TalonFX, RobotMap.kCANivore_name);
+    WPI_TalonFX m_turnTableTalon = new WPI_TalonFX(RobotMap.kTurnTableMotor_TalonFX, RobotMap.kCANivore_name);
     DigitalInput m_TurnTableZero = new DigitalInput(RobotMap.kShooter_TurretZeroDIO);
     public boolean m_hasBeenCalibrated = false;
 
@@ -44,7 +44,7 @@ public class Shooter extends Base {
     public void robotInit() {
         ShootMotorTab.addNumber("Actual Top RPM", () -> getTopMotorRPM()).withPosition(5, 2);
         ShootMotorTab.addNumber("Actual Bot RPM", () -> getBotMotorRPM()).withPosition(5, 3);
-        ShootMotorTab.addBoolean("Is Ok to Shoot", () -> IsOkToShoot()).withPosition(4, 1);
+        // ShootMotorTab.addBoolean("Is Ok to Shoot", () -> IsOkToShoot()).withPosition(4, 1);
         ShootMotorTab.addNumber("Turn Table Position", () -> m_turnTableTalon.getSelectedSensorPosition());
         ShootMotorTab.addBoolean("Has Been Zero'ed", () -> m_hasBeenCalibrated);
 
@@ -200,10 +200,11 @@ public class Shooter extends Base {
 
     // Boolean that checks if shooter is reading to shoot at a good speed.
     public boolean IsOkToShoot() {
-        double errorTopRPM = rpmToTicksPer100ms(m_shootTalonTop.getClosedLoopError());
-        double errorBotRPM = rpmToTicksPer100ms(m_shootTalonBot.getClosedLoopError());
-
-        return errorBotRPM < 75 && errorTopRPM < 75;
+        double errorTopRPM = ticksPer100msToRPM(m_shootTalonTop.getClosedLoopError());
+        double errorBotRPM = ticksPer100msToRPM(m_shootTalonBot.getClosedLoopError());
+        boolean isTopFast = ticksPer100msToRPM(m_shootTalonTop.getSelectedSensorVelocity()) > 1100;
+        boolean isBotFast = ticksPer100msToRPM(m_shootTalonBot.getSelectedSensorVelocity()) > 1100;
+        return errorBotRPM < 30 && errorTopRPM < 30 && isTopFast && isBotFast;
     }
 
     public void turnMotorsOff() {

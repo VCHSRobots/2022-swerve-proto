@@ -15,6 +15,9 @@ public class RobotMap {
      * 24/8 * 72/18 = 12
      */
 
+    // CANIVORE // 
+    public static final String kCANivore_name = "canivore";
+
     // TALON FX //
     public static final int kDrive_FrontLeftDrive_TalonFX   = 4;
     public static final int kDrive_FrontLeftTurn_TalonFX    = 3;
