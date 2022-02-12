@@ -88,5 +88,39 @@ public class OI {
         return xboxDrive.getRightTriggerAxis() > 0.5;
     }
     
-
+    static public boolean getVisionBallEngaged(){
+        return xboxDrive.getLeftStickButton();
+    }
 }
+
+/* FRC button doc
+X Returns true if X button is pressed, false otherwise.
+Y Returns true if Y button is pressed, false otherwise.
+B Returns true if B button is pressed, false otherwise.
+A Returns true if A button is pressed, false otherwise.
+
+DpadDown Returns true if D-pad Down is pressed, false otherwise.
+DpadLeft Returns true if D-pad Left is pressed, false otherwise.
+DpadRight Returns true if D-pad Right is pressed, false otherwise.
+DpadUp Returns true if D-pad Up is pressed, false otherwise
+
+LeftTrigger Returns range of value 0.0 to 1.0 as right trigger is pressed.
+RightTrigger Returns range of value 0.0 to 1.0 as right trigger is pressed.
+LeftBumper Returns true if the left bumper is pressed, false otherwise.
+RightBumper Returns true if the right bumper is pressed, false otherwise.
+
+Back Returns true if Back button is pressed, false otherwise.
+Start Returns true if the Start button is pressed, false otherwise.
+Guide/Mode Returns true if the Guide/Mode button is pressed, false otherwise.
+
+LeftStickX Returns the left-right deflection of the left stick.Negative values represent left deflections and positive right deflections. Range is -1.0 to +1.0.
+LeftStickY Returns the up-down deflection of the left stick.Negative values represent up deflections and positive values down deflections. Range is -1.0 to +1.0.
+RightStickX Returns the left-right deflection of the right stick.Negative values represent left deflections and positive right deflections. Range is -1.0 to +1.0.
+RightStickY Returns the up-down deflection of the right stick.Negative values represent up deflections and positive values down deflections. Range is -1.0 to +1.0.
+LeftStickButton Returns true if the left stick button is pressed, false otherwise.
+RightStickButton Returns true if the right stick button is pressed, false otherwise.
+
+AtRest Returns true if joys sticks and triggers in neutral position, false otherwise.(AtRest is a property you can access in your programming - not actually a “button” on the controller)
+
+link: https://ftcforum.firstinspires.org/forum/first-tech-challenge-community-forum-this-is-an-open-forum/teams-helping-teams-programming/77647-ftc-game-controller-programming-reference
+*/
