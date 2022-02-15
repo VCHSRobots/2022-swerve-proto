@@ -142,14 +142,14 @@ public class SuperStructure extends Base {
 
         // TURNTABLE
         // if not zeroed, zero the turntable
-        if (!m_Shooter.m_hasBeenCalibrated) {
-            m_Shooter.setTurnTableToZero();
+        // if (!m_Shooter.m_hasBeenCalibrated) {
+        //     m_Shooter.setTurnTableToZero();
 
-        } else {
-            // manual control of turntable
-            m_Shooter.TurnTable(OI.getRightBumperForTurntable(), OI.getLeftBumperForTurntable());
+        // } else {
+        //     // manual control of turntable
+        //     m_Shooter.TurnTable(OI.getRightBumperForTurntable(), OI.getLeftBumperForTurntable());
 
-        }
+        // }
 
         // CLIMBER
         climberControl(OI.getSolenoidReverse(), OI.getSolenoidForward(),
