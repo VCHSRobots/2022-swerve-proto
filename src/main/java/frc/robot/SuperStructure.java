@@ -19,6 +19,7 @@ import com.pathplanner.lib.PathPlannerTrajectory.PathPlannerState;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.networktables.NetworkTableEntry;
 
 /** Add your docs here. */
@@ -56,7 +57,7 @@ public class SuperStructure extends Base {
         m_Intake = intake;
         m_Shooter = shooter;
         m_Climber = climber;
-        m_VisionBall = new VisionBall(m_SwerveDrive);
+        m_VisionBall = new VisionBall();
 
     }
 
@@ -92,15 +93,17 @@ public class SuperStructure extends Base {
     public void teleopPeriodic() {
         m_phCompressor.enableAnalog(90, 115);
 
+        // DRIVING //
         // VISION GET BALL
         if (OI.getVisionBallEngaged()) {
-            m_VisionBall.followBall();
-            return;
+            ChassisSpeeds speeds = m_VisionBall.followBall();
+            m_SwerveDrive.driveFromChassisSpeeds(speeds);
+        } else {
+            // XBOX DRIVING CODE
+            m_SwerveDrive.driveWithXbox(OI.getDriveY(), OI.getDriveX(), OI.getDriveRot(),
+                    OI.getCenterOfRotationFrontLeft(),
+                    OI.getCenterOfRotationFrontRight());
         }
-
-        // DRIVING CODE
-        m_SwerveDrive.driveWithXbox(OI.getDriveY(), OI.getDriveX(), OI.getDriveRot(), OI.getCenterOfRotationFrontLeft(),
-                OI.getCenterOfRotationFrontRight());
 
         // INTAKE STATE UPDATE
         m_Intake.changeState(OI.startIntake(), OI.stopIntake());

@@ -107,11 +107,11 @@ public class SwerveModule implements Sendable {
                 m_turningMotor.setSensorPhase(false);
 
                 TalonFXConfiguration baseConfig = new TalonFXConfiguration();
-                baseConfig.closedloopRamp = 0.02;
+                baseConfig.closedloopRamp = 0.00;
                 baseConfig.neutralDeadband = 0.005;
                 baseConfig.nominalOutputForward = 0.0;
                 baseConfig.nominalOutputReverse = 0.0;
-                baseConfig.openloopRamp = 0.01;
+                baseConfig.openloopRamp = 0.00;
                 baseConfig.peakOutputForward = 1.0;
                 baseConfig.peakOutputReverse = -1.0;
                 baseConfig.statorCurrLimit.enable = true;
