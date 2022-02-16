@@ -20,7 +20,10 @@ public class Shooter extends Base {
     WPI_TalonFX m_shootTalonBot = new WPI_TalonFX(RobotMap.kShoot_BottomMotor_TalonFX, RobotMap.kCANivore_name);
     WPI_TalonFX m_turnTableTalon = new WPI_TalonFX(RobotMap.kTurnTableMotor_TalonFX, RobotMap.kCANivore_name);
     DigitalInput m_TurnTableZero = new DigitalInput(RobotMap.kShooter_TurretZeroDIO);
+
     public boolean m_hasBeenCalibrated = false;
+
+    private int m_isOKtoShootCounter = 0;
 
     // SimpleMotorFeedforward m_ShootFeedForward = new SimpleMotorFeedforward(0.00,
     // 0.00045);
@@ -95,7 +98,6 @@ public class Shooter extends Base {
         m_shootTalonTop.setSensorPhase(false);
 
         m_turnTableTalon.configOpenloopRamp(0.1);
-
     }
 
     @Override
@@ -114,6 +116,7 @@ public class Shooter extends Base {
     @Override
     public void teleopInit() {
         m_state = STATE.NotShooting;
+        m_isOKtoShootCounter = 0;
     }
 
     // Shooting function with Distance. (NOT READY!!)
@@ -204,7 +207,13 @@ public class Shooter extends Base {
         double errorBotRPM = ticksPer100msToRPM(m_shootTalonBot.getClosedLoopError());
         boolean isTopFast = ticksPer100msToRPM(m_shootTalonTop.getSelectedSensorVelocity()) > 1500;
         boolean isBotFast = ticksPer100msToRPM(m_shootTalonBot.getSelectedSensorVelocity()) > 1500;
-        return errorBotRPM < 30 && errorTopRPM < 30 && isTopFast && isBotFast;
+        if (errorBotRPM < 30 && errorTopRPM < 30) {
+            m_isOKtoShootCounter++;
+        } //&& isTopFast && isBotFast;
+        else {
+            m_isOKtoShootCounter = 0;
+        }
+        return m_isOKtoShootCounter > 5;
     }
 
     public void turnMotorsOff() {
