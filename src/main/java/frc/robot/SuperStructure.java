@@ -36,6 +36,7 @@ public class SuperStructure extends Base {
     private Shooter m_Shooter;
     private Climber m_Climber;
     private final VisionBall m_VisionBall;
+    private final VisionShooter m_VisionShooter = new VisionShooter();
 
     Timer m_Timer = new Timer();
 
@@ -70,8 +71,9 @@ public class SuperStructure extends Base {
         m_Climber.robotInit();
         m_auto.robotInit();
         m_VisionBall.robotInit();
+        m_VisionShooter.robotInit();
 
-        Shuffleboard.getTab("super").add("swervedrie", m_SwerveDrive);
+        Shuffleboard.getTab("super").add("swervedrive", m_SwerveDrive);
         Shuffleboard.getTab("super").add("compressor", m_phCompressor);
         Shuffleboard.getTab("super").addNumber("compressor/pressure", () -> m_phCompressor.getPressure());
 
@@ -87,6 +89,7 @@ public class SuperStructure extends Base {
         m_SwerveDrive.changeOdometry(OI.shouldSetFieldRelative(), OI.shouldSetRobotRelative(), OI.getResetOdometry());
         m_Intake.robotPeriodic();
         m_auto.robotPeriodic();
+        m_VisionShooter.calculateAngleError();
     }
 
     @Override
@@ -145,12 +148,15 @@ public class SuperStructure extends Base {
         // TURNTABLE
         // if not zeroed, zero the turntable
         // if (!m_Shooter.m_hasBeenCalibrated) {
-        //     m_Shooter.setTurnTableToZero();
+        // m_Shooter.setTurnTableToZero();
 
         // } else {
-        //     // manual control of turntable
-        //     m_Shooter.TurnTable(OI.getRightBumperForTurntable(), OI.getLeftBumperForTurntable());
-
+        // // manual control of turntable
+        if (OI.getAimTurret()) {
+            m_Shooter.aimTurret(m_VisionShooter.getYaw());
+        } else {
+            m_Shooter.TurnTable(OI.getRightBumperForTurntable(), OI.getLeftBumperForTurntable());
+        }
         // }
 
         // CLIMBER

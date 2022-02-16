@@ -27,7 +27,6 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
 import frc.robot.OI;
 import frc.robot.RobotMap;
-import frc.robot.Constants.SwerveModuleOffsetRadians;
 
 /** Add your docs here. */
 public class SwerveDrive extends Base {

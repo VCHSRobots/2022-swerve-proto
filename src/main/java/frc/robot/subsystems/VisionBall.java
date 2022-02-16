@@ -43,7 +43,7 @@ public class VisionBall extends Base {
     @Override
     public void robotInit() {
         // var cameraName="Microsoft_LifeCam_HD-3000";
-        var cameraName = "mmal_service_16.1";
+        var cameraName = "mmal_ballcam";
         camera = new PhotonCamera(cameraName);
     }
 

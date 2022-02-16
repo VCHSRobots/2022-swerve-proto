@@ -216,15 +216,15 @@ public class Shooter extends Base {
         double errorTopRPM = ticksPer100msToRPM(m_shootTalonTop.getClosedLoopError());
         double errorBotRPM = ticksPer100msToRPM(m_shootTalonBot.getClosedLoopError());
         boolean isTopFast = ticksPer100msToRPM(m_shootTalonTop.getSelectedSensorVelocity()) > 1500;
-        boolean isBotFast = ticksPer100msToRPM(m_shootTalonBot.getSelectedSensorVelocity()) > 1500;
-        if (errorBotRPM < 30 && errorTopRPM < 30) {
+        boolean isBotFast = ticksPer100msToRPM(m_shootTalonBot.getSelectedSensorVelocity()) > 1300;
+        if (errorBotRPM < 30 && errorTopRPM < 30 && isBotFast) {
             m_isOKtoShootCounter++;
 
         } //&& isTopFast && isBotFast;
         else {
             m_isOKtoShootCounter = 0;
         }
-        return m_isOKtoShootCounter > 5;
+        return m_isOKtoShootCounter > 15;
     }
 
     public void turnMotorsOff() {
@@ -256,5 +256,24 @@ public class Shooter extends Base {
 
     public boolean isAtZero() {
         return !m_TurnTableZero.get();
+    }
+
+    public boolean aimTurret(double angleYaw) {
+        final double percentOut = 0.15;
+        final double kS = 0.033;
+        final double kP = 1/60.0;
+        double speed = 0;
+        if (Math.abs(angleYaw) < 0.5) {
+            speed = 0;
+        }
+        else if (angleYaw > 0) {
+            speed = -percentOut*angleYaw*kP;
+        }
+        else {// angleYaw < 0
+            speed = -percentOut*angleYaw*kP;
+        }
+        speed = speed + Math.copySign(kS, speed);
+        m_turnTableTalon.set(ControlMode.PercentOutput, speed);
+        return speed == 0;
     }
 }

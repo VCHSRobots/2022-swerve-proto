@@ -52,9 +52,14 @@ public class OI {
     }
 
     static public boolean getLeftBumperForTurntable(){
-        return xboxDrive.getBackButton();
+        // return xboxDrive.getBackButton();
+        return xboxDrive.getRawButton(8);
     }
+    static public boolean getRightBumperForTurntable(){
+        // return xboxDrive.getStartButton();
+        return xboxDrive.getRawButton(7);
 
+    }
     static public boolean getSolenoidReverse() {
         return xboxClimb.getAButtonPressed();
     }
@@ -69,10 +74,6 @@ public class OI {
     static public boolean getArmsDown(){
         return xboxClimb.getLeftBumper();
     }
-    static public boolean getRightBumperForTurntable(){
-        return xboxDrive.getStartButton();
-
-    }
     static public boolean getXButtonForShootDist(){
         return xboxDrive.getXButton();
     }
@@ -86,6 +87,10 @@ public class OI {
     
     static public boolean getZeroOfTurnTableTalon(){
         return xboxDrive.getRightTriggerAxis() > 0.5;
+    }
+
+    static public boolean getAimTurret() {
+        return xboxDrive.getLeftTriggerAxis() > 0.5;
     }
     
     static public boolean getVisionBallEngaged(){
