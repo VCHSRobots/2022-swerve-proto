@@ -5,6 +5,7 @@ package frc.robot.subsystems;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
+import com.ctre.phoenix.motorcontrol.StatusFrameEnhanced;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 
 import edu.wpi.first.networktables.NetworkTableEntry;
@@ -40,8 +41,8 @@ public class Climber extends Base {
         m_follower = new WPI_TalonFX(RobotMap.kClimb_follower_TalonFX, RobotMap.kCANivore_name);
 
         // motor configs
-        m_master.configFactoryDefault();
-        m_follower.configFactoryDefault();
+        m_master.configFactoryDefault(100);
+        m_follower.configFactoryDefault(100);
 
         m_master.setNeutralMode(NeutralMode.Brake);
         m_follower.setNeutralMode(NeutralMode.Brake);
@@ -49,19 +50,19 @@ public class Climber extends Base {
         m_master.setInverted(false);
         m_follower.setInverted(false);
 
+        m_follower.follow(m_master);
+
+        m_follower.setStatusFramePeriod(StatusFrameEnhanced.Status_1_General, 255, 50);
+        m_follower.setStatusFramePeriod(StatusFrameEnhanced.Status_2_Feedback0, 255, 50);
+
         // init solenoids
         m_solenoid = new DoubleSolenoid(PneumaticsModuleType.REVPH, RobotMap.kClimb_SolenoidForward,
                 RobotMap.kClimb_SolenoidReverse);
+        m_solenoid.set(Value.kReverse);
 
         // init limit switches
         bottomLimit = new DigitalInput(RobotMap.kClimber_BottomLimitSwitch);
         topLimit = new DigitalInput(RobotMap.kClimber_TopLimitSwitch);
-
-        // motors
-        m_follower.follow(m_master);
-
-        // solenoids
-        m_solenoid.set(Value.kReverse);
 
         // encoder Value
         encoderValue = m_follower.getSelectedSensorPosition();

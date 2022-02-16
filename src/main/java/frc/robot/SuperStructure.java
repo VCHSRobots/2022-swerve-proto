@@ -19,6 +19,7 @@ import com.pathplanner.lib.PathPlannerTrajectory.PathPlannerState;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.networktables.NetworkTableEntry;
 
 /** Add your docs here. */
@@ -34,6 +35,7 @@ public class SuperStructure extends Base {
     private Intake m_Intake;
     private Shooter m_Shooter;
     private Climber m_Climber;
+    private final VisionBall m_VisionBall;
 
     Timer m_Timer = new Timer();
 
@@ -55,6 +57,7 @@ public class SuperStructure extends Base {
         m_Intake = intake;
         m_Shooter = shooter;
         m_Climber = climber;
+        m_VisionBall = new VisionBall();
 
     }
 
@@ -66,6 +69,7 @@ public class SuperStructure extends Base {
         m_Shooter.robotInit();
         m_Climber.robotInit();
         m_auto.robotInit();
+        m_VisionBall.robotInit();
 
         Shuffleboard.getTab("super").add("swervedrie", m_SwerveDrive);
         Shuffleboard.getTab("super").add("compressor", m_phCompressor);
@@ -89,9 +93,17 @@ public class SuperStructure extends Base {
     public void teleopPeriodic() {
         m_phCompressor.enableAnalog(90, 115);
 
-        // DRIVING CODE
-        m_SwerveDrive.driveWithXbox(OI.getDriveY(), OI.getDriveX(), OI.getDriveRot(), OI.getCenterOfRotationFrontLeft(),
-                OI.getCenterOfRotationFrontRight());
+        // DRIVING //
+        // VISION GET BALL
+        if (OI.getVisionBallEngaged()) {
+            ChassisSpeeds speeds = m_VisionBall.followBall();
+            m_SwerveDrive.driveFromChassisSpeeds(speeds);
+        } else {
+            // XBOX DRIVING CODE
+            m_SwerveDrive.driveWithXbox(OI.getDriveY(), OI.getDriveX(), OI.getDriveRot(),
+                    OI.getCenterOfRotationFrontLeft(),
+                    OI.getCenterOfRotationFrontRight());
+        }
 
         // INTAKE STATE UPDATE
         m_Intake.changeState(OI.startIntake(), OI.stopIntake());
@@ -130,14 +142,14 @@ public class SuperStructure extends Base {
 
         // TURNTABLE
         // if not zeroed, zero the turntable
-        if (!m_Shooter.m_hasBeenCalibrated) {
-            m_Shooter.setTurnTableToZero();
+        // if (!m_Shooter.m_hasBeenCalibrated) {
+        //     m_Shooter.setTurnTableToZero();
 
-        } else {
-            // manual control of turntable
-            m_Shooter.TurnTable(OI.getRightBumperForTurntable(), OI.getLeftBumperForTurntable());
+        // } else {
+        //     // manual control of turntable
+        //     m_Shooter.TurnTable(OI.getRightBumperForTurntable(), OI.getLeftBumperForTurntable());
 
-        }
+        // }
 
         // CLIMBER
         climberControl(OI.getSolenoidReverse(), OI.getSolenoidForward(),

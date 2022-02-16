@@ -20,7 +20,10 @@ public class Shooter extends Base {
     WPI_TalonFX m_shootTalonBot = new WPI_TalonFX(RobotMap.kShoot_BottomMotor_TalonFX, RobotMap.kCANivore_name);
     WPI_TalonFX m_turnTableTalon = new WPI_TalonFX(RobotMap.kTurnTableMotor_TalonFX, RobotMap.kCANivore_name);
     DigitalInput m_TurnTableZero = new DigitalInput(RobotMap.kShooter_TurretZeroDIO);
+
     public boolean m_hasBeenCalibrated = false;
+
+    private int m_isOKtoShootCounter = 0;
 
     // SimpleMotorFeedforward m_ShootFeedForward = new SimpleMotorFeedforward(0.00,
     // 0.00045);
@@ -73,7 +76,7 @@ public class Shooter extends Base {
         baseConfig.slot0.integralZone = 100;
         baseConfig.slot0.kI = 0.0;
         baseConfig.slot0.kD = 0.0;
-        baseConfig.slot0.kF = 0.05;
+        baseConfig.slot0.kF = 0.07;
         baseConfig.slot0.kP = 0.038; // 0.03
 
         m_shootTalonBot.configFactoryDefault(100);
@@ -94,8 +97,7 @@ public class Shooter extends Base {
         m_shootTalonBot.setSensorPhase(false);
         m_shootTalonTop.setSensorPhase(false);
 
-        m_turnTableTalon.configOpenloopRamp(0.1, 100);
-
+        m_turnTableTalon.configOpenloopRamp(0.1);
     }
 
     @Override
@@ -114,6 +116,7 @@ public class Shooter extends Base {
     @Override
     public void teleopInit() {
         m_state = STATE.NotShooting;
+        m_isOKtoShootCounter = 0;
     }
 
     // Shooting function with Distance. (NOT READY!!)
@@ -202,9 +205,15 @@ public class Shooter extends Base {
     public boolean IsOkToShoot() {
         double errorTopRPM = ticksPer100msToRPM(m_shootTalonTop.getClosedLoopError());
         double errorBotRPM = ticksPer100msToRPM(m_shootTalonBot.getClosedLoopError());
-        boolean isTopFast = ticksPer100msToRPM(m_shootTalonTop.getSelectedSensorVelocity()) > 1100;
-        boolean isBotFast = ticksPer100msToRPM(m_shootTalonBot.getSelectedSensorVelocity()) > 1100;
-        return errorBotRPM < 30 && errorTopRPM < 30 && isTopFast && isBotFast;
+        boolean isTopFast = ticksPer100msToRPM(m_shootTalonTop.getSelectedSensorVelocity()) > 1500;
+        boolean isBotFast = ticksPer100msToRPM(m_shootTalonBot.getSelectedSensorVelocity()) > 1500;
+        if (errorBotRPM < 30 && errorTopRPM < 30) {
+            m_isOKtoShootCounter++;
+        } //&& isTopFast && isBotFast;
+        else {
+            m_isOKtoShootCounter = 0;
+        }
+        return m_isOKtoShootCounter > 5;
     }
 
     public void turnMotorsOff() {
