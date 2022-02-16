@@ -1,5 +1,7 @@
 package frc.robot.subsystems;
 
+import java.util.ResourceBundle.Control;
+
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.TalonFXConfiguration;
@@ -57,8 +59,8 @@ public class Shooter extends Base {
         baseConfig.nominalOutputForward = 0.0;
         baseConfig.nominalOutputReverse = 0.0;
         baseConfig.openloopRamp = 0.01;
-        baseConfig.peakOutputForward = .2;
-        baseConfig.peakOutputReverse = -.2;
+        baseConfig.peakOutputForward = 1;
+        baseConfig.peakOutputReverse = -1;
         baseConfig.statorCurrLimit.enable = true;
         baseConfig.statorCurrLimit.currentLimit = 30;
         baseConfig.statorCurrLimit.triggerThresholdCurrent = 30;
@@ -97,6 +99,12 @@ public class Shooter extends Base {
         m_shootTalonBot.setSensorPhase(false);
         m_shootTalonTop.setSensorPhase(false);
 
+        TalonFXConfiguration turnTableConfig = baseConfig;
+        turnTableConfig.peakOutputForward = .2;
+        turnTableConfig.peakOutputReverse = -.2;
+
+        m_turnTableTalon.configAllSettings(turnTableConfig, 100);
+
         m_turnTableTalon.configOpenloopRamp(0.1);
     }
 
@@ -131,6 +139,8 @@ public class Shooter extends Base {
         m_state = STATE.ShootingRPM;
         setSpeedsRPM(topRPM, botRPM);
     }
+
+
 
     public void turnOff() {
         m_shootTalonBot.setVoltage(0);
@@ -170,6 +180,7 @@ public class Shooter extends Base {
         m_shootTalonBot.set(ControlMode.Velocity, shootBotSpeed);
     }
 
+
     // Converts RPM to Ticks/100MS.
     public double rpmToTicksPer100ms(double rpm) {
         double minutesPerSecond = 1.0 / 60.0;
@@ -177,7 +188,6 @@ public class Shooter extends Base {
         double ticksPerRotation = 2048;
         double ticksPer100ms = rpm * minutesPerSecond * secondsPer100ms * ticksPerRotation;
         return ticksPer100ms;
-
     }
 
     // Converts Ticks/100MS to RPM.
@@ -209,6 +219,7 @@ public class Shooter extends Base {
         boolean isBotFast = ticksPer100msToRPM(m_shootTalonBot.getSelectedSensorVelocity()) > 1500;
         if (errorBotRPM < 30 && errorTopRPM < 30) {
             m_isOKtoShootCounter++;
+
         } //&& isTopFast && isBotFast;
         else {
             m_isOKtoShootCounter = 0;

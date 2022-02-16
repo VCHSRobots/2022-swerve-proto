@@ -117,6 +117,8 @@ public class SuperStructure extends Base {
                 // Load shooter
                 m_Intake.loadShooter();
 
+            } else {
+                m_Intake.toAState();
             }
         } else if (OI.getXButtonForShootDist()) {
             // turn shooter on in Dist
