@@ -141,7 +141,7 @@ public class SwerveModule implements Sendable {
                 turnConfig.motionCruiseVelocity = kModuleMaxAngularVelocity;
                 turnConfig.motionCurveStrength = 2;
 
-                m_turningMotor.configAllSettings(turnConfig);
+                m_turningMotor.configAllSettings(turnConfig, 100);
                 m_turningMotor.configSelectedFeedbackSensor(RemoteFeedbackDevice.RemoteSensor0);
                 m_turningMotor.selectProfileSlot(0, 0);
 
@@ -155,13 +155,13 @@ public class SwerveModule implements Sendable {
                 driveConfig.slot0.kD = 0;
                 driveConfig.slot0.kF = 0;
 
-                m_driveMotor.configAllSettings(driveConfig);
+                m_driveMotor.configAllSettings(driveConfig, 100);
                 m_driveMotor.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor);
                 m_driveMotor.selectProfileSlot(0, 0);
                 m_driveMotor.configSelectedFeedbackCoefficient(1);
 
                 m_turningEncoder = new CANCoder(turningEncoderChannel, RobotMap.kCANivore_name);
-                m_turningEncoder.configFactoryDefault();
+                m_turningEncoder.configFactoryDefault(100);
                 m_turningEncoder.configAbsoluteSensorRange(AbsoluteSensorRange.Signed_PlusMinus180);
                 m_turningEncoder.configSensorInitializationStrategy(
                                 SensorInitializationStrategy.BootToAbsolutePosition);
@@ -193,7 +193,7 @@ public class SwerveModule implements Sendable {
                 return Units.degreesToRadians(m_turningEncoder.getAbsolutePosition()) - m_turningEncoderOffset;
         }
 
-        /**
+        /**s
          * Sets the desired state for the module.
          *
          * @param desiredState Desired state with speed and angle.

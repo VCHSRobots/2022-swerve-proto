@@ -57,9 +57,9 @@ public class Intake extends Base {
     public Intake() {
         m_colorSensor.init();
 
-        m_intake.configFactoryDefault();
-        m_mover.configFactoryDefault();
-        m_shooterLoader.configFactoryDefault();
+        m_intake.configFactoryDefault(100);
+        m_mover.configFactoryDefault(100);
+        m_shooterLoader.configFactoryDefault(100);
 
         m_intake.setInverted(false);
         m_mover.setInverted(false);

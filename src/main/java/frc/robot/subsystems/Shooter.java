@@ -32,11 +32,11 @@ public class Shooter extends Base {
 
     // SHUFFLEBOARD HELPERS
     private double getTopMotorRPM() {
-        return ticksPer100msToRPM(m_shootTalonTop.getSelectedSensorVelocity(10));
+        return ticksPer100msToRPM(m_shootTalonTop.getSelectedSensorVelocity());
     }
 
     private double getBotMotorRPM() {
-        return ticksPer100msToRPM(m_shootTalonBot.getSelectedSensorVelocity(10));
+        return ticksPer100msToRPM(m_shootTalonBot.getSelectedSensorVelocity());
     }
 
     // END SHUFFLEBOARD HELPERS
@@ -54,8 +54,8 @@ public class Shooter extends Base {
         baseConfig.nominalOutputForward = 0.0;
         baseConfig.nominalOutputReverse = 0.0;
         baseConfig.openloopRamp = 0.01;
-        baseConfig.peakOutputForward = 1.0;
-        baseConfig.peakOutputReverse = -1.0;
+        baseConfig.peakOutputForward = .2;
+        baseConfig.peakOutputReverse = -.2;
         baseConfig.statorCurrLimit.enable = true;
         baseConfig.statorCurrLimit.currentLimit = 30;
         baseConfig.statorCurrLimit.triggerThresholdCurrent = 30;
