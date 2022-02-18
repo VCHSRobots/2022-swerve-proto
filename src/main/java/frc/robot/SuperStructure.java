@@ -32,7 +32,7 @@ public class SuperStructure extends Base {
     private final SendableChooser<String> m_chooser = new SendableChooser<>();
 
     private SwerveDrive m_SwerveDrive;
-    private Intake m_Intake;
+  /*  private Intake m_Intake;
     private Shooter m_Shooter;
     private Climber m_Climber;
     private final VisionBall m_VisionBall;
@@ -50,23 +50,23 @@ public class SuperStructure extends Base {
     NetworkTableEntry ntBotRPM = ShootMotorTab.add("Bot RPM", 1900).withPosition(3, 3).withSize(1, 1).getEntry();
     NetworkTableEntry ntTopRPM = ShootMotorTab.add("Top RPM", 1900).withPosition(3, 2).withSize(1, 1).getEntry();
     NetworkTableEntry ntFeetToRPM = ShootMotorTab.add("Feet To Top RPM", 17).withPosition(4, 2).withSize(1, 1)
-            .getEntry();
+            .getEntry(); */
 
-    public SuperStructure(SwerveDrive swerveDrive, Intake intake, Shooter shooter, Climber climber) {
+    public SuperStructure(SwerveDrive swerveDrive) {
 
         m_SwerveDrive = swerveDrive;
-        m_Intake = intake;
+   /*     m_Intake = intake;
         m_Shooter = shooter;
         m_Climber = climber;
-        m_VisionBall = new VisionBall();
+        m_VisionBall = new VisionBall(); */
 
     }
 
     @Override
     public void robotInit() {
-        m_phCompressor.disable();
+   //     m_phCompressor.disable();
         m_SwerveDrive.robotInit();
-        m_Intake.init();
+     /*   m_Intake.init();
         m_Shooter.robotInit();
         m_Climber.robotInit();
         m_auto.robotInit();
@@ -81,33 +81,33 @@ public class SuperStructure extends Base {
         m_chooser.setDefaultOption("Auto1", kDefaultAuto);
         m_chooser.addOption("Auto2", kCustomAuto);
         m_chooser.addOption("strafeleft", kCustomAuto1);
-        Shuffleboard.getTab("Auto").add("Auto Choose", m_chooser);
+        Shuffleboard.getTab("Auto").add("Auto Choose", m_chooser); */
     }
 
     @Override
     public void robotPeriodic() {
         m_SwerveDrive.changeOdometry(OI.shouldSetFieldRelative(), OI.shouldSetRobotRelative(), OI.getResetOdometry());
-        m_Intake.robotPeriodic();
-        m_auto.robotPeriodic();
-        m_VisionShooter.calculateAngleError();
+      // m_Intake.robotPeriodic();
+        //m_auto.robotPeriodic();
+        //m_VisionShooter.calculateAngleError();
     }
 
     @Override
     public void teleopPeriodic() {
-        m_phCompressor.enableAnalog(90, 115);
+  //      m_phCompressor.enableAnalog(90, 115);
 
         // DRIVING //
         // VISION GET BALL
         if (OI.getVisionBallEngaged()) {
-            ChassisSpeeds speeds = m_VisionBall.followBall();
-            m_SwerveDrive.driveFromChassisSpeeds(speeds);
+      //      ChassisSpeeds speeds = m_VisionBall.followBall();
+         //   m_SwerveDrive.driveFromChassisSpeeds(speeds);
         } else {
             // XBOX DRIVING CODE
             m_SwerveDrive.driveWithXbox(OI.getDriveY(), OI.getDriveX(), OI.getDriveRot(),
                     OI.getCenterOfRotationFrontLeft(),
                     OI.getCenterOfRotationFrontRight());
         }
-
+/*
         // INTAKE STATE UPDATE
         m_Intake.changeState(OI.startIntake(), OI.stopIntake());
 
@@ -162,11 +162,11 @@ public class SuperStructure extends Base {
         // CLIMBER
         climberControl(OI.getSolenoidReverse(), OI.getSolenoidForward(),
                 OI.getArmsUp(), OI.getArmsDown());
-    }
+    */  }
 
     @Override
     public void autonomousInit() {
-        m_auto.autonomousInit();
+/*        m_auto.autonomousInit();
 
         PathPlannerState state = new PathPlannerState();
         state.poseMeters = new Pose2d();
@@ -178,17 +178,17 @@ public class SuperStructure extends Base {
             state = m_auto.getInitialState_auto2();
         } else if (m_chooser.getSelected() == "strafeleft") {
             state = m_auto.getInitialState_auto3();
-        }
+        } 
 
         m_SwerveDrive.resetOdometry(new Pose2d(state.poseMeters.getTranslation(), state.holonomicRotation));
 
         m_Timer.reset();
         m_Timer.start();
-    }
+    */ } 
 
     @Override
     public void autonomousPeriodic() {
-        if (m_chooser.getSelected() == "Auto1") {
+/*       if (m_chooser.getSelected() == "Auto1") {
             m_SwerveDrive.driveFromChassisSpeeds(m_auto.getNextChassisSpeeds_Auto1(m_SwerveDrive.getPose2d()));
 
             // shoot during auto
@@ -209,9 +209,9 @@ public class SuperStructure extends Base {
         } else if (m_chooser.getSelected() == "strafeleft") {
             m_SwerveDrive.driveFromChassisSpeeds(m_auto.getNextChassisSpeeds_Auto3(m_SwerveDrive.getPose2d()));
         }
-    }
+    */   }
 
-    @Override
+  /*  @Override
     public void disabledInit() {
         m_phCompressor.disable();
     }
@@ -245,5 +245,5 @@ public class SuperStructure extends Base {
             m_Climber.armsStop();
         }
 
-    }
+    }*/
 }

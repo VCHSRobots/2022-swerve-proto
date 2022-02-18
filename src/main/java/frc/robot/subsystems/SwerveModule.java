@@ -91,8 +91,8 @@ public class SwerveModule implements Sendable {
                         double turningEncoderOffset,
                         double turningIntegratedEncoderOffset) {
 
-                m_driveMotor = new WPI_TalonFX(driveMotorChannel, RobotMap.kCANivore_name);
-                m_turningMotor = new WPI_TalonFX(turningMotorChannel, RobotMap.kCANivore_name);
+                m_driveMotor = new WPI_TalonFX(driveMotorChannel);
+                m_turningMotor = new WPI_TalonFX(turningMotorChannel);
 
                 m_driveMotor.configFactoryDefault(100);
                 m_turningMotor.configFactoryDefault(100);
@@ -160,7 +160,7 @@ public class SwerveModule implements Sendable {
                 m_driveMotor.selectProfileSlot(0, 0);
                 m_driveMotor.configSelectedFeedbackCoefficient(1);
 
-                m_turningEncoder = new CANCoder(turningEncoderChannel, RobotMap.kCANivore_name);
+                m_turningEncoder = new CANCoder(turningEncoderChannel);
                 m_turningEncoder.configFactoryDefault(100);
                 m_turningEncoder.configAbsoluteSensorRange(AbsoluteSensorRange.Signed_PlusMinus180);
                 m_turningEncoder.configSensorInitializationStrategy(
@@ -272,16 +272,16 @@ public class SwerveModule implements Sendable {
 
         @Override
         public void initSendable(SendableBuilder builder) {
-                // builder.setSmartDashboardType("Swerve Module");
-                // builder.addDoubleProperty("Actual Drive m-s", () -> this.getDriveRatePerSecond(), null);
-                // builder.addDoubleProperty("Drive Position Meters",
-                //                 () -> (kDriveMetersPerIntegratedTick *
-                //                                 m_driveMotor.getSelectedSensorPosition()),
-                //                 null);
-                // builder.addDoubleProperty("Actual Angle deg", () -> m_turningEncoder.getAbsolutePosition(), null);
-                // builder.addDoubleProperty("Actual Angle with offset deg",
-                //                 () -> Units.radiansToDegrees(getTurningPositionRadians()), null);
-                // builder.addDoubleProperty("Desired Drive m-s", () -> m_desiredState.speedMetersPerSecond, null);
-                // builder.addDoubleProperty("Desired Angle deg", () -> m_desiredState.angle.getDegrees(), null);
+                builder.setSmartDashboardType("Swerve Module");
+                builder.addDoubleProperty("Actual Drive m-s", () -> this.getDriveRatePerSecond(), null);
+                builder.addDoubleProperty("Drive Position Meters",
+                                () -> (kDriveMetersPerIntegratedTick *
+                                                m_driveMotor.getSelectedSensorPosition()),
+                                null);
+                builder.addDoubleProperty("Actual Angle deg", () -> m_turningEncoder.getAbsolutePosition(), null);
+                builder.addDoubleProperty("Actual Angle with offset deg",
+                                () -> Units.radiansToDegrees(getTurningPositionRadians()), null);
+                builder.addDoubleProperty("Desired Drive m-s", () -> m_desiredState.speedMetersPerSecond, null);
+                builder.addDoubleProperty("Desired Angle deg", () -> m_desiredState.angle.getDegrees(), null);
         }
 }
