@@ -147,12 +147,12 @@ public class SuperStructure extends Base {
 
         // TURNTABLE
         // if not zeroed, zero the turntable
-        // if (!m_Shooter.m_hasBeenCalibrated) {
-        // m_Shooter.setTurnTableToZero();
+        if (!m_Shooter.m_hasBeenCalibrated) {
+            m_Shooter.setTurnTableToZero();
 
-        // } else {
+        }
         // // manual control of turntable
-        if (OI.getAimTurret()) {
+        else if (OI.getAimTurret()) {
             m_Shooter.aimTurret(m_VisionShooter.getYaw());
         } else {
             m_Shooter.TurnTable(OI.getRightBumperForTurntable(), OI.getLeftBumperForTurntable());
