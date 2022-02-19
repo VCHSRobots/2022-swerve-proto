@@ -236,8 +236,8 @@ public class Shooter extends Base {
             // 13 to 62, 52 to 231, GEAR RATIO: 21.19
             m_hasBeenCalibrated = true;
             m_turnTableTalon.setSelectedSensorPosition(0);
-            m_turnTableTalon.configReverseSoftLimitThreshold(-10000, 100);
-            m_turnTableTalon.configForwardSoftLimitThreshold(12000, 100);
+            m_turnTableTalon.configReverseSoftLimitThreshold(-16000, 100);
+            m_turnTableTalon.configForwardSoftLimitThreshold(16000, 100);
             m_turnTableTalon.configForwardSoftLimitEnable(true, 100);
             m_turnTableTalon.configReverseSoftLimitEnable(true, 100);
 
