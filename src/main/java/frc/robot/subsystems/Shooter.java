@@ -78,8 +78,8 @@ public class Shooter extends Base {
         baseConfig.slot0.integralZone = 100;
         baseConfig.slot0.kI = 0.0;
         baseConfig.slot0.kD = 0.0;
-        baseConfig.slot0.kF = 0.07;
-        baseConfig.slot0.kP = 0.038; // 0.03
+        baseConfig.slot0.kF = 0.075;
+        baseConfig.slot0.kP = 0.041; // 0.03
 
         m_shootTalonBot.configFactoryDefault(100);
         m_shootTalonTop.configFactoryDefault(100);
