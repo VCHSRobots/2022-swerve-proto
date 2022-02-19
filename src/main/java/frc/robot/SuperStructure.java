@@ -19,6 +19,7 @@ import com.pathplanner.lib.PathPlannerTrajectory.PathPlannerState;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.networktables.NetworkTableEntry;
 
 /** Add your docs here. */
@@ -35,6 +36,7 @@ public class SuperStructure extends Base {
     private Shooter m_Shooter;
     private Climber m_Climber;
     private final VisionBall m_VisionBall;
+    private final VisionShooter m_VisionShooter = new VisionShooter();
 
     Timer m_Timer = new Timer();
 
@@ -57,7 +59,7 @@ public class SuperStructure extends Base {
         m_Intake = intake;
         m_Shooter = shooter;
         m_Climber = climber;
-        m_VisionBall = new VisionBall(m_SwerveDrive);
+        m_VisionBall = new VisionBall();
 
     }
 
@@ -70,8 +72,9 @@ public class SuperStructure extends Base {
         m_Climber.robotInit();
         m_auto.robotInit();
         m_VisionBall.robotInit();
+        m_VisionShooter.robotInit();
 
-        Shuffleboard.getTab("super").add("swervedrie", m_SwerveDrive);
+        Shuffleboard.getTab("super").add("swervedrive", m_SwerveDrive);
         Shuffleboard.getTab("super").add("compressor", m_phCompressor);
         Shuffleboard.getTab("super").addNumber("compressor/pressure", () -> m_phCompressor.getPressure());
         Shuffleboard.getTab("ShooterSuper").addBoolean("IsOkToShoot", () -> m_Shooter.IsOkToShoot());
@@ -89,21 +92,24 @@ public class SuperStructure extends Base {
         m_SwerveDrive.changeOdometry(OI.shouldSetFieldRelative(), OI.shouldSetRobotRelative(), OI.getResetOdometry());
         m_Intake.robotPeriodic();
         m_auto.robotPeriodic();
+        m_VisionShooter.calculateAngleError();
     }
 
     @Override
     public void teleopPeriodic() {
         m_phCompressor.enableAnalog(90, 115);
 
+        // DRIVING //
         // VISION GET BALL
         if (OI.getVisionBallEngaged()) {
-            m_VisionBall.followBall();
-            return;
+            ChassisSpeeds speeds = m_VisionBall.followBall();
+            m_SwerveDrive.driveFromChassisSpeeds(speeds);
+        } else {
+            // XBOX DRIVING CODE
+            m_SwerveDrive.driveWithXbox(OI.getDriveY(), OI.getDriveX(), OI.getDriveRot(),
+                    OI.getCenterOfRotationFrontLeft(),
+                    OI.getCenterOfRotationFrontRight());
         }
-
-        // DRIVING CODE
-        m_SwerveDrive.driveWithXbox(OI.getDriveY(), OI.getDriveX(), OI.getDriveRot(), OI.getCenterOfRotationFrontLeft(),
-                OI.getCenterOfRotationFrontRight());
 
         // INTAKE STATE UPDATE
         m_Intake.changeState(OI.startIntake(), OI.stopIntake());
@@ -117,6 +123,8 @@ public class SuperStructure extends Base {
                 // Load shooter
                 m_Intake.loadShooter();
 
+            } else {
+                m_Intake.toAState();
             }
         } else if (OI.getXButtonForShootDist()) {
             // turn shooter on in Dist
@@ -145,13 +153,14 @@ public class SuperStructure extends Base {
         if (!m_Shooter.m_hasBeenCalibrated) {
             m_Shooter.setTurnTableToZero();
 
-        } else {
-            // manual control of turntable
-            m_Shooter.TurnTable(OI.getRightBumperForTurntable(), OI.getLeftBumperForTurntable());
-
         }
-        if(OI.getZeroOfTurnTable())
-
+        // // manual control of turntable
+        else if (OI.getAimTurret()) {
+            m_Shooter.aimTurret(m_VisionShooter.getYaw());
+        } else {
+            m_Shooter.TurnTable(OI.getRightBumperForTurntable(), OI.getLeftBumperForTurntable());
+        }
+        // }
 
         // CLIMBER
         climberControl(OI.getSolenoidReverse(), OI.getSolenoidForward(),

@@ -7,7 +7,6 @@ package frc.robot.subsystems;
 import org.photonvision.PhotonCamera;
 import org.photonvision.targeting.PhotonTrackedTarget;
 
-import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
@@ -21,9 +20,11 @@ import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
  * - what if the ball is moving
  * 3. if no ball found, turn around to find the ball.
  */
-public class VisionBall extends Base {
+public class VisionShooter extends Base {
 
-    ShuffleboardTab visionBalltab = Shuffleboard.getTab("VisionBall");
+    ShuffleboardTab visionBalltab = Shuffleboard.getTab("VisionShooter");
+
+    // rename these in network tables if camera is rotated
     NetworkTableEntry ntTargetYaw = visionBalltab.add("Yaw", 0).getEntry();
     NetworkTableEntry ntTargetPitch = visionBalltab.add("Pitch", 0).getEntry();
     NetworkTableEntry ntTargetArea = visionBalltab.add("Area", 0).getEntry();
@@ -36,19 +37,20 @@ public class VisionBall extends Base {
     // private SwerveDrive m_SwerveDrive;
 
     // public VisionBall(SwerveDrive sd) {
-    public VisionBall() {
+    public VisionShooter() {
         // m_SwerveDrive=sd;
     }
 
     @Override
     public void robotInit() {
         // var cameraName="Microsoft_LifeCam_HD-3000";
-        var cameraName = "mmal_ballcam";
+        var cameraName = "mmal_service_16.1";
         camera = new PhotonCamera(cameraName);
     }
 
     // public boolean followBall() {
-    public ChassisSpeeds followBall() {
+    public double calculateAngleError() {
+        if (camera == null) return -1;
         var result = camera.getLatestResult();
 
         // update shuffle board
@@ -85,7 +87,7 @@ public class VisionBall extends Base {
             } else {
                 // m_SwerveDrive.drive(0, 0, 0, false);
                 // return false;
-                return new ChassisSpeeds();
+                return 0;
             }
         } else {
             hasTarget = true;
@@ -100,41 +102,47 @@ public class VisionBall extends Base {
                 }
             }
         }
+
         if (!hasTarget) {
             m_lostCount++;
             if (m_lostCount >= m_MAXLOSTCOUNT) {
                 hasLastTarget = false;
                 // m_SwerveDrive.drive(0, 0, 0, false);
                 // return false;
-                return new ChassisSpeeds();
+                return 0;
             }
         } else {
             m_lostCount = 0;
         }
 
-        double targetYaw = target.getYaw();
-        // double targetPitch=target.getPitch();
-        double targetArea = target.getArea();
-
-        double kpx = 0.1;
-        double kpy = -1.0 / 60;
-        double kpr = -1.0 / 60;
-
-        // drive toward the ball
-        double xSpeed = 0;
-        double deltaArea = stopArea - targetArea;
-        if (deltaArea > 0) {
-            xSpeed = kpx * Math.sqrt(deltaArea);
-        }
-        double ySpeed = kpy * targetYaw;
-        double rot = kpr * targetYaw;
-
-        // m_SwerveDrive.drive(xSpeed, ySpeed, rot, false);
-
         m_lastTarget = target;
         hasLastTarget = true;
-        // return true;
-        return new ChassisSpeeds(xSpeed, ySpeed, rot);
+        return target.getYaw();
+    }
+
+    public double getYaw() {
+        return m_lastTarget.getYaw();
+    }
+
+    public double getPitch() {
+        // change this is camera is rotated
+        return m_lastTarget.getPitch();
+    }
+
+    public double getDistance() {
+        double distanceMeters = 2;
+        double cameraAngle = 25.0; // angle from horizontal to axis of camera view
+        double cameraHeight = 0.6096; // height of camera on robot
+        double targetHeight = 2.581148; // height of retroreflective tape in meters
+        /*
+         * from internet
+         * distance = delta_height / (tan(cameraAngle + Pitch) * cos(Yaw))
+         * 
+         * d = (targetHeight - cameraHeight) / tan(cameraAngle + Pitch)
+         */
+        distanceMeters = ((targetHeight - cameraHeight)
+                / (Math.tan(cameraAngle + getPitch()) * Math.cos(getYaw())));
+        return distanceMeters;
     }
 
 }

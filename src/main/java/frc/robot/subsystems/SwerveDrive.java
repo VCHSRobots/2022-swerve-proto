@@ -27,11 +27,10 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
 import frc.robot.OI;
 import frc.robot.RobotMap;
-import frc.robot.Constants.SwerveModuleOffsetRadians;
 
 /** Add your docs here. */
 public class SwerveDrive extends Base {
-    public static final double kMaxSpeed = 3.0; // 3 meters per second
+    public static final double kMaxSpeed = 3.5; // 3 meters per second
     public static final double kMaxAngularSpeed = 3 * Math.PI; // 1 rotation per second
 
     private final SlewRateLimiter m_xSpeedLimiter = new SlewRateLimiter(10);
@@ -44,18 +43,10 @@ public class SwerveDrive extends Base {
     private final Translation2d m_backLeftLocation = new Translation2d(-inches15toMeters, inches15toMeters);
     private final Translation2d m_backRightLocation = new Translation2d(-inches15toMeters, -inches15toMeters);
 
-    private final SwerveModule m_frontLeft = new SwerveModule(RobotMap.kDrive_FrontLeftDrive_TalonFX,
-            RobotMap.kDrive_FrontLeftTurn_TalonFX, RobotMap.kDrive_FrontLeftEncoder,
-            Constants.SwerveModuleOffsetRadians.FRONT_LEFT, 0);
-    private final SwerveModule m_frontRight = new SwerveModule(RobotMap.kDrive_FrontRightDrive_TalonFX,
-            RobotMap.kDrive_FrontRightTurn_TalonFX, RobotMap.kDrive_FrontRightEncoder,
-            Constants.SwerveModuleOffsetRadians.FRONT_RIGHT, 0);
-    private final SwerveModule m_backLeft = new SwerveModule(RobotMap.kDrive_BackLeftDrive_TalonFX,
-            RobotMap.kDrive_BackLeftTurn_TalonFX, RobotMap.kDrive_BackLeftEncoder,
-            Constants.SwerveModuleOffsetRadians.BACK_LEFT, 0);
-    private final SwerveModule m_backRight = new SwerveModule(RobotMap.kDrive_BackRightDrive_TalonFX,
-            RobotMap.kDrive_BackRightTurn_TalonFX, RobotMap.kDrive_BackRightEncoder,
-            Constants.SwerveModuleOffsetRadians.BACK_RIGHT, 0);
+    private final SwerveModule m_frontLeft;
+    private final SwerveModule m_frontRight;
+    private final SwerveModule m_backLeft;
+    private final SwerveModule m_backRight;
 
     private final AHRS m_gyro = new AHRS(SPI.Port.kMXP);
 
@@ -77,6 +68,37 @@ public class SwerveDrive extends Base {
 
             }
         }).start();
+
+        double frontLeftOffset = 0;
+        double frontRightoffset = 0;
+        double backLeftoffset = 0;
+        double backRightoffset = 0;
+        if (Constants.isPracticeBot) {
+            frontLeftOffset = Constants.SwerveModuleOffsetRadiansPractice.FRONT_LEFT;
+            frontRightoffset = Constants.SwerveModuleOffsetRadiansPractice.FRONT_RIGHT;
+            backLeftoffset = Constants.SwerveModuleOffsetRadiansPractice.BACK_LEFT;
+            backRightoffset = Constants.SwerveModuleOffsetRadiansPractice.BACK_RIGHT;
+        } else {
+            frontLeftOffset = Constants.SwerveModuleOffsetRadiansComp.FRONT_LEFT;
+            frontRightoffset = Constants.SwerveModuleOffsetRadiansComp.FRONT_RIGHT;
+            backLeftoffset = Constants.SwerveModuleOffsetRadiansComp.BACK_LEFT;
+            backRightoffset = Constants.SwerveModuleOffsetRadiansComp.BACK_RIGHT;
+
+        }
+
+        m_frontLeft = new SwerveModule(RobotMap.kDrive_FrontLeftDrive_TalonFX,
+            RobotMap.kDrive_FrontLeftTurn_TalonFX, RobotMap.kDrive_FrontLeftEncoder,
+            frontLeftOffset, 0);
+        m_frontRight = new SwerveModule(RobotMap.kDrive_FrontRightDrive_TalonFX,
+            RobotMap.kDrive_FrontRightTurn_TalonFX, RobotMap.kDrive_FrontRightEncoder,
+            frontRightoffset, 0);
+        m_backLeft = new SwerveModule(RobotMap.kDrive_BackLeftDrive_TalonFX,
+            RobotMap.kDrive_BackLeftTurn_TalonFX, RobotMap.kDrive_BackLeftEncoder,
+            backLeftoffset, 0);
+        m_backRight = new SwerveModule(RobotMap.kDrive_BackRightDrive_TalonFX,
+            RobotMap.kDrive_BackRightTurn_TalonFX, RobotMap.kDrive_BackRightEncoder,
+            backRightoffset, 0);
+
     }
 
     // Robot Init
@@ -187,14 +209,14 @@ public class SwerveDrive extends Base {
         // negative values when we push forward.
         final var xSpeed = -m_xSpeedLimiter
                 .calculate(MathUtil.applyDeadband(driveY, Constants.xboxDeadband))
-                * SwerveDrive.kMaxSpeed * 0.9;
+                * SwerveDrive.kMaxSpeed;
 
         // Get the y speed or sideways/strafe speed. We are inverting this because
         // we want a positive value when we pull to the left. Xbox controllers
         // return positive values when you pull to the right by default.
         final var ySpeed = -m_ySpeedLimiter
                 .calculate(MathUtil.applyDeadband(driveX, Constants.xboxDeadband))
-                * SwerveDrive.kMaxSpeed * 0.9;
+                * SwerveDrive.kMaxSpeed;
 
         // Get the rate of angular rotation. We are inverting this because we want a
         // positive value when we pull to the left (remember, CCW is positive in

@@ -64,7 +64,7 @@ public class SwerveModule implements Sendable {
                                         kModuleMaxAngularVelocity, kModuleMaxAngularAcceleration));
 
         // Gains are for example purposes only - must be determined for your own robot!
-        private final SimpleMotorFeedforward m_driveFeedforward = new SimpleMotorFeedforward(0.4, 1.93); // 0.4, 1.93
+        private final SimpleMotorFeedforward m_driveFeedforward = new SimpleMotorFeedforward(0.4, 2.2); // 0.4, 1.93
         private final SimpleMotorFeedforward m_turnFeedforward = new SimpleMotorFeedforward(0.35, 0.19); // 0.1,0.25
 
         private final SimpleMotorFeedforward m_driveFeedforwardIntegrated = new SimpleMotorFeedforward(0, 0);
@@ -107,11 +107,11 @@ public class SwerveModule implements Sendable {
                 m_turningMotor.setSensorPhase(false);
 
                 TalonFXConfiguration baseConfig = new TalonFXConfiguration();
-                baseConfig.closedloopRamp = 0.02;
+                baseConfig.closedloopRamp = 0.00;
                 baseConfig.neutralDeadband = 0.005;
                 baseConfig.nominalOutputForward = 0.0;
                 baseConfig.nominalOutputReverse = 0.0;
-                baseConfig.openloopRamp = 0.01;
+                baseConfig.openloopRamp = 0.00;
                 baseConfig.peakOutputForward = 1.0;
                 baseConfig.peakOutputReverse = -1.0;
                 baseConfig.statorCurrLimit.enable = true;
@@ -141,7 +141,7 @@ public class SwerveModule implements Sendable {
                 turnConfig.motionCruiseVelocity = kModuleMaxAngularVelocity;
                 turnConfig.motionCurveStrength = 2;
 
-                m_turningMotor.configAllSettings(turnConfig);
+                m_turningMotor.configAllSettings(turnConfig, 100);
                 m_turningMotor.configSelectedFeedbackSensor(RemoteFeedbackDevice.RemoteSensor0);
                 m_turningMotor.selectProfileSlot(0, 0);
 
@@ -155,13 +155,13 @@ public class SwerveModule implements Sendable {
                 driveConfig.slot0.kD = 0;
                 driveConfig.slot0.kF = 0;
 
-                m_driveMotor.configAllSettings(driveConfig);
+                m_driveMotor.configAllSettings(driveConfig, 100);
                 m_driveMotor.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor);
                 m_driveMotor.selectProfileSlot(0, 0);
                 m_driveMotor.configSelectedFeedbackCoefficient(1);
 
                 m_turningEncoder = new CANCoder(turningEncoderChannel, RobotMap.kCANivore_name);
-                m_turningEncoder.configFactoryDefault();
+                m_turningEncoder.configFactoryDefault(100);
                 m_turningEncoder.configAbsoluteSensorRange(AbsoluteSensorRange.Signed_PlusMinus180);
                 m_turningEncoder.configSensorInitializationStrategy(
                                 SensorInitializationStrategy.BootToAbsolutePosition);
@@ -193,7 +193,7 @@ public class SwerveModule implements Sendable {
                 return Units.degreesToRadians(m_turningEncoder.getAbsolutePosition()) - m_turningEncoderOffset;
         }
 
-        /**
+        /**s
          * Sets the desired state for the module.
          *
          * @param desiredState Desired state with speed and angle.

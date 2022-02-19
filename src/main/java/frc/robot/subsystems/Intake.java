@@ -57,9 +57,9 @@ public class Intake extends Base {
     public Intake() {
         m_colorSensor.init();
 
-        m_intake.configFactoryDefault();
-        m_mover.configFactoryDefault();
-        m_shooterLoader.configFactoryDefault();
+        m_intake.configFactoryDefault(100);
+        m_mover.configFactoryDefault(100);
+        m_shooterLoader.configFactoryDefault(100);
 
         m_intake.setInverted(false);
         m_mover.setInverted(false);
@@ -123,6 +123,31 @@ public class Intake extends Base {
                     m_state = STATE.C;
                 }
 
+                switch (DriverStation.getAlliance()) {
+                    case Blue:
+                        if (m_colorSensor.isRedBallDetected()) {
+                            
+                            isChanging = true;
+
+                            m_timer.reset();
+                            m_timer.start();
+                            // turns back to normal (isChanging = False) after 1 seconds
+                        }
+                        break;
+                    case Red:
+                        if (m_colorSensor.isBlueBallDetected()) {
+
+                            isChanging = true;
+
+                            m_timer.reset();
+                            m_timer.start();
+                            // turns back to normal (isChanging = False) after 1 seconds
+                        }
+                        break;
+                    case Invalid:
+                        break;
+                }
+
                 break;
             case C:
                 // intake, mover, ON, loader OFF
@@ -148,6 +173,32 @@ public class Intake extends Base {
 
                 // SPIT BALL OUT IF BAD (WRONG COLOR) :))))))
                 // add spit out ball logic somewhere else
+
+                switch (DriverStation.getAlliance()) {
+                    case Blue:
+                        if (m_colorSensor.isRedBallDetected()) {
+                            
+                            isChanging = true;
+
+                            m_timer.reset();
+                            m_timer.start();
+                            // turns back to normal (isChanging = False) after 1 seconds
+                        }
+                        break;
+                    case Red:
+                        if (m_colorSensor.isBlueBallDetected()) {
+
+                            isChanging = true;
+
+                            m_timer.reset();
+                            m_timer.start();
+                            // turns back to normal (isChanging = False) after 1 seconds
+                        }
+                        break;
+                    case Invalid:
+                        break;
+                }
+                
 
                 
 
@@ -185,8 +236,17 @@ public class Intake extends Base {
             case B:
                 // intake, bt, and load ON
                 // intake down
-                m_intake.set(ControlMode.PercentOutput, ntMotorSpeed.getDouble(0.0));
-                m_mover.set(ControlMode.PercentOutput, ntMotorSpeed.getDouble(0.0));
+                if(!isChanging) {
+                    m_intake.set(ControlMode.PercentOutput, ntMotorSpeed.getDouble(0.0));
+                    m_mover.set(ControlMode.PercentOutput, ntMotorSpeed.getDouble(0.0));
+                } else {
+                    reverseIntake();
+                    if(m_timer.get() >= .25) {
+                        isChanging = false;
+                        m_timer.stop();
+                    }
+                }
+
                 m_shooterLoader.set(ControlMode.PercentOutput, ntMotorSpeed.getDouble(0.0));
 
                 m_doublePCM.set(Value.kForward);
@@ -196,12 +256,19 @@ public class Intake extends Base {
                 // intake, mover, ON, loader OFF
                 // intake down
 
-                // SPIT BALL OUT IF BAD (WRONG COLOR) :))))))
-                // add spit out ball logic somewhere else
+                if(!isChanging) {
+                    m_intake.set(ControlMode.PercentOutput, ntMotorSpeed.getDouble(0.0));
+                    m_mover.set(ControlMode.PercentOutput, ntMotorSpeed.getDouble(0.0));
+                } else {
+                    reverseIntake();
+                    if(m_timer.get() >= .25) {
+                        isChanging = false;
+                        m_timer.stop();
+                    }
+                }
 
-                m_intake.set(ControlMode.PercentOutput, ntMotorSpeed.getDouble(0.0));
-                m_mover.set(ControlMode.PercentOutput, ntMotorSpeed.getDouble(0.0));
                 m_shooterLoader.set(ControlMode.PercentOutput, 0);
+
 
                 m_doublePCM.set(Value.kForward);
 
@@ -243,6 +310,10 @@ public class Intake extends Base {
         if (m_state == STATE.E) {
             m_state = STATE.A;
         }
+    }
+
+    public void toAState() {
+        m_state = STATE.A;
     }
 
     // spit out ball
