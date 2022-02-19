@@ -37,8 +37,8 @@ public class Climber extends Base {
     public void robotInit() {
 
         // init motors
-        m_master = new WPI_TalonFX(RobotMap.kClimb_master_TalonFX, RobotMap.kCANivore_name);
-        m_follower = new WPI_TalonFX(RobotMap.kClimb_follower_TalonFX, RobotMap.kCANivore_name);
+        m_master = new WPI_TalonFX(RobotMap.kClimb_master_TalonFX);
+        m_follower = new WPI_TalonFX(RobotMap.kClimb_follower_TalonFX);
 
         // motor configs
         m_master.configFactoryDefault(100);
@@ -56,7 +56,7 @@ public class Climber extends Base {
         m_follower.setStatusFramePeriod(StatusFrameEnhanced.Status_2_Feedback0, 255, 50);
 
         // init solenoids
-        m_solenoid = new DoubleSolenoid(PneumaticsModuleType.REVPH, RobotMap.kClimb_SolenoidForward,
+        m_solenoid = new DoubleSolenoid(PneumaticsModuleType.CTREPCM, RobotMap.kClimb_SolenoidForward,
                 RobotMap.kClimb_SolenoidReverse);
         m_solenoid.set(Value.kReverse);
 

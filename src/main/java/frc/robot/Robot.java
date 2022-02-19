@@ -23,12 +23,12 @@ import frc.robot.subsystems.*;
  */
 public class Robot extends TimedRobot {
   //for superstructure
-  private final SwerveDrive swerveDrive = new SwerveDrive();
-  private final Intake intake = new Intake();
-  private final Shooter shooter = new Shooter();
+  // private final SwerveDrive swerveDrive = new SwerveDrive();
+  // private final Intake intake = new Intake();
+  // private final Shooter shooter = new Shooter();
   private final Climber climber = new Climber();
 
-  SuperStructure superStructure = new SuperStructure(swerveDrive, intake, shooter, climber);
+  SuperStructure superStructure = new SuperStructure(climber);
 
   
   /**
@@ -43,9 +43,9 @@ public class Robot extends TimedRobot {
 
     Shuffleboard.getTab("main").add("xbox", OI.xboxDrive);
 
-    Shuffleboard.getTab("main").addNumber("pose/x", ()->swerveDrive.getPose2d().getX());
-    Shuffleboard.getTab("main").addNumber("pose/y", ()->swerveDrive.getPose2d().getY());
-    Shuffleboard.getTab("main").addNumber("pose/theta", ()->swerveDrive.getPose2d().getRotation().getDegrees());
+    // Shuffleboard.getTab("main").addNumber("pose/x", ()->swerveDrive.getPose2d().getX());
+    // Shuffleboard.getTab("main").addNumber("pose/y", ()->swerveDrive.getPose2d().getY());
+    // Shuffleboard.getTab("main").addNumber("pose/theta", ()->swerveDrive.getPose2d().getRotation().getDegrees());
 
     // CameraServer.startAutomaticCapture();
 

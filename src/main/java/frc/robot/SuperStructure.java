@@ -31,19 +31,20 @@ public class SuperStructure extends Base {
     private String m_autoSelected;
     private final SendableChooser<String> m_chooser = new SendableChooser<>();
 
-    private SwerveDrive m_SwerveDrive;
-    private Intake m_Intake;
-    private Shooter m_Shooter;
+    // private SwerveDrive m_SwerveDrive;
+    // private Intake m_Intake;
+    // private Shooter m_Shooter;
     private Climber m_Climber;
-    private final VisionBall m_VisionBall;
-    private final VisionShooter m_VisionShooter = new VisionShooter();
+    // private final VisionBall m_VisionBall;
+    // private final VisionShooter m_VisionShooter = new VisionShooter();
 
     Timer m_Timer = new Timer();
 
     private Auto m_auto = new Auto();
 
-    private final Compressor m_phCompressor = new Compressor(PneumaticsModuleType.REVPH);
-    private final PneumaticHub m_ph = new PneumaticHub();
+    // private final Compressor m_phCompressor = new Compressor(PneumaticsModuleType.REVPH);
+    private final Compressor m_phCompressor = new Compressor(PneumaticsModuleType.CTREPCM);
+    // private final PneumaticHub m_ph = new PneumaticHub();
 
     ShuffleboardTab ShootMotorTab = Shuffleboard.getTab("ShooterSuper");
 
@@ -52,30 +53,30 @@ public class SuperStructure extends Base {
     NetworkTableEntry ntFeetToRPM = ShootMotorTab.add("Feet To Top RPM", 17).withPosition(4, 2).withSize(1, 1)
             .getEntry();
 
-    public SuperStructure(SwerveDrive swerveDrive, Intake intake, Shooter shooter, Climber climber) {
+    public SuperStructure(Climber climber) {
 
-        m_SwerveDrive = swerveDrive;
-        m_Intake = intake;
-        m_Shooter = shooter;
+        // m_SwerveDrive = swerveDrive;
+        // m_Intake = intake;
+        // m_Shooter = shooter;
         m_Climber = climber;
-        m_VisionBall = new VisionBall();
+        // m_VisionBall = new VisionBall();
 
     }
 
     @Override
     public void robotInit() {
         m_phCompressor.disable();
-        m_SwerveDrive.robotInit();
-        m_Intake.init();
-        m_Shooter.robotInit();
+        // m_SwerveDrive.robotInit();
+        // m_Intake.init();
+        // m_Shooter.robotInit();
         m_Climber.robotInit();
         m_auto.robotInit();
-        m_VisionBall.robotInit();
-        m_VisionShooter.robotInit();
+        // m_VisionBall.robotInit();
+        // m_VisionShooter.robotInit();
 
-        Shuffleboard.getTab("super").add("swervedrive", m_SwerveDrive);
-        Shuffleboard.getTab("super").add("compressor", m_phCompressor);
-        Shuffleboard.getTab("super").addNumber("compressor/pressure", () -> m_phCompressor.getPressure());
+        // Shuffleboard.getTab("super").add("swervedrive", m_SwerveDrive);
+        // Shuffleboard.getTab("super").add("compressor", m_phCompressor);
+        // Shuffleboard.getTab("super").addNumber("compressor/pressure", () -> m_phCompressor.getPressure());
 
         // auto chooser
         m_chooser.setDefaultOption("Auto1", kDefaultAuto);
@@ -86,77 +87,78 @@ public class SuperStructure extends Base {
 
     @Override
     public void robotPeriodic() {
-        m_SwerveDrive.changeOdometry(OI.shouldSetFieldRelative(), OI.shouldSetRobotRelative(), OI.getResetOdometry());
-        m_Intake.robotPeriodic();
+        // m_SwerveDrive.changeOdometry(OI.shouldSetFieldRelative(), OI.shouldSetRobotRelative(), OI.getResetOdometry());
+        // m_Intake.robotPeriodic();
         m_auto.robotPeriodic();
-        m_VisionShooter.calculateAngleError();
+        // m_VisionShooter.calculateAngleError();
     }
 
     @Override
     public void teleopPeriodic() {
-        m_phCompressor.enableAnalog(90, 115);
+        // m_phCompressor.enableAnalog(90, 115);
+        m_phCompressor.enableDigital();
 
         // DRIVING //
         // VISION GET BALL
         if (OI.getVisionBallEngaged()) {
-            ChassisSpeeds speeds = m_VisionBall.followBall();
-            m_SwerveDrive.driveFromChassisSpeeds(speeds);
+            // ChassisSpeeds speeds = m_VisionBall.followBall();
+            // m_SwerveDrive.driveFromChassisSpeeds(speeds);
         } else {
             // XBOX DRIVING CODE
-            m_SwerveDrive.driveWithXbox(OI.getDriveY(), OI.getDriveX(), OI.getDriveRot(),
-                    OI.getCenterOfRotationFrontLeft(),
-                    OI.getCenterOfRotationFrontRight());
+            // m_SwerveDrive.driveWithXbox(OI.getDriveY(), OI.getDriveX(), OI.getDriveRot(),
+            //         OI.getCenterOfRotationFrontLeft(),
+            //         OI.getCenterOfRotationFrontRight());
         }
 
         // INTAKE STATE UPDATE
-        m_Intake.changeState(OI.startIntake(), OI.stopIntake());
+        // m_Intake.changeState(OI.startIntake(), OI.stopIntake());
 
         // INTAKE / SHOOTING
-        if (OI.getYButtonForShootRPM()) {
-            // turn shooter on in rpm mode
-            m_Shooter.shootingRPM(ntTopRPM.getNumber(0).doubleValue(), ntBotRPM.getNumber(0).doubleValue());
+        // if (OI.getYButtonForShootRPM()) {
+        //     // turn shooter on in rpm mode
+        //     m_Shooter.shootingRPM(ntTopRPM.getNumber(0).doubleValue(), ntBotRPM.getNumber(0).doubleValue());
 
-            if (m_Shooter.IsOkToShoot()) {
-                // Load shooter
-                m_Intake.loadShooter();
+        //     if (m_Shooter.IsOkToShoot()) {
+        //         // Load shooter
+        //         m_Intake.loadShooter();
 
-            } else {
-                m_Intake.toAState();
-            }
-        } else if (OI.getXButtonForShootDist()) {
-            // turn shooter on in Dist
-            m_Shooter.shootingDist(ntFeetToRPM.getNumber(0).doubleValue());
+        //     } else {
+        //         m_Intake.toAState();
+        //     }
+        // } else if (OI.getXButtonForShootDist()) {
+        //     // turn shooter on in Dist
+        //     m_Shooter.shootingDist(ntFeetToRPM.getNumber(0).doubleValue());
 
-            if (m_Shooter.IsOkToShoot()) {
-                // load shooter
-                m_Intake.loadShooter();
-            }
-        } else {
-            m_Shooter.turnOff();
-        }
+        //     if (m_Shooter.IsOkToShoot()) {
+        //         // load shooter
+        //         m_Intake.loadShooter();
+        //     }
+        // } else {
+        //     m_Shooter.turnOff();
+        // }
 
         // when shooting released, stop loading
-        if (OI.getXorYforShootingReleased()) {
-            m_Intake.turnOffLoadShooter();
-        }
+        // if (OI.getXorYforShootingReleased()) {
+        //     m_Intake.turnOffLoadShooter();
+        // }
         // climberControl(OI.getSolenoidReverse(), OI.getSolenoidForward(),
         // OI.getArmsUp(), OI.getArmsDown());
-        if (OI.getZeroOfTurnTableTalon()) {
-            m_Shooter.setTurnTableToZero();
-        }
+        // if (OI.getZeroOfTurnTableTalon()) {
+        //     m_Shooter.setTurnTableToZero();
+        // }
 
         // TURNTABLE
         // if not zeroed, zero the turntable
-        if (!m_Shooter.m_hasBeenCalibrated) {
-            m_Shooter.setTurnTableToZero();
+        // if (!m_Shooter.m_hasBeenCalibrated) {
+        //     m_Shooter.setTurnTableToZero();
 
-        }
-        // // manual control of turntable
-        else if (OI.getAimTurret()) {
-            m_Shooter.aimTurret(m_VisionShooter.getYaw());
-        } else {
-            m_Shooter.TurnTable(OI.getRightBumperForTurntable(), OI.getLeftBumperForTurntable());
-        }
+        // }
+        // // // manual control of turntable
+        // else if (OI.getAimTurret()) {
+        //     m_Shooter.aimTurret(m_VisionShooter.getYaw());
+        // } else {
+        //     m_Shooter.TurnTable(OI.getRightBumperForTurntable(), OI.getLeftBumperForTurntable());
+        // }
         // }
 
         // CLIMBER
@@ -180,7 +182,7 @@ public class SuperStructure extends Base {
             state = m_auto.getInitialState_auto3();
         }
 
-        m_SwerveDrive.resetOdometry(new Pose2d(state.poseMeters.getTranslation(), state.holonomicRotation));
+        // m_SwerveDrive.resetOdometry(new Pose2d(state.poseMeters.getTranslation(), state.holonomicRotation));
 
         m_Timer.reset();
         m_Timer.start();
@@ -188,28 +190,28 @@ public class SuperStructure extends Base {
 
     @Override
     public void autonomousPeriodic() {
-        if (m_chooser.getSelected() == "Auto1") {
-            m_SwerveDrive.driveFromChassisSpeeds(m_auto.getNextChassisSpeeds_Auto1(m_SwerveDrive.getPose2d()));
+    //     if (m_chooser.getSelected() == "Auto1") {
+    //         // m_SwerveDrive.driveFromChassisSpeeds(m_auto.getNextChassisSpeeds_Auto1(m_SwerveDrive.getPose2d()));
 
-            // shoot during auto
-            if (m_Timer.get() > 1.25 && m_Timer.get() < 5) {
-                m_Shooter.shootingRPM(ntTopRPM.getNumber(0).doubleValue(), ntBotRPM.getNumber(0).doubleValue());
-                if (m_Shooter.IsOkToShoot()) {
-                    m_Intake.loadShooter();
-                }
-            } else {
-                m_Shooter.turnOff();
-                m_Intake.turnOffLoadShooter();
-            }
+    //         // shoot during auto
+    //         if (m_Timer.get() > 1.25 && m_Timer.get() < 5) {
+    //             m_Shooter.shootingRPM(ntTopRPM.getNumber(0).doubleValue(), ntBotRPM.getNumber(0).doubleValue());
+    //             if (m_Shooter.IsOkToShoot()) {
+    //                 m_Intake.loadShooter();
+    //             }
+    //         } else {
+    //             m_Shooter.turnOff();
+    //             m_Intake.turnOffLoadShooter();
+    //         }
 
-            m_Intake.changeState(false, false);
+    //         m_Intake.changeState(false, false);
 
-        } else if (m_chooser.getSelected() == "Auto2") {
-            m_SwerveDrive.driveFromChassisSpeeds(m_auto.getNextChassisSpeeds_Auto2(m_SwerveDrive.getPose2d()));
-        } else if (m_chooser.getSelected() == "strafeleft") {
-            m_SwerveDrive.driveFromChassisSpeeds(m_auto.getNextChassisSpeeds_Auto3(m_SwerveDrive.getPose2d()));
-        }
-    }
+    //     } else if (m_chooser.getSelected() == "Auto2") {
+    //         m_SwerveDrive.driveFromChassisSpeeds(m_auto.getNextChassisSpeeds_Auto2(m_SwerveDrive.getPose2d()));
+    //     } else if (m_chooser.getSelected() == "strafeleft") {
+    //         m_SwerveDrive.driveFromChassisSpeeds(m_auto.getNextChassisSpeeds_Auto3(m_SwerveDrive.getPose2d()));
+    //     }
+     }
 
     @Override
     public void disabledInit() {
@@ -218,7 +220,7 @@ public class SuperStructure extends Base {
 
     @Override
     public void testInit() {
-        m_phCompressor.enableAnalog(80, 115);
+        // m_phCompressor.enableAnalog(80, 115);
     }
 
     @Override

@@ -53,7 +53,7 @@ public class RobotMap {
     public static final int kClimb_RightSolenoidForward    = 6;
     public static final int kClimb_RightSolenoidReverse    = 7;
     public static final int kClimb_SolenoidForward         = 0;
-    public static final int kClimb_SolenoidReverse         = 1;
+    public static final int kClimb_SolenoidReverse         = 1; 
 
     public static final int kIntake_Pnuematic1              = 3;
     public static final int kIntake_Pnuematic2              = 4;
