@@ -96,6 +96,14 @@ public class OI {
     static public boolean getVisionBallEngaged(){
         return xboxDrive.getLeftStickButton();
     }
+
+    static public boolean forwardIntake() {
+        return xboxIntakeTesting.getAButton();
+    }
+
+    static public boolean reverseIntake() {
+        return xboxIntakeTesting.getBButton();
+    }
 }
 
 /* FRC button doc

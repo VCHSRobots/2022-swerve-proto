@@ -46,7 +46,11 @@ public class Intake extends Base {
     NetworkTableEntry ntIntakeSpeed = intakeMotortab.add("intake actual", 0.15).getEntry();
     NetworkTableEntry ntMoverSpeed = intakeMotortab.add("mover actual", 0.15).getEntry();
     NetworkTableEntry ntShooterLoaderSpeed = intakeMotortab.add("loader actual", 0.15).getEntry();
-    NetworkTableEntry ntMotorSpeed = intakeMotortab.add("set percent out", 0.3).getEntry();
+    NetworkTableEntry ntMotorSpeed = intakeMotortab.add("Intake percent out", 0.3).getEntry();
+    NetworkTableEntry ntBTPercentOut = intakeMotortab.add("BT percent out", 0.5).getEntry();
+    NetworkTableEntry ntLoaderPercentOut = intakeMotortab.add("loader percent out", 0.5).getEntry();
+
+
 
     enum STATE {
         A, B, C, D, E;
@@ -123,30 +127,30 @@ public class Intake extends Base {
                     m_state = STATE.C;
                 }
 
-                switch (DriverStation.getAlliance()) {
-                    case Blue:
-                        if (m_colorSensor.isRedBallDetected()) {
+                // switch (DriverStation.getAlliance()) {
+                //     case Blue:
+                //         if (m_colorSensor.isRedBallDetected()) {
                             
-                            isChanging = true;
+                //             isChanging = true;
 
-                            m_timer.reset();
-                            m_timer.start();
-                            // turns back to normal (isChanging = False) after 1 seconds
-                        }
-                        break;
-                    case Red:
-                        if (m_colorSensor.isBlueBallDetected()) {
+                //             m_timer.reset();
+                //             m_timer.start();
+                //             // turns back to normal (isChanging = False) after 1 seconds
+                //         }
+                //         break;
+                //     case Red:
+                //         if (m_colorSensor.isBlueBallDetected()) {
 
-                            isChanging = true;
+                //             isChanging = true;
 
-                            m_timer.reset();
-                            m_timer.start();
-                            // turns back to normal (isChanging = False) after 1 seconds
-                        }
-                        break;
-                    case Invalid:
-                        break;
-                }
+                //             m_timer.reset();
+                //             m_timer.start();
+                //             // turns back to normal (isChanging = False) after 1 seconds
+                //         }
+                //         break;
+                //     case Invalid:
+                //         break;
+                // }
 
                 break;
             case C:
@@ -174,30 +178,30 @@ public class Intake extends Base {
                 // SPIT BALL OUT IF BAD (WRONG COLOR) :))))))
                 // add spit out ball logic somewhere else
 
-                switch (DriverStation.getAlliance()) {
-                    case Blue:
-                        if (m_colorSensor.isRedBallDetected()) {
+                // switch (DriverStation.getAlliance()) {
+                //     case Blue:
+                //         if (m_colorSensor.isRedBallDetected()) {
                             
-                            isChanging = true;
+                //             isChanging = true;
 
-                            m_timer.reset();
-                            m_timer.start();
-                            // turns back to normal (isChanging = False) after 1 seconds
-                        }
-                        break;
-                    case Red:
-                        if (m_colorSensor.isBlueBallDetected()) {
+                //             m_timer.reset();
+                //             m_timer.start();
+                //             // turns back to normal (isChanging = False) after 1 seconds
+                //         }
+                //         break;
+                //     case Red:
+                //         if (m_colorSensor.isBlueBallDetected()) {
 
-                            isChanging = true;
+                //             isChanging = true;
 
-                            m_timer.reset();
-                            m_timer.start();
-                            // turns back to normal (isChanging = False) after 1 seconds
-                        }
-                        break;
-                    case Invalid:
-                        break;
-                }
+                //             m_timer.reset();
+                //             m_timer.start();
+                //             // turns back to normal (isChanging = False) after 1 seconds
+                //         }
+                //         break;
+                //     case Invalid:
+                //         break;
+                // }
                 
 
                 
@@ -230,7 +234,8 @@ public class Intake extends Base {
                 m_mover.set(ControlMode.PercentOutput, 0);
                 m_shooterLoader.set(ControlMode.PercentOutput, 0);
 
-                m_doublePCM.set(Value.kReverse);
+                // add later
+                // m_doublePCM.set(Value.kReverse);
 
                 break;
             case B:
@@ -238,7 +243,7 @@ public class Intake extends Base {
                 // intake down
                 if(!isChanging) {
                     m_intake.set(ControlMode.PercentOutput, ntMotorSpeed.getDouble(0.0));
-                    m_mover.set(ControlMode.PercentOutput, ntMotorSpeed.getDouble(0.0));
+                    m_mover.set(ControlMode.PercentOutput, ntBTPercentOut.getDouble(0.0));
                 } else {
                     reverseIntake();
                     if(m_timer.get() >= .25) {
@@ -247,9 +252,9 @@ public class Intake extends Base {
                     }
                 }
 
-                m_shooterLoader.set(ControlMode.PercentOutput, ntMotorSpeed.getDouble(0.0));
+                m_shooterLoader.set(ControlMode.PercentOutput, ntLoaderPercentOut.getDouble(0.0));
 
-                m_doublePCM.set(Value.kForward);
+                // m_doublePCM.set(Value.kForward);
 
                 break;
             case C:
@@ -258,7 +263,7 @@ public class Intake extends Base {
 
                 if(!isChanging) {
                     m_intake.set(ControlMode.PercentOutput, ntMotorSpeed.getDouble(0.0));
-                    m_mover.set(ControlMode.PercentOutput, ntMotorSpeed.getDouble(0.0));
+                    m_mover.set(ControlMode.PercentOutput, ntBTPercentOut.getDouble(0.0));
                 } else {
                     reverseIntake();
                     if(m_timer.get() >= .25) {
@@ -270,7 +275,7 @@ public class Intake extends Base {
                 m_shooterLoader.set(ControlMode.PercentOutput, 0);
 
 
-                m_doublePCM.set(Value.kForward);
+                // m_doublePCM.set(Value.kForward);
 
                 break;
             case D:
@@ -288,8 +293,8 @@ public class Intake extends Base {
                 // start loading balls into shooter (loadShooter)
                 // stops when no more shooter buttons are pressed
                 m_intake.set(ControlMode.PercentOutput, ntMotorSpeed.getDouble(0.0));
-                m_mover.set(ControlMode.PercentOutput, ntMotorSpeed.getDouble(0.0));
-                m_shooterLoader.set(ControlMode.PercentOutput, ntMotorSpeed.getDouble(0.0));
+                m_mover.set(ControlMode.PercentOutput, ntBTPercentOut.getDouble(0.0));
+                m_shooterLoader.set(ControlMode.PercentOutput, ntLoaderPercentOut.getDouble(0.0));
 
                 break;
         }
@@ -297,6 +302,15 @@ public class Intake extends Base {
         // sets nt values for motors
         setNTValues();
 
+    }
+
+    // toggles intake pnuematic, for testing purposes
+    public void setIntakePnuematic(boolean forward) {
+        if(forward) {
+            m_doublePCM.set(Value.kForward);
+        } else {
+            m_doublePCM.set(Value.kReverse);
+        }
     }
 
     // Turns on shooter intake and mover to put balls in shooter.
@@ -307,13 +321,20 @@ public class Intake extends Base {
 
     // Goes back to the first state
     public void turnOffLoadShooter() {
-        if (m_state == STATE.E) {
-            m_state = STATE.A;
-        }
+        // if (m_state == STATE.E) {
+           m_state = STATE.A;
+        // }
     }
 
-    public void toAState() {
-        m_state = STATE.A;
+    // continues spinning intake motors if ball is there while shooting
+    public void countinueIntakeMotors() {
+        if(isBallAtLoad()) {
+            m_state = STATE.C;
+        } else if(isBallAtLoad() && isBallAtMiddle()) {
+            m_state = STATE.A;
+        } else {
+            m_state = STATE.B;
+        }
     }
 
     // spit out ball
