@@ -230,7 +230,8 @@ public class Intake extends Base {
                 m_mover.set(ControlMode.PercentOutput, 0);
                 m_shooterLoader.set(ControlMode.PercentOutput, 0);
 
-                m_doublePCM.set(Value.kReverse);
+                // add later
+                // m_doublePCM.set(Value.kReverse);
 
                 break;
             case B:
@@ -249,7 +250,7 @@ public class Intake extends Base {
 
                 m_shooterLoader.set(ControlMode.PercentOutput, ntMotorSpeed.getDouble(0.0));
 
-                m_doublePCM.set(Value.kForward);
+                // m_doublePCM.set(Value.kForward);
 
                 break;
             case C:
@@ -270,7 +271,7 @@ public class Intake extends Base {
                 m_shooterLoader.set(ControlMode.PercentOutput, 0);
 
 
-                m_doublePCM.set(Value.kForward);
+                // m_doublePCM.set(Value.kForward);
 
                 break;
             case D:
@@ -299,6 +300,15 @@ public class Intake extends Base {
 
     }
 
+    // toggles intake pnuematic, for testing purposes
+    public void setIntakePnuematic(boolean forward) {
+        if(forward) {
+            m_doublePCM.set(Value.kForward);
+        } else {
+            m_doublePCM.set(Value.kReverse);
+        }
+    }
+
     // Turns on shooter intake and mover to put balls in shooter.
     // Used in OI to coordinate shooting.
     public void loadShooter() {
@@ -312,8 +322,15 @@ public class Intake extends Base {
         }
     }
 
-    public void toAState() {
-        m_state = STATE.A;
+    // continues spinning intake motors if ball is there while shooting
+    public void countinueIntakeMotors() {
+        if(isBallAtLoad()) {
+            m_state = STATE.C;
+        } else if(isBallAtLoad() && isBallAtMiddle()) {
+            m_state = STATE.A;
+        } else {
+            m_state = STATE.B;
+        }
     }
 
     // spit out ball

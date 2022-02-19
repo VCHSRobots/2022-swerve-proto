@@ -96,6 +96,14 @@ public class SuperStructure extends Base {
     public void teleopPeriodic() {
         m_phCompressor.enableAnalog(90, 115);
 
+        // testing purposaes, changes intake pnuematics
+        if(OI.forwardIntake()) {
+            m_Intake.setIntakePnuematic(true);
+        }
+        if(OI.reverseIntake()) {
+            m_Intake.setIntakePnuematic(false);
+        }
+
         // DRIVING //
         // VISION GET BALL
         if (OI.getVisionBallEngaged()) {
@@ -121,7 +129,7 @@ public class SuperStructure extends Base {
                 m_Intake.loadShooter();
 
             } else {
-                m_Intake.toAState();
+                m_Intake.countinueIntakeMotors();
             }
         } else if (OI.getXButtonForShootDist()) {
             // turn shooter on in Dist
@@ -130,6 +138,8 @@ public class SuperStructure extends Base {
             if (m_Shooter.IsOkToShoot()) {
                 // load shooter
                 m_Intake.loadShooter();
+            } else {
+                m_Intake.countinueIntakeMotors();
             }
         } else {
             m_Shooter.turnOff();
