@@ -64,8 +64,10 @@ public class Shooter extends Base {
         };
 
         for (distanceRPMPoint point : distanceRPMlist) {
-            m_interpolatingSpeeds_bot.put(new InterpolatingDouble(point.distance), new InterpolatingDouble(point.botRPM));
-            m_interpolatingSpeeds_top.put(new InterpolatingDouble(point.distance), new InterpolatingDouble(point.topRPM));
+            m_interpolatingSpeeds_bot.put(new InterpolatingDouble(point.distance),
+                    new InterpolatingDouble(point.botRPM));
+            m_interpolatingSpeeds_top.put(new InterpolatingDouble(point.distance),
+                    new InterpolatingDouble(point.topRPM));
         }
     }
 
@@ -89,7 +91,7 @@ public class Shooter extends Base {
         ShootMotorTab.addBoolean("Has Been Zero'ed", () -> m_hasBeenCalibrated);
 
         TalonFXConfiguration baseConfig = new TalonFXConfiguration();
-        baseConfig.closedloopRamp = 0.02;
+        baseConfig.closedloopRamp = 0.0;
         baseConfig.neutralDeadband = 0.005;
         baseConfig.nominalOutputForward = 0.0;
         baseConfig.nominalOutputReverse = 0.0;
@@ -201,8 +203,8 @@ public class Shooter extends Base {
 
     // Sets Speeds for Distance.
     public void setSpeedsDist(double distanceFeet) {
-        setShootSpeeds(topFeetToRPM(distanceFeet),
-                botFeetToRPM(distanceFeet));
+        setShootSpeeds(rpmToTicksPer100ms(topFeetToRPM(distanceFeet)),
+                rpmToTicksPer100ms(botFeetToRPM(distanceFeet)));
 
     }
 
@@ -233,9 +235,10 @@ public class Shooter extends Base {
 
     // Equation for Top Motor.
     public double topFeetToRPM(double topfeet) {
-        // double RPMquadtop = -1419.522 + 396.7329 * topfeet + -3.353022 * (topfeet * topfeet);
+        // double RPMquadtop = -1419.522 + 396.7329 * topfeet + -3.353022 * (topfeet *
+        // topfeet);
         return m_interpolatingSpeeds_top.getInterpolated(new InterpolatingDouble(topfeet)).value;
-        
+
     }
 
     // Equation for Bot Motor.
@@ -245,28 +248,27 @@ public class Shooter extends Base {
 
     // Boolean that checks if shooter is reading to shoot at a good speed.
     public boolean IsOkToShoot() {
-        double errorTopRPM = ticksPer100msToRPM(m_shootTalonTop.getClosedLoopError());
-        double errorBotRPM = ticksPer100msToRPM(m_shootTalonBot.getClosedLoopError());
+        // double errorTopRPM =
+        // ticksPer100msToRPM(m_shootTalonTop.getClosedLoopError());
+        // double errorBotRPM =
+        // ticksPer100msToRPM(m_shootTalonBot.getClosedLoopError());
+        if (m_shootTalonBot.getControlMode() == ControlMode.PercentOutput) {
+            return false;
+        }
+        double errorTopRPM = ticksPer100msToRPM(m_shootTalonTop.getClosedLoopTarget()
+                - m_shootTalonTop.getSelectedSensorVelocity());
+        double errorBotRPM = ticksPer100msToRPM(m_shootTalonBot.getClosedLoopTarget()
+                - m_shootTalonBot.getSelectedSensorVelocity());
         boolean isTopFast = ticksPer100msToRPM(m_shootTalonTop.getSelectedSensorVelocity()) > 1500;
         boolean isBotFast = ticksPer100msToRPM(m_shootTalonBot.getSelectedSensorVelocity()) > 1300;
+
         if (errorBotRPM < 30 && errorTopRPM < 30 && isBotFast) {
             m_isOKtoShootCounter++;
-
-        } // && isTopFast && isBotFast;
+        }
         else {
             m_isOKtoShootCounter = 0;
         }
-        return m_isOKtoShootCounter > 15;
-    }
-
-    public double closedLoopErrorTop() {
-        double errorTopRPMActual = ticksPer100msToRPM(m_shootTalonTop.getClosedLoopError());
-        return errorTopRPMActual;
-    }
-
-    public double closedLoopErrorBot() {
-        double errorBotRPMActual = ticksPer100msToRPM(m_shootTalonBot.getClosedLoopError());
-        return errorBotRPMActual;
+        return m_isOKtoShootCounter > 7;
     }
 
     public void turnMotorsOff() {

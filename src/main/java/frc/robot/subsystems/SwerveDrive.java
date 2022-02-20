@@ -118,8 +118,17 @@ public class SwerveDrive extends Base {
     }
 
     public Rotation2d getGyroRotation2d() {
-        return Rotation2d.fromDegrees(-m_gyro.getAngle());
-        // return Rotation2d.fromDegrees(Math.IEEEremainder(m_gyro.getAngle(), 360));
+        // return Rotation2d.fromDegrees(-m_gyro.getAngle());
+        double angle = Math.IEEEremainder(-m_gyro.getAngle(), 360);
+        // double angle = m_turningEncoder.getPosition() - Units.radiansToDegrees(m_turningEncoderOffset);
+        //         angle = angle % 360;
+        //         if (angle > 180) {
+        //                 angle -= (360);
+        //         } else if (angle < -180) {
+        //                 angle += (360);
+        //         }
+        //         return Units.degreesToRadians(angle);
+        return Rotation2d.fromDegrees(angle);
     }
 
     public void resetOdometry(Pose2d pose) {

@@ -45,7 +45,7 @@ public class SuperStructure extends Base {
     private final Compressor m_phCompressor = new Compressor(PneumaticsModuleType.REVPH);
     private final PneumaticHub m_ph = new PneumaticHub();
 
-    ShuffleboardTab ShootMotorTab = Shuffleboard.getTab("ShooterSuper");
+    ShuffleboardTab ShootMotorTab = Shuffleboard.getTab("super");
 
     NetworkTableEntry ntBotRPM = ShootMotorTab.add("Bot RPM", 1900).withPosition(3, 3).withSize(1, 1).getEntry();
     NetworkTableEntry ntTopRPM = ShootMotorTab.add("Top RPM", 1900).withPosition(3, 2).withSize(1, 1).getEntry();
@@ -77,9 +77,11 @@ public class SuperStructure extends Base {
         Shuffleboard.getTab("super").add("swervedrive", m_SwerveDrive);
         Shuffleboard.getTab("super").add("compressor", m_phCompressor);
         Shuffleboard.getTab("super").addNumber("compressor/pressure", () -> m_phCompressor.getPressure());
-        Shuffleboard.getTab("ShooterSuper").addBoolean("IsOkToShoot", () -> m_Shooter.IsOkToShoot());
-        Shuffleboard.getTab("ShooterSuper").addNumber("Closed Loop Error Top", () -> m_Shooter.closedLoopErrorTop());
-        Shuffleboard.getTab("ShooterSuper").addNumber("Closed Loop Error Bot", () -> m_Shooter.closedLoopErrorBot());
+        Shuffleboard.getTab("super").addBoolean("IsOkToShoot", () -> m_Shooter.IsOkToShoot());
+        // Shuffleboard.getTab("super").addNumber("Closed Loop Error Top", () -> m_Shooter.closedLoopErrorTop());
+        // Shuffleboard.getTab("super").addNumber("Closed Loop Error Bot", () -> m_Shooter.closedLoopErrorBot());
+        Shuffleboard.getTab("super").addNumber("Camera Based Distance", () -> m_VisionShooter.getDistance());
+
         // auto chooser
         m_chooser.setDefaultOption("Auto1", kDefaultAuto);
         m_chooser.addOption("Auto2", kCustomAuto);
@@ -135,8 +137,10 @@ public class SuperStructure extends Base {
                 m_Intake.countinueIntakeMotors();
             }
         } else if (OI.getXButtonForShootDist()) {
+            double distFeet = m_VisionShooter.getDistance();
+
             // turn shooter on in Dist
-            m_Shooter.shootingDist(ntFeetToRPM.getNumber(0).doubleValue());
+            m_Shooter.shootingDist(distFeet);
 
             if (m_Shooter.IsOkToShoot()) {
                 // load shooter
@@ -237,6 +241,18 @@ public class SuperStructure extends Base {
     @Override
     public void testPeriodic() {
         climberControl(OI.getSolenoidReverse(), OI.getSolenoidForward(), OI.getArmsUp(), OI.getArmsDown());
+
+        if (OI.getDriveForward()) {
+            m_SwerveDrive.drive(0.01, 0.00, 0, false);
+        } else if (OI.getDriveLeft()) {
+            m_SwerveDrive.drive(0.00, 0.01, 0, false);
+        } else if (OI.getDriveReverse()) {
+            m_SwerveDrive.drive(-0.01, 0.00, 0, false);
+        } else if (OI.getDriveRight()) {
+            m_SwerveDrive.drive(0.00, -0.01, 0, false);
+        } else {
+            m_SwerveDrive.drive(0, 0, 0, false);
+        }
 
     }
 

@@ -7,6 +7,7 @@ package frc.robot.subsystems;
 import org.photonvision.PhotonCamera;
 import org.photonvision.targeting.PhotonTrackedTarget;
 
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
@@ -44,13 +45,19 @@ public class VisionShooter extends Base {
     @Override
     public void robotInit() {
         // var cameraName="Microsoft_LifeCam_HD-3000";
-        var cameraName = "mmal_service_16.1";
-        camera = new PhotonCamera(cameraName);
+        connectCamera();
     }
 
-    // public boolean followBall() {
+    public void connectCamera() {
+        var cameraName = "mmal_service_16.1";
+        if (camera == null)
+            camera = new PhotonCamera(cameraName);
+    }
+
     public double calculateAngleError() {
-        if (camera == null) return -1;
+        connectCamera();
+        if (camera == null)
+            return -1;
         var result = camera.getLatestResult();
 
         // update shuffle board
@@ -121,28 +128,33 @@ public class VisionShooter extends Base {
     }
 
     public double getYaw() {
+        if (m_lastTarget == null)
+            return 0.0;
         return m_lastTarget.getYaw();
     }
 
     public double getPitch() {
         // change this is camera is rotated
+        if (m_lastTarget == null)
+            return 15.0;
         return m_lastTarget.getPitch();
     }
 
     public double getDistance() {
-        double distanceMeters = 2;
-        double cameraAngle = 25.0; // angle from horizontal to axis of camera view
-        double cameraHeight = 0.6096; // height of camera on robot
-        double targetHeight = 2.581148; // height of retroreflective tape in meters
+        double visionTargetOffsetFromCenter = 2;
+        double distanceFeet = 14;
+        double cameraAngle = Units.degreesToRadians(25.0); // angle from horizontal to axis of camera view
+        double cameraHeight = 2; // height of camera on robot
+        double targetHeight = 8.46833; // height of retroreflective tape in feet
         /*
          * from internet
          * distance = delta_height / (tan(cameraAngle + Pitch) * cos(Yaw))
          * 
          * d = (targetHeight - cameraHeight) / tan(cameraAngle + Pitch)
          */
-        distanceMeters = ((targetHeight - cameraHeight)
-                / (Math.tan(cameraAngle + getPitch()) * Math.cos(getYaw())));
-        return distanceMeters;
+        distanceFeet = visionTargetOffsetFromCenter + ((targetHeight - cameraHeight)
+                / (Math.tan(cameraAngle + Units.degreesToRadians(getPitch())))); //* Math.cos(getYaw())));
+        return distanceFeet;
     }
 
 }
