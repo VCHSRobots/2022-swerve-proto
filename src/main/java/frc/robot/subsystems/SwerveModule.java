@@ -13,6 +13,7 @@ import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.util.sendable.Sendable;
 import edu.wpi.first.util.sendable.SendableBuilder;
+import frc.robot.Constants;
 import frc.robot.RobotMap;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
@@ -53,19 +54,14 @@ public class SwerveModule implements Sendable {
         private double m_turningEncoderOffset = 0;
 
         // Gains are for example purposes only - must be determined for your own robot!
-        private final PIDController m_drivePIDController = new PIDController(2.0, 0, 0); // 2
+        private final PIDController m_drivePIDController;
 
         // Gains are for example purposes only - must be determined for your own robot!
-        private final ProfiledPIDController m_turningPIDController = new ProfiledPIDController(
-                        2.2,
-                        0,
-                        0,
-                        new TrapezoidProfile.Constraints(
-                                        kModuleMaxAngularVelocity, kModuleMaxAngularAcceleration));
+        private final ProfiledPIDController m_turningPIDController;
 
         // Gains are for example purposes only - must be determined for your own robot!
-        private final SimpleMotorFeedforward m_driveFeedforward = new SimpleMotorFeedforward(0.4, 2.2); // 0.4, 1.93
-        private final SimpleMotorFeedforward m_turnFeedforward = new SimpleMotorFeedforward(0.35, 0.19); // 0.1,0.25
+        private final SimpleMotorFeedforward m_driveFeedforward; // 0.4, 1.93
+        private final SimpleMotorFeedforward m_turnFeedforward; // 0.1,0.25
 
         private final SimpleMotorFeedforward m_driveFeedforwardIntegrated = new SimpleMotorFeedforward(0, 0);
 
@@ -155,18 +151,53 @@ public class SwerveModule implements Sendable {
                 driveConfig.slot0.kD = 0;
                 driveConfig.slot0.kF = 0;
 
-                m_driveMotor.configAllSettings(driveConfig, 100);
+                m_driveMotor.configAllSettings(driveConfig, 50);
                 m_driveMotor.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor);
                 m_driveMotor.selectProfileSlot(0, 0);
                 m_driveMotor.configSelectedFeedbackCoefficient(1);
 
                 m_turningEncoder = new CANCoder(turningEncoderChannel);
-                m_turningEncoder.configFactoryDefault(100);
+                m_turningEncoder.configFactoryDefault(50);
                 m_turningEncoder.configAbsoluteSensorRange(AbsoluteSensorRange.Signed_PlusMinus180);
                 m_turningEncoder.configSensorInitializationStrategy(
                                 SensorInitializationStrategy.BootToAbsolutePosition);
+                m_turningEncoder.setPositionToAbsolute();
                 // m_turningEncoder.setStatusFramePeriod(CANCoderStatusFrame.SensorData, 20, );
 
+                if (Constants.isPracticeBot) {
+                        // Gains are for example purposes only - must be determined for your own robot!
+                        m_drivePIDController = new PIDController(2.0, 0, 0); // 2
+
+                        // Gains are for example purposes only - must be determined for your own robot!
+                        m_turningPIDController = new ProfiledPIDController(
+                                        2.2,
+                                        0,
+                                        0,
+                                        new TrapezoidProfile.Constraints(
+                                                        kModuleMaxAngularVelocity, kModuleMaxAngularAcceleration));
+
+                        // Gains are for example purposes only - must be determined for your own robot!
+                        m_driveFeedforward = new SimpleMotorFeedforward(0.4, 2.2); // 0.4,
+                                                                                   // 1.93
+                        m_turnFeedforward = new SimpleMotorFeedforward(0.35, 0.19); // 0.1,0.25
+                } else {
+                        // new swerve chassis
+                        // Gains are for example purposes only - must be determined for your own robot!
+                        m_drivePIDController = new PIDController(2.0, 0, 0); // 2
+
+                        // Gains are for example purposes only - must be determined for your own robot!
+                        m_turningPIDController = new ProfiledPIDController(
+                                        2.2,
+                                        0,
+                                        0,
+                                        new TrapezoidProfile.Constraints(
+                                                        kModuleMaxAngularVelocity, kModuleMaxAngularAcceleration));
+
+                        // Gains are for example purposes only - must be determined for your own robot!
+                        m_driveFeedforward = new SimpleMotorFeedforward(0.4, 2.2); // 0.4,
+                                                                                   // 1.93
+                        m_turnFeedforward = new SimpleMotorFeedforward(0.4, 0.25); // 0.1,0.25
+                }
                 // Limit the PID Controller's input range between -pi and pi and set the input
                 // to be continuous.
                 m_turningPIDController.enableContinuousInput(-Math.PI, Math.PI);
@@ -190,10 +221,20 @@ public class SwerveModule implements Sendable {
         }
 
         private double getTurningPositionRadians() {
-                return Units.degreesToRadians(m_turningEncoder.getAbsolutePosition()) - m_turningEncoderOffset;
+                // return Units.degreesToRadians(m_turningEncoder.getAbsolutePosition()) -
+                // m_turningEncoderOffset;
+                double angle = m_turningEncoder.getPosition() - Units.radiansToDegrees(m_turningEncoderOffset);
+                angle = angle % 360;
+                if (angle > 180) {
+                        angle -= (360);
+                } else if (angle < -180) {
+                        angle += (360);
+                }
+                return Units.degreesToRadians(angle);
         }
 
-        /**s
+        /**
+         * s
          * Sets the desired state for the module.
          *
          * @param desiredState Desired state with speed and angle.
@@ -206,7 +247,7 @@ public class SwerveModule implements Sendable {
 
                 // if requested state is of ~0 speed, then don't move wheels back to zero,
                 // just stop them
-                if (Math.abs(state.speedMetersPerSecond) < 0.002) {
+                if (Math.abs(state.speedMetersPerSecond) < 0.005) {
                         stop();
                         return;
                 }
@@ -278,7 +319,7 @@ public class SwerveModule implements Sendable {
                                 () -> (kDriveMetersPerIntegratedTick *
                                                 m_driveMotor.getSelectedSensorPosition()),
                                 null);
-                builder.addDoubleProperty("Actual Angle deg", () -> m_turningEncoder.getAbsolutePosition(), null);
+                builder.addDoubleProperty("Actual Angle deg", () -> m_turningEncoder.getPosition(), null);
                 builder.addDoubleProperty("Actual Angle with offset deg",
                                 () -> Units.radiansToDegrees(getTurningPositionRadians()), null);
                 builder.addDoubleProperty("Desired Drive m-s", () -> m_desiredState.speedMetersPerSecond, null);

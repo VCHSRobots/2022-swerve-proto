@@ -19,10 +19,10 @@ public class Constants {
         public static final double BACK_RIGHT = Units.degreesToRadians(172.0);
     }
     public static final class SwerveModuleOffsetRadiansComp {
-        public static final double FRONT_LEFT = Units.degreesToRadians(-40.8);
-        public static final double FRONT_RIGHT = Units.degreesToRadians(96.0);
-        public static final double BACK_LEFT = Units.degreesToRadians(67.8);
-        public static final double BACK_RIGHT = Units.degreesToRadians(15.8);
+        public static final double FRONT_LEFT = Units.degreesToRadians(-39.639);
+        public static final double FRONT_RIGHT = Units.degreesToRadians(97.998);
+        public static final double BACK_LEFT = Units.degreesToRadians(76.992);
+        public static final double BACK_RIGHT = Units.degreesToRadians(16.26);
     }
     public static final double xboxDeadband = 0.075;
 }

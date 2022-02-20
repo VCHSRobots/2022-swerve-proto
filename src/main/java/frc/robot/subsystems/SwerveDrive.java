@@ -11,6 +11,7 @@ import com.kauailabs.navx.frc.AHRS;
 import com.pathplanner.lib.PathPlannerTrajectory.PathPlannerState;
 
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -19,6 +20,7 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.SPI;
@@ -36,6 +38,9 @@ public class SwerveDrive extends Base {
     private final SlewRateLimiter m_xSpeedLimiter = new SlewRateLimiter(10);
     private final SlewRateLimiter m_ySpeedLimiter = new SlewRateLimiter(10);
     private final SlewRateLimiter m_rotLimiter = new SlewRateLimiter(10);
+
+    static ProfiledPIDController m_thetaController = new ProfiledPIDController(3.5, 0, 0,
+            new Constraints(kMaxAngularSpeed, 6 * kMaxAngularSpeed));
 
     private final double inches15toMeters = Units.inchesToMeters(11);
     private final Translation2d m_frontLeftLocation = new Translation2d(inches15toMeters, inches15toMeters);
@@ -87,17 +92,20 @@ public class SwerveDrive extends Base {
         }
 
         m_frontLeft = new SwerveModule(RobotMap.kDrive_FrontLeftDrive_TalonFX,
-            RobotMap.kDrive_FrontLeftTurn_TalonFX, RobotMap.kDrive_FrontLeftEncoder,
-            frontLeftOffset, 0);
+                RobotMap.kDrive_FrontLeftTurn_TalonFX, RobotMap.kDrive_FrontLeftEncoder,
+                frontLeftOffset, 0);
         m_frontRight = new SwerveModule(RobotMap.kDrive_FrontRightDrive_TalonFX,
-            RobotMap.kDrive_FrontRightTurn_TalonFX, RobotMap.kDrive_FrontRightEncoder,
-            frontRightoffset, 0);
+                RobotMap.kDrive_FrontRightTurn_TalonFX, RobotMap.kDrive_FrontRightEncoder,
+                frontRightoffset, 0);
         m_backLeft = new SwerveModule(RobotMap.kDrive_BackLeftDrive_TalonFX,
-            RobotMap.kDrive_BackLeftTurn_TalonFX, RobotMap.kDrive_BackLeftEncoder,
-            backLeftoffset, 0);
+                RobotMap.kDrive_BackLeftTurn_TalonFX, RobotMap.kDrive_BackLeftEncoder,
+                backLeftoffset, 0);
         m_backRight = new SwerveModule(RobotMap.kDrive_BackRightDrive_TalonFX,
-            RobotMap.kDrive_BackRightTurn_TalonFX, RobotMap.kDrive_BackRightEncoder,
-            backRightoffset, 0);
+                RobotMap.kDrive_BackRightTurn_TalonFX, RobotMap.kDrive_BackRightEncoder,
+                backRightoffset, 0);
+
+        m_thetaController.enableContinuousInput(-Math.PI, Math.PI);
+        m_thetaController.setTolerance(Units.degreesToRadians(1));
 
     }
 
@@ -231,6 +239,41 @@ public class SwerveDrive extends Base {
         drive(xSpeed, ySpeed, rot, m_fieldRelative, centerOfRotationMeters);
     }
 
+    public void driveWithXboxFaceRightStick(double driveY, double driveX, double xboxRotX, double xboxRotY) {
+        // Get the x speed. We are inverting this because Xbox controllers return
+        // negative values when we push forward.
+        final var xSpeed = -m_xSpeedLimiter
+                .calculate(MathUtil.applyDeadband(driveY, Constants.xboxDeadband))
+                * SwerveDrive.kMaxSpeed;
+
+        // Get the y speed or sideways/strafe speed. We are inverting this because
+        // we want a positive value when we pull to the left. Xbox controllers
+        // return positive values when you pull to the right by default.
+        final var ySpeed = -m_ySpeedLimiter
+                .calculate(MathUtil.applyDeadband(driveX, Constants.xboxDeadband))
+                * SwerveDrive.kMaxSpeed;
+
+        // Get the rate of angular rotation. We are inverting this because we want a
+        // positive value when we pull to the left (remember, CCW is positive in
+        // mathematics). Xbox controllers return positive values when you pull to
+        // the right by default.
+        // final var rot = -m_rotLimiter.calculate(MathUtil.applyDeadband(xboxRot,
+        // Constants.xboxDeadband))
+        // * SwerveDrive.kMaxAngularSpeed;
+
+        final double theta = cartesianToPolarTheta(-xboxRotY, -xboxRotX);
+        final double r = cartesianToPolarR(-xboxRotY, -xboxRotX);
+        double rot = 0;
+        if (Math.abs(r) > 0.5) {
+            rot = m_thetaController.calculate(getGyroRotation2d().getRadians(), theta);
+        }
+
+        // final var centerOfRotationMeters = frontLeftCOR ? m_frontLeftLocation
+        // : (frontRightCOR ? m_frontRightLocation : new Translation2d());
+
+        drive(xSpeed, ySpeed, rot, m_fieldRelative, new Translation2d());
+    }
+
     // Robot Periodic
     public void changeOdometry(boolean setFieldRelative, boolean setRobotRelative, boolean resetOdometry) {
         if (setFieldRelative) {
@@ -270,5 +313,16 @@ public class SwerveDrive extends Base {
         builder.addDoubleProperty("Desired Vx m-s", () -> m_lastChassisSpeedsDesired.vxMetersPerSecond, null);
         builder.addDoubleProperty("Desired Vy m-s", () -> m_lastChassisSpeedsDesired.vyMetersPerSecond, null);
         builder.addDoubleProperty("Desired Rot rad-s", () -> m_lastChassisSpeedsDesired.omegaRadiansPerSecond, null);
+    }
+
+    public double cartesianToPolarTheta(double x, double y) {
+        double theta = Math.atan2(y, x);
+        return theta;
+    }
+
+    public double cartesianToPolarR(double x, double y) {
+        double r = Math.sqrt(x * x + y * y);
+        return r;
+
     }
 }

@@ -10,7 +10,24 @@ public class OI {
     static xbox4415 xboxClimb = new xbox4415(1);
     static xbox4415 xboxShooterTesting = new xbox4415(2);
     static xbox4415 xboxIntakeTesting = new xbox4415(3);
+    static xbox4415 xbox_drive_test = new xbox4415(4);
 
+    static public boolean getDriveForward() {
+        return xbox_drive_test.getYButton();
+    }
+
+    static public boolean getDriveReverse() {
+        return xbox_drive_test.getAButton();
+    }
+
+    static public boolean getDriveLeft() {
+        return xbox_drive_test.getXButton();
+    }
+
+    static public boolean getDriveRight() {
+        return xbox_drive_test.getBButton();
+    }
+    
     static public double getDriveY() {
         return xboxDrive.getLeftY();
     }
@@ -21,6 +38,13 @@ public class OI {
 
     static public double getDriveRot() {
         return Math.copySign(Math.pow(xboxDrive.getRightX(), 2), xboxDrive.getRightX());
+    }
+
+    static public double getDriveRotX() {
+        return xboxDrive.getRightX();
+    }
+    static public double getDriveRotY() {
+        return xboxDrive.getRightY();
     }
 
     static public boolean shouldSetFieldRelative() {
