@@ -162,8 +162,12 @@ public class SuperStructure extends Base {
         // }
 
         // CLIMBER
-        climberControl(OI.getSolenoidReverse(), OI.getSolenoidForward(),
+        climberControl(OI.getClimberSolenoidReverse(), OI.getClimberSolenoidForward(),
                 OI.getArmsUp(), OI.getArmsDown());
+
+        if (OI.getResetClimbEncoder()) {
+            m_Climber.resetPosition();
+        }
     }
 
     @Override
@@ -225,7 +229,7 @@ public class SuperStructure extends Base {
 
     @Override
     public void testPeriodic() {
-        climberControl(OI.getSolenoidReverse(), OI.getSolenoidForward(), OI.getArmsUp(), OI.getArmsDown());
+        climberControl(OI.getClimberSolenoidReverse(), OI.getClimberSolenoidForward(), OI.getArmsUp(), OI.getArmsDown());
 
     }
 

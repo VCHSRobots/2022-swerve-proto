@@ -60,10 +60,10 @@ public class OI {
         return xboxDrive.getRawButton(7);
 
     }
-    static public boolean getSolenoidReverse() {
+    static public boolean getClimberSolenoidReverse() {
         return xboxClimb.getAButtonPressed();
     }
-    static public boolean getSolenoidForward() {
+    static public boolean getClimberSolenoidForward() {
         return xboxClimb.getBButtonPressed();
     }
 
@@ -74,6 +74,11 @@ public class OI {
     static public boolean getArmsDown(){
         return xboxClimb.getLeftBumper();
     }
+
+    static public boolean getResetClimbEncoder() {
+        return xboxClimb.getStartButton();
+    }
+
     static public boolean getXButtonForShootDist(){
         return xboxDrive.getXButton();
     }

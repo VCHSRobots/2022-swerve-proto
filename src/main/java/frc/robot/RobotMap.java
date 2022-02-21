@@ -33,7 +33,8 @@ public class RobotMap {
     public static final int kIntake_shooterInput_TalonFX    = 15;
 
     public static final int kClimb_master_TalonFX          = 21;
-    public static final int kClimb_follower_TalonFX         = 22;
+    public static final int kClimb_follower_TalonFX        = 22;
+    public static final int kClimb_follower2_TalonFX       = 23;
     
     public static final int kShoot_BottomMotor_TalonFX     = 31;
     public static final int kShoot_TopMotor_TalonFX        = 32;
