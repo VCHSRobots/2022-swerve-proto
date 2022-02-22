@@ -104,8 +104,7 @@ public class SuperStructure extends Base {
         // testing purposaes, changes intake pnuematics
         if(OI.forwardIntake()) {
             m_Intake.setIntakePnuematic(true);
-        }
-        if(OI.reverseIntake()) {
+        } else if(OI.reverseIntake()) {
             m_Intake.setIntakePnuematic(false);
         }
 

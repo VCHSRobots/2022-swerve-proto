@@ -57,7 +57,7 @@ public class SwerveModule implements Sendable {
 
         // Gains are for example purposes only - must be determined for your own robot!
         private final ProfiledPIDController m_turningPIDController = new ProfiledPIDController(
-                        2.2,
+                        2.0,
                         0,
                         0,
                         new TrapezoidProfile.Constraints(
@@ -65,7 +65,7 @@ public class SwerveModule implements Sendable {
 
         // Gains are for example purposes only - must be determined for your own robot!
         private final SimpleMotorFeedforward m_driveFeedforward = new SimpleMotorFeedforward(0.4, 2.2); // 0.4, 1.93
-        private final SimpleMotorFeedforward m_turnFeedforward = new SimpleMotorFeedforward(0.35, 0.19); // 0.1,0.25
+        private final SimpleMotorFeedforward m_turnFeedforward = new SimpleMotorFeedforward(0.3, 0.19); // 0.1,0.25
 
         private final SimpleMotorFeedforward m_driveFeedforwardIntegrated = new SimpleMotorFeedforward(0, 0);
 
@@ -115,9 +115,9 @@ public class SwerveModule implements Sendable {
                 baseConfig.peakOutputForward = 1.0;
                 baseConfig.peakOutputReverse = -1.0;
                 baseConfig.statorCurrLimit.enable = true;
-                baseConfig.statorCurrLimit.currentLimit = 30;
-                baseConfig.statorCurrLimit.triggerThresholdCurrent = 30;
-                baseConfig.statorCurrLimit.triggerThresholdTime = 1;
+                baseConfig.statorCurrLimit.currentLimit = 40;
+                baseConfig.statorCurrLimit.triggerThresholdCurrent = 40;
+                baseConfig.statorCurrLimit.triggerThresholdTime = 0.5;
                 baseConfig.supplyCurrLimit.enable = true;
                 baseConfig.supplyCurrLimit.currentLimit = 30;
                 baseConfig.supplyCurrLimit.triggerThresholdCurrent = 30;

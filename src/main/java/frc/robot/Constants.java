@@ -24,5 +24,5 @@ public class Constants {
         public static final double BACK_LEFT = Units.degreesToRadians( 0.0);
         public static final double BACK_RIGHT = Units.degreesToRadians(0.0);
     }
-    public static final double xboxDeadband = 0.075;
+    public static final double xboxDeadband = 0.09;
 }

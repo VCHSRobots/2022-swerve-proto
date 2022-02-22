@@ -25,8 +25,6 @@ import edu.wpi.first.wpilibj.Timer;
 /** Add your docs here. */
 public class Intake extends Base {
 
-    private double kDefaultMotorSpeed = .25;
-
     private boolean isChanging = false;
 
     private Timer m_timer = new Timer();
@@ -46,9 +44,13 @@ public class Intake extends Base {
     NetworkTableEntry ntIntakeSpeed = intakeMotortab.add("intake actual", 0.15).getEntry();
     NetworkTableEntry ntMoverSpeed = intakeMotortab.add("mover actual", 0.15).getEntry();
     NetworkTableEntry ntShooterLoaderSpeed = intakeMotortab.add("loader actual", 0.15).getEntry();
+
     NetworkTableEntry ntMotorSpeed = intakeMotortab.add("Intake percent out", 0.3).getEntry();
     NetworkTableEntry ntBTPercentOut = intakeMotortab.add("BT percent out", 0.5).getEntry();
     NetworkTableEntry ntLoaderPercentOut = intakeMotortab.add("loader percent out", 0.5).getEntry();
+    private final double kIntakeOut = 0.3;
+    private final double kBTOut = 0.5;
+    private final double kLoaderOut = 0.5;
 
 
 
@@ -236,14 +238,15 @@ public class Intake extends Base {
 
                 // add later
                 // m_doublePCM.set(Value.kReverse);
+                setIntakePnuematic(false);
 
                 break;
             case B:
                 // intake, bt, and load ON
                 // intake down
                 if(!isChanging) {
-                    m_intake.set(ControlMode.PercentOutput, ntMotorSpeed.getDouble(0.0));
-                    m_mover.set(ControlMode.PercentOutput, ntBTPercentOut.getDouble(0.0));
+                    m_intake.set(ControlMode.PercentOutput, kIntakeOut);
+                    m_mover.set(ControlMode.PercentOutput, kBTOut);
                 } else {
                     reverseIntake();
                     if(m_timer.get() >= .25) {
@@ -252,9 +255,10 @@ public class Intake extends Base {
                     }
                 }
 
-                m_shooterLoader.set(ControlMode.PercentOutput, ntLoaderPercentOut.getDouble(0.0));
+                m_shooterLoader.set(ControlMode.PercentOutput, kLoaderOut);
 
                 // m_doublePCM.set(Value.kForward);
+                setIntakePnuematic(true);
 
                 break;
             case C:
@@ -262,8 +266,8 @@ public class Intake extends Base {
                 // intake down
 
                 if(!isChanging) {
-                    m_intake.set(ControlMode.PercentOutput, ntMotorSpeed.getDouble(0.0));
-                    m_mover.set(ControlMode.PercentOutput, ntBTPercentOut.getDouble(0.0));
+                    m_intake.set(ControlMode.PercentOutput, kIntakeOut);
+                    m_mover.set(ControlMode.PercentOutput, kBTOut);
                 } else {
                     reverseIntake();
                     if(m_timer.get() >= .25) {
@@ -274,9 +278,9 @@ public class Intake extends Base {
 
                 m_shooterLoader.set(ControlMode.PercentOutput, 0);
 
+                setIntakePnuematic(true);
 
                 // m_doublePCM.set(Value.kForward);
-
                 break;
             case D:
                 // state changes to E after timer (inbetween state)
@@ -287,15 +291,13 @@ public class Intake extends Base {
                 // m_shooterLoader.set(ControlMode.PercentOutput, 0);
 
                 // m_doublePCM.set(Value.kForward);
-
                 break;
             case E:
                 // start loading balls into shooter (loadShooter)
                 // stops when no more shooter buttons are pressed
-                m_intake.set(ControlMode.PercentOutput, ntMotorSpeed.getDouble(0.0));
-                m_mover.set(ControlMode.PercentOutput, ntBTPercentOut.getDouble(0.0));
-                m_shooterLoader.set(ControlMode.PercentOutput, ntLoaderPercentOut.getDouble(0.0));
-
+                m_intake.set(ControlMode.PercentOutput, kIntakeOut);
+                m_mover.set(ControlMode.PercentOutput, kBTOut);
+                m_shooterLoader.set(ControlMode.PercentOutput, kLoaderOut);
                 break;
         }
 
