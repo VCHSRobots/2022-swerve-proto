@@ -1,7 +1,7 @@
 {
   "SysId": {
     "Analysis Type": "General Mechanism",
-    "AnalyzerJSONLocation": "C:\\dev\\FRC\\2022-swerve-proto\\characterization\\sysid_data20220128-202737.json",
+    "AnalyzerJSONLocation": "C:\\Users\\EpicUser\\Documents\\GitHub\\2022-swerve-proto\\sim\\sysid_data20220221-145056.json",
     "NetworkTables Settings": {
       "serverTeam": "4415"
     },

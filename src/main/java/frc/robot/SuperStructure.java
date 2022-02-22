@@ -81,6 +81,7 @@ public class SuperStructure extends Base {
         // Shuffleboard.getTab("super").addNumber("Closed Loop Error Top", () -> m_Shooter.closedLoopErrorTop());
         // Shuffleboard.getTab("super").addNumber("Closed Loop Error Bot", () -> m_Shooter.closedLoopErrorBot());
         Shuffleboard.getTab("super").addNumber("Camera Based Distance", () -> m_VisionShooter.getDistance());
+        Shuffleboard.getTab("super").addNumber("Shooter Yaw", () -> m_VisionShooter.getYaw());
 
         // auto chooser
         m_chooser.setDefaultOption("Auto1", kDefaultAuto);
@@ -169,7 +170,8 @@ public class SuperStructure extends Base {
         }
         // // manual control of turntable
         else if (OI.getAimTurret()) {
-            m_Shooter.aimTurret(m_VisionShooter.getYaw());
+            // m_Shooter.aimTurret(m_VisionShooter.getYaw());
+            m_Shooter.aimTurretTalonOnboard(m_VisionShooter.getYaw());
         } else {
             m_Shooter.TurnTable(OI.getRightBumperForTurntable(), OI.getLeftBumperForTurntable());
         }
