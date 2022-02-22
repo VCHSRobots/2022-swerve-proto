@@ -3,10 +3,13 @@
 // the WPILib BSD license file in the root directory of this project.
 package frc.robot.subsystems;
 
+import java.util.ResourceBundle.Control;
+
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.InvertType;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.StatusFrameEnhanced;
+import com.ctre.phoenix.motorcontrol.can.TalonFXConfiguration;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 
 import edu.wpi.first.networktables.NetworkTableEntry;
@@ -31,6 +34,8 @@ public class Climber extends Base {
     private DigitalInput topLimit;
     public double encoderValue;
 
+    private double kInchesPerEncoderTick = 0.00014573;
+
     ShuffleboardTab ClimberTab = Shuffleboard.getTab("Climber Encoder");
     NetworkTableEntry ntClimberEncoderValue = ClimberTab.add("Climber Encoder Value", encoderValue).withPosition(2, 2)
             .withSize(1, 1).getEntry();
@@ -46,6 +51,20 @@ public class Climber extends Base {
         m_master.configFactoryDefault(50);
         m_follower.configFactoryDefault(50);
         m_follower2.configFactoryDefault(50);
+
+        TalonFXConfiguration config = new TalonFXConfiguration();
+        config.slot0.kP = 0.11;
+        config.slot0.kI = 0.0;
+        config.slot0.kD = 0.5;
+        config.slot0.kF = 0.0;
+        config.motionAcceleration = 24 / kInchesPerEncoderTick; // 6 in/ s*s
+        config.motionCruiseVelocity = 18 / kInchesPerEncoderTick; // 12in per sec
+        config.motionCurveStrength = 6;
+        config.supplyCurrLimit.currentLimit = 30;
+        config.supplyCurrLimit.enable = true;
+        config.supplyCurrLimit.triggerThresholdCurrent = 30;
+        config.supplyCurrLimit.triggerThresholdTime = 0.5;
+        m_master.configAllSettings(config);
 
         m_master.setNeutralMode(NeutralMode.Brake);
         m_follower.setNeutralMode(NeutralMode.Brake);
@@ -65,7 +84,7 @@ public class Climber extends Base {
 
         m_master.setSelectedSensorPosition(0);
         m_master.configForwardSoftLimitEnable(true);
-        m_master.configForwardSoftLimitThreshold(236981);
+        m_master.configForwardSoftLimitThreshold(200000);
 
         // init solenoids
         m_solenoid = new DoubleSolenoid(PneumaticsModuleType.CTREPCM, RobotMap.kClimb_SolenoidForward,
@@ -80,7 +99,7 @@ public class Climber extends Base {
         encoderValue = m_master.getSelectedSensorPosition();
 
         // shuffleboard send
-        Shuffleboard.getTab("climber").addNumber("climber pos", ()-> m_master.getSelectedSensorPosition());
+        Shuffleboard.getTab("climber").addNumber("climber pos", () -> m_master.getSelectedSensorPosition());
     }
 
     // Teleop Periodic
@@ -116,4 +135,17 @@ public class Climber extends Base {
     public void resetPosition() {
         m_master.setSelectedSensorPosition(0);
     }
+
+    public void goToHalf() {
+        m_master.set(ControlMode.MotionMagic, 12 / kInchesPerEncoderTick);
+    }
+
+    public void goToFull() {
+        m_master.set(ControlMode.MotionMagic, 27 / kInchesPerEncoderTick);
+    }
+
+    public void goToZero() {
+        m_master.set(ControlMode.MotionMagic, 0);
+    }
+
 }

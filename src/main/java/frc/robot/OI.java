@@ -79,6 +79,19 @@ public class OI {
         return xboxClimb.getStartButton();
     }
 
+    static public boolean getClimbToZero() {
+        return xboxClimb.getBackButton();
+    }
+
+    static public boolean getClimbToHalf() {
+        return xboxClimb.getXButton();
+    }
+
+    static public boolean getClimbToFull() {
+        return xboxClimb.getYButton();
+    }
+
+
     static public boolean getXButtonForShootDist(){
         return xboxDrive.getXButton();
     }

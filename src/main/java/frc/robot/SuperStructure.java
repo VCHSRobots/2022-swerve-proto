@@ -42,7 +42,8 @@ public class SuperStructure extends Base {
 
     private Auto m_auto = new Auto();
 
-    // private final Compressor m_phCompressor = new Compressor(PneumaticsModuleType.REVPH);
+    // private final Compressor m_phCompressor = new
+    // Compressor(PneumaticsModuleType.REVPH);
     private final Compressor m_phCompressor = new Compressor(PneumaticsModuleType.CTREPCM);
     // private final PneumaticHub m_ph = new PneumaticHub();
 
@@ -76,7 +77,8 @@ public class SuperStructure extends Base {
 
         // Shuffleboard.getTab("super").add("swervedrive", m_SwerveDrive);
         // Shuffleboard.getTab("super").add("compressor", m_phCompressor);
-        // Shuffleboard.getTab("super").addNumber("compressor/pressure", () -> m_phCompressor.getPressure());
+        // Shuffleboard.getTab("super").addNumber("compressor/pressure", () ->
+        // m_phCompressor.getPressure());
 
         // auto chooser
         m_chooser.setDefaultOption("Auto1", kDefaultAuto);
@@ -87,7 +89,8 @@ public class SuperStructure extends Base {
 
     @Override
     public void robotPeriodic() {
-        // m_SwerveDrive.changeOdometry(OI.shouldSetFieldRelative(), OI.shouldSetRobotRelative(), OI.getResetOdometry());
+        // m_SwerveDrive.changeOdometry(OI.shouldSetFieldRelative(),
+        // OI.shouldSetRobotRelative(), OI.getResetOdometry());
         // m_Intake.robotPeriodic();
         m_auto.robotPeriodic();
         // m_VisionShooter.calculateAngleError();
@@ -95,7 +98,6 @@ public class SuperStructure extends Base {
 
     @Override
     public void teleopPeriodic() {
-        // m_phCompressor.enableAnalog(90, 115);
         m_phCompressor.enableDigital();
 
         // DRIVING //
@@ -106,8 +108,8 @@ public class SuperStructure extends Base {
         } else {
             // XBOX DRIVING CODE
             // m_SwerveDrive.driveWithXbox(OI.getDriveY(), OI.getDriveX(), OI.getDriveRot(),
-            //         OI.getCenterOfRotationFrontLeft(),
-            //         OI.getCenterOfRotationFrontRight());
+            // OI.getCenterOfRotationFrontLeft(),
+            // OI.getCenterOfRotationFrontRight());
         }
 
         // INTAKE STATE UPDATE
@@ -115,56 +117,65 @@ public class SuperStructure extends Base {
 
         // INTAKE / SHOOTING
         // if (OI.getYButtonForShootRPM()) {
-        //     // turn shooter on in rpm mode
-        //     m_Shooter.shootingRPM(ntTopRPM.getNumber(0).doubleValue(), ntBotRPM.getNumber(0).doubleValue());
+        // // turn shooter on in rpm mode
+        // m_Shooter.shootingRPM(ntTopRPM.getNumber(0).doubleValue(),
+        // ntBotRPM.getNumber(0).doubleValue());
 
-        //     if (m_Shooter.IsOkToShoot()) {
-        //         // Load shooter
-        //         m_Intake.loadShooter();
+        // if (m_Shooter.IsOkToShoot()) {
+        // // Load shooter
+        // m_Intake.loadShooter();
 
-        //     } else {
-        //         m_Intake.toAState();
-        //     }
-        // } else if (OI.getXButtonForShootDist()) {
-        //     // turn shooter on in Dist
-        //     m_Shooter.shootingDist(ntFeetToRPM.getNumber(0).doubleValue());
-
-        //     if (m_Shooter.IsOkToShoot()) {
-        //         // load shooter
-        //         m_Intake.loadShooter();
-        //     }
         // } else {
-        //     m_Shooter.turnOff();
+        // m_Intake.toAState();
+        // }
+        // } else if (OI.getXButtonForShootDist()) {
+        // // turn shooter on in Dist
+        // m_Shooter.shootingDist(ntFeetToRPM.getNumber(0).doubleValue());
+
+        // if (m_Shooter.IsOkToShoot()) {
+        // // load shooter
+        // m_Intake.loadShooter();
+        // }
+        // } else {
+        // m_Shooter.turnOff();
         // }
 
         // when shooting released, stop loading
         // if (OI.getXorYforShootingReleased()) {
-        //     m_Intake.turnOffLoadShooter();
+        // m_Intake.turnOffLoadShooter();
         // }
         // climberControl(OI.getSolenoidReverse(), OI.getSolenoidForward(),
         // OI.getArmsUp(), OI.getArmsDown());
         // if (OI.getZeroOfTurnTableTalon()) {
-        //     m_Shooter.setTurnTableToZero();
+        // m_Shooter.setTurnTableToZero();
         // }
 
         // TURNTABLE
         // if not zeroed, zero the turntable
         // if (!m_Shooter.m_hasBeenCalibrated) {
-        //     m_Shooter.setTurnTableToZero();
+        // m_Shooter.setTurnTableToZero();
 
         // }
         // // // manual control of turntable
         // else if (OI.getAimTurret()) {
-        //     m_Shooter.aimTurret(m_VisionShooter.getYaw());
+        // m_Shooter.aimTurret(m_VisionShooter.getYaw());
         // } else {
-        //     m_Shooter.TurnTable(OI.getRightBumperForTurntable(), OI.getLeftBumperForTurntable());
+        // m_Shooter.TurnTable(OI.getRightBumperForTurntable(),
+        // OI.getLeftBumperForTurntable());
         // }
         // }
 
         // CLIMBER
-        climberControl(OI.getClimberSolenoidReverse(), OI.getClimberSolenoidForward(),
-                OI.getArmsUp(), OI.getArmsDown());
-
+        if (OI.getClimbToZero()) {
+            m_Climber.goToZero();
+        } else if (OI.getClimbToHalf()) {
+            m_Climber.goToHalf();
+        } else if (OI.getClimbToFull()) {
+            m_Climber.goToFull();
+        } else {
+            climberControl(OI.getClimberSolenoidReverse(), OI.getClimberSolenoidForward(),
+                    OI.getArmsUp(), OI.getArmsDown());
+        }
         if (OI.getResetClimbEncoder()) {
             m_Climber.resetPosition();
         }
@@ -186,7 +197,8 @@ public class SuperStructure extends Base {
             state = m_auto.getInitialState_auto3();
         }
 
-        // m_SwerveDrive.resetOdometry(new Pose2d(state.poseMeters.getTranslation(), state.holonomicRotation));
+        // m_SwerveDrive.resetOdometry(new Pose2d(state.poseMeters.getTranslation(),
+        // state.holonomicRotation));
 
         m_Timer.reset();
         m_Timer.start();
@@ -194,28 +206,30 @@ public class SuperStructure extends Base {
 
     @Override
     public void autonomousPeriodic() {
-    //     if (m_chooser.getSelected() == "Auto1") {
-    //         // m_SwerveDrive.driveFromChassisSpeeds(m_auto.getNextChassisSpeeds_Auto1(m_SwerveDrive.getPose2d()));
+        // if (m_chooser.getSelected() == "Auto1") {
+        // //
+        // m_SwerveDrive.driveFromChassisSpeeds(m_auto.getNextChassisSpeeds_Auto1(m_SwerveDrive.getPose2d()));
 
-    //         // shoot during auto
-    //         if (m_Timer.get() > 1.25 && m_Timer.get() < 5) {
-    //             m_Shooter.shootingRPM(ntTopRPM.getNumber(0).doubleValue(), ntBotRPM.getNumber(0).doubleValue());
-    //             if (m_Shooter.IsOkToShoot()) {
-    //                 m_Intake.loadShooter();
-    //             }
-    //         } else {
-    //             m_Shooter.turnOff();
-    //             m_Intake.turnOffLoadShooter();
-    //         }
+        // // shoot during auto
+        // if (m_Timer.get() > 1.25 && m_Timer.get() < 5) {
+        // m_Shooter.shootingRPM(ntTopRPM.getNumber(0).doubleValue(),
+        // ntBotRPM.getNumber(0).doubleValue());
+        // if (m_Shooter.IsOkToShoot()) {
+        // m_Intake.loadShooter();
+        // }
+        // } else {
+        // m_Shooter.turnOff();
+        // m_Intake.turnOffLoadShooter();
+        // }
 
-    //         m_Intake.changeState(false, false);
+        // m_Intake.changeState(false, false);
 
-    //     } else if (m_chooser.getSelected() == "Auto2") {
-    //         m_SwerveDrive.driveFromChassisSpeeds(m_auto.getNextChassisSpeeds_Auto2(m_SwerveDrive.getPose2d()));
-    //     } else if (m_chooser.getSelected() == "strafeleft") {
-    //         m_SwerveDrive.driveFromChassisSpeeds(m_auto.getNextChassisSpeeds_Auto3(m_SwerveDrive.getPose2d()));
-    //     }
-     }
+        // } else if (m_chooser.getSelected() == "Auto2") {
+        // m_SwerveDrive.driveFromChassisSpeeds(m_auto.getNextChassisSpeeds_Auto2(m_SwerveDrive.getPose2d()));
+        // } else if (m_chooser.getSelected() == "strafeleft") {
+        // m_SwerveDrive.driveFromChassisSpeeds(m_auto.getNextChassisSpeeds_Auto3(m_SwerveDrive.getPose2d()));
+        // }
+    }
 
     @Override
     public void disabledInit() {
@@ -224,17 +238,17 @@ public class SuperStructure extends Base {
 
     @Override
     public void testInit() {
-        // m_phCompressor.enableAnalog(80, 115);
+        m_phCompressor.enableAnalog(80, 115);
     }
 
     @Override
     public void testPeriodic() {
-        climberControl(OI.getClimberSolenoidReverse(), OI.getClimberSolenoidForward(), OI.getArmsUp(), OI.getArmsDown());
+        climberControl(OI.getClimberSolenoidReverse(), OI.getClimberSolenoidForward(), OI.getArmsUp(),
+                OI.getArmsDown());
 
     }
 
     private void climberControl(boolean shortHookBack, boolean shortHookForward, boolean armsUp, boolean armsDown) {
-
         // solenoids
         if (shortHookBack) {
             m_Climber.hooksReverse();
