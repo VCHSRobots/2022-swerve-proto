@@ -45,12 +45,13 @@ public class SuperStructure extends Base {
     private final Compressor m_phCompressor = new Compressor(PneumaticsModuleType.REVPH);
     private final PneumaticHub m_ph = new PneumaticHub();
 
-    ShuffleboardTab ShootMotorTab = Shuffleboard.getTab("ShooterSuper");
+    ShuffleboardTab ShootMotorTab = Shuffleboard.getTab("super");
 
     NetworkTableEntry ntBotRPM = ShootMotorTab.add("Bot RPM", 1900).withPosition(3, 3).withSize(1, 1).getEntry();
     NetworkTableEntry ntTopRPM = ShootMotorTab.add("Top RPM", 1900).withPosition(3, 2).withSize(1, 1).getEntry();
     NetworkTableEntry ntFeetToRPM = ShootMotorTab.add("Feet To Top RPM", 17).withPosition(4, 2).withSize(1, 1)
             .getEntry();
+    
 
     public SuperStructure(SwerveDrive swerveDrive, Intake intake, Shooter shooter, Climber climber) {
 
@@ -76,6 +77,11 @@ public class SuperStructure extends Base {
         Shuffleboard.getTab("super").add("swervedrive", m_SwerveDrive);
         Shuffleboard.getTab("super").add("compressor", m_phCompressor);
         Shuffleboard.getTab("super").addNumber("compressor/pressure", () -> m_phCompressor.getPressure());
+        Shuffleboard.getTab("super").addBoolean("IsOkToShoot", () -> m_Shooter.IsOkToShoot());
+        // Shuffleboard.getTab("super").addNumber("Closed Loop Error Top", () -> m_Shooter.closedLoopErrorTop());
+        // Shuffleboard.getTab("super").addNumber("Closed Loop Error Bot", () -> m_Shooter.closedLoopErrorBot());
+        Shuffleboard.getTab("super").addNumber("Camera Based Distance", () -> m_VisionShooter.getDistance());
+        Shuffleboard.getTab("super").addNumber("Shooter Yaw", () -> m_VisionShooter.getYaw());
 
         // auto chooser
         m_chooser.setDefaultOption("Auto1", kDefaultAuto);
@@ -99,8 +105,7 @@ public class SuperStructure extends Base {
         // testing purposaes, changes intake pnuematics
         if(OI.forwardIntake()) {
             m_Intake.setIntakePnuematic(true);
-        }
-        if(OI.reverseIntake()) {
+        } else if(OI.reverseIntake()) {
             m_Intake.setIntakePnuematic(false);
         }
 
@@ -132,8 +137,10 @@ public class SuperStructure extends Base {
                 m_Intake.countinueIntakeMotors();
             }
         } else if (OI.getXButtonForShootDist()) {
+            double distFeet = m_VisionShooter.getDistance();
+
             // turn shooter on in Dist
-            m_Shooter.shootingDist(ntFeetToRPM.getNumber(0).doubleValue());
+            m_Shooter.shootingDist(distFeet);
 
             if (m_Shooter.IsOkToShoot()) {
                 // load shooter
@@ -163,7 +170,8 @@ public class SuperStructure extends Base {
         }
         // // manual control of turntable
         else if (OI.getAimTurret()) {
-            m_Shooter.aimTurret(m_VisionShooter.getYaw());
+            // m_Shooter.aimTurret(m_VisionShooter.getYaw());
+            m_Shooter.aimTurretTalonOnboard(m_VisionShooter.getYaw());
         } else {
             m_Shooter.TurnTable(OI.getRightBumperForTurntable(), OI.getLeftBumperForTurntable());
         }
@@ -234,6 +242,18 @@ public class SuperStructure extends Base {
     @Override
     public void testPeriodic() {
         climberControl(OI.getSolenoidReverse(), OI.getSolenoidForward(), OI.getArmsUp(), OI.getArmsDown());
+
+        if (OI.getDriveForward()) {
+            m_SwerveDrive.drive(0.01, 0.00, 0, false);
+        } else if (OI.getDriveLeft()) {
+            m_SwerveDrive.drive(0.00, 0.01, 0, false);
+        } else if (OI.getDriveReverse()) {
+            m_SwerveDrive.drive(-0.01, 0.00, 0, false);
+        } else if (OI.getDriveRight()) {
+            m_SwerveDrive.drive(0.00, -0.01, 0, false);
+        } else {
+            m_SwerveDrive.drive(0, 0, 0, false);
+        }
 
     }
 

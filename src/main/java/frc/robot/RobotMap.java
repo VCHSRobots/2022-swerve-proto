@@ -48,15 +48,15 @@ public class RobotMap {
     // END CANCODER //
 
     // SOLENOID //
-    public static final int kClimb_LeftSolenoidForward     = 4;
-    public static final int kClimb_LeftSolenoidReverse     = 5;
-    public static final int kClimb_RightSolenoidForward    = 6;
-    public static final int kClimb_RightSolenoidReverse    = 7;
+    // public static final int kClimb_LeftSolenoidForward     = 4;
+    // public static final int kClimb_LeftSolenoidReverse     = 5;
+    // public static final int kClimb_RightSolenoidForward    = 6;
+    // public static final int kClimb_RightSolenoidReverse    = 7;
     public static final int kClimb_SolenoidForward         = 0;
     public static final int kClimb_SolenoidReverse         = 1;
 
-    public static final int kIntake_Pnuematic1              = 3;
-    public static final int kIntake_Pnuematic2              = 4;
+    public static final int kIntake_Pnuematic1              = 2;
+    public static final int kIntake_Pnuematic2              = 3;
     // END SOLENOID //
     
     // DIO //

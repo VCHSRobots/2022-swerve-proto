@@ -42,8 +42,8 @@ public class SwerveModule implements Sendable {
         // 360 deg * turning rot per motor rot * motor rot per 2048 enc ticks
         private static final double kTurningRotPerMotorRot = 1 / 10.0;
 
-        private static final double kModuleMaxAngularVelocity = 4 * SwerveDrive.kMaxAngularSpeed;
-        private static final double kModuleMaxAngularAcceleration = 12 * Math.PI; // radians per second squared
+        private static final double kModuleMaxAngularVelocity = 2 * SwerveDrive.kMaxAngularSpeed;
+        private static final double kModuleMaxAngularAcceleration = 10 * Math.PI; // radians per second squared
 
         public final WPI_TalonFX m_driveMotor;
         public final WPI_TalonFX m_turningMotor;
@@ -57,7 +57,7 @@ public class SwerveModule implements Sendable {
 
         // Gains are for example purposes only - must be determined for your own robot!
         private final ProfiledPIDController m_turningPIDController = new ProfiledPIDController(
-                        2.2,
+                        2.0,
                         0,
                         0,
                         new TrapezoidProfile.Constraints(
@@ -65,7 +65,7 @@ public class SwerveModule implements Sendable {
 
         // Gains are for example purposes only - must be determined for your own robot!
         private final SimpleMotorFeedforward m_driveFeedforward = new SimpleMotorFeedforward(0.4, 2.2); // 0.4, 1.93
-        private final SimpleMotorFeedforward m_turnFeedforward = new SimpleMotorFeedforward(0.35, 0.19); // 0.1,0.25
+        private final SimpleMotorFeedforward m_turnFeedforward = new SimpleMotorFeedforward(0.3, 0.19); // 0.1,0.25
 
         private final SimpleMotorFeedforward m_driveFeedforwardIntegrated = new SimpleMotorFeedforward(0, 0);
 
@@ -115,9 +115,9 @@ public class SwerveModule implements Sendable {
                 baseConfig.peakOutputForward = 1.0;
                 baseConfig.peakOutputReverse = -1.0;
                 baseConfig.statorCurrLimit.enable = true;
-                baseConfig.statorCurrLimit.currentLimit = 30;
-                baseConfig.statorCurrLimit.triggerThresholdCurrent = 30;
-                baseConfig.statorCurrLimit.triggerThresholdTime = 1;
+                baseConfig.statorCurrLimit.currentLimit = 40;
+                baseConfig.statorCurrLimit.triggerThresholdCurrent = 40;
+                baseConfig.statorCurrLimit.triggerThresholdTime = 0.5;
                 baseConfig.supplyCurrLimit.enable = true;
                 baseConfig.supplyCurrLimit.currentLimit = 30;
                 baseConfig.supplyCurrLimit.triggerThresholdCurrent = 30;
@@ -165,7 +165,8 @@ public class SwerveModule implements Sendable {
                 m_turningEncoder.configAbsoluteSensorRange(AbsoluteSensorRange.Signed_PlusMinus180);
                 m_turningEncoder.configSensorInitializationStrategy(
                                 SensorInitializationStrategy.BootToAbsolutePosition);
-                // m_turningEncoder.setStatusFramePeriod(CANCoderStatusFrame.SensorData, 20, );
+                m_turningEncoder.setPositionToAbsolute();
+                m_turningEncoder.setStatusFramePeriod(CANCoderStatusFrame.SensorData, 20, 50);
 
                 // Limit the PID Controller's input range between -pi and pi and set the input
                 // to be continuous.
@@ -190,10 +191,20 @@ public class SwerveModule implements Sendable {
         }
 
         private double getTurningPositionRadians() {
-                return Units.degreesToRadians(m_turningEncoder.getAbsolutePosition()) - m_turningEncoderOffset;
+                // return Units.degreesToRadians(m_turningEncoder.getAbsolutePosition()) -
+                // m_turningEncoderOffset;
+                double angle = m_turningEncoder.getPosition() - Units.radiansToDegrees(m_turningEncoderOffset);
+                angle = Math.IEEEremainder(angle, 360);
+                // if (angle > 180) {
+                //         angle -= (360);
+                // } else if (angle < -180) {
+                //         angle += (360);
+                // }
+                return Units.degreesToRadians(angle);
         }
 
-        /**s
+        /**
+         * s
          * Sets the desired state for the module.
          *
          * @param desiredState Desired state with speed and angle.
@@ -206,7 +217,7 @@ public class SwerveModule implements Sendable {
 
                 // if requested state is of ~0 speed, then don't move wheels back to zero,
                 // just stop them
-                if (Math.abs(state.speedMetersPerSecond) < 0.002) {
+                if (Math.abs(state.speedMetersPerSecond) < 0.005) {
                         stop();
                         return;
                 }
@@ -273,15 +284,19 @@ public class SwerveModule implements Sendable {
         @Override
         public void initSendable(SendableBuilder builder) {
                 // builder.setSmartDashboardType("Swerve Module");
-                // builder.addDoubleProperty("Actual Drive m-s", () -> this.getDriveRatePerSecond(), null);
+                // builder.addDoubleProperty("Actual Drive m-s", () ->
+                // this.getDriveRatePerSecond(), null);
                 // builder.addDoubleProperty("Drive Position Meters",
-                //                 () -> (kDriveMetersPerIntegratedTick *
-                //                                 m_driveMotor.getSelectedSensorPosition()),
-                //                 null);
-                // builder.addDoubleProperty("Actual Angle deg", () -> m_turningEncoder.getAbsolutePosition(), null);
+                // () -> (kDriveMetersPerIntegratedTick *
+                // m_driveMotor.getSelectedSensorPosition()),
+                // null);
+                // builder.addDoubleProperty("Actual Angle deg", () ->
+                // m_turningEncoder.getPosition(), null);
                 // builder.addDoubleProperty("Actual Angle with offset deg",
-                //                 () -> Units.radiansToDegrees(getTurningPositionRadians()), null);
-                // builder.addDoubleProperty("Desired Drive m-s", () -> m_desiredState.speedMetersPerSecond, null);
-                // builder.addDoubleProperty("Desired Angle deg", () -> m_desiredState.angle.getDegrees(), null);
+                // () -> Units.radiansToDegrees(getTurningPositionRadians()), null);
+                // builder.addDoubleProperty("Desired Drive m-s", () ->
+                // m_desiredState.speedMetersPerSecond, null);
+                // builder.addDoubleProperty("Desired Angle deg", () ->
+                // m_desiredState.angle.getDegrees(), null);
         }
 }

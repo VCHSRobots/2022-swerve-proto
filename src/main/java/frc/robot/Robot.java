@@ -11,6 +11,8 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.subsystems.*;
+import frc.robot.util.*;
+
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -29,7 +31,7 @@ public class Robot extends TimedRobot {
   private final Climber climber = new Climber();
 
   SuperStructure superStructure = new SuperStructure(swerveDrive, intake, shooter, climber);
-
+  private InterpolatingTreeMap< InterpolatingDouble, InterpolatingDouble> m_DistanceRPMMap = new InterpolatingTreeMap<>();
   
   /**
    * This function is run when the robot is first started up and should be used
@@ -112,7 +114,9 @@ public class Robot extends TimedRobot {
   /** This function is called periodically during operator control. */
   @Override
   public void teleopPeriodic() {
-
+    double feetEight = 8;
+    double rpmEight = 2200;
+    m_DistanceRPMMap.put(new InterpolatingDouble(feetEight), new InterpolatingDouble(rpmEight));
     //SUPER STRUCTURE STUFF
     superStructure.teleopPeriodic();
   }
