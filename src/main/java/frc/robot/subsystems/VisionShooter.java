@@ -31,7 +31,7 @@ public class VisionShooter extends Base {
     NetworkTableEntry ntTargetArea = visionBalltab.add("Area", 0).getEntry();
     private PhotonTrackedTarget m_lastTarget;
     private boolean hasLastTarget = false;
-    private PhotonCamera camera;
+    private PhotonCamera camera = new PhotonCamera("mmal_service_16.1");
     private int m_lostCount = 0;
     private int m_icount = 0;
     private int m_MAXLOSTCOUNT = 10;
@@ -40,12 +40,13 @@ public class VisionShooter extends Base {
     // public VisionBall(SwerveDrive sd) {
     public VisionShooter() {
         // m_SwerveDrive=sd;
+        // connectCamera();
     }
 
     @Override
     public void robotInit() {
         // var cameraName="Microsoft_LifeCam_HD-3000";
-        connectCamera();
+        // connectCamera();
     }
 
     public void connectCamera() {
@@ -55,10 +56,11 @@ public class VisionShooter extends Base {
     }
 
     public double calculateAngleError() {
-        connectCamera();
+        // connectCamera();
         if (camera == null)
             return -1;
         var result = camera.getLatestResult();
+        // System.out.println("calc angle");
 
         // update shuffle board
         m_icount++;
@@ -87,7 +89,6 @@ public class VisionShooter extends Base {
          */
         PhotonTrackedTarget target;
         var hasTarget = false;
-        double stopArea = 25;
         if (!result.hasTargets()) {
             if (hasLastTarget) {
                 target = m_lastTarget;
@@ -99,12 +100,9 @@ public class VisionShooter extends Base {
         } else {
             hasTarget = true;
             target = result.getBestTarget();
-            if (target.getArea() > stopArea) {
-                hasTarget = false;
-            }
             if (hasLastTarget) {
-                if (Math.abs((target.getYaw() - m_lastTarget.getYaw()) / m_lastTarget.getYaw()) > 0.5
-                        || Math.abs(target.getArea() - m_lastTarget.getArea()) / m_lastTarget.getArea() > 0.3) {
+                if (Math.abs((target.getYaw() - m_lastTarget.getYaw()) / m_lastTarget.getYaw()) > 0.7
+                        || Math.abs(target.getArea() - m_lastTarget.getArea()) / m_lastTarget.getArea() > 0.5) {
                     hasTarget = false;
                 }
             }
@@ -114,8 +112,6 @@ public class VisionShooter extends Base {
             m_lostCount++;
             if (m_lostCount >= m_MAXLOSTCOUNT) {
                 hasLastTarget = false;
-                // m_SwerveDrive.drive(0, 0, 0, false);
-                // return false;
                 return 0;
             }
         } else {

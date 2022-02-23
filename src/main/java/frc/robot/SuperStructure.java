@@ -102,9 +102,7 @@ public class SuperStructure extends Base {
         Shuffleboard.getTab("super").addBoolean("Is Ball in Loader", () -> m_Intake.isBallAtLoad());
         Shuffleboard.getTab("super").addBoolean("Is Ball in Middle", () -> m_Intake.isBallAtMiddle());
         Shuffleboard.getTab("super").add(CameraServer.putVideo("mmal_service_16.1-output", 2000, 3000));
-        
-       
-        
+        Shuffleboard.getTab("super").addNumber("Shooter Yaw", () -> m_VisionShooter.getYaw());
 
         // auto chooser
         m_chooser.setDefaultOption("Auto1", kDefaultAuto);
@@ -128,8 +126,7 @@ public class SuperStructure extends Base {
         // testing purposaes, changes intake pnuematics
         if(OI.forwardIntake()) {
             m_Intake.setIntakePnuematic(true);
-        }
-        if(OI.reverseIntake()) {
+        } else if(OI.reverseIntake()) {
             m_Intake.setIntakePnuematic(false);
         }
 
@@ -194,7 +191,8 @@ public class SuperStructure extends Base {
         }
         // // manual control of turntable
         else if (OI.getAimTurret()) {
-            m_Shooter.aimTurret(m_VisionShooter.getYaw());
+            // m_Shooter.aimTurret(m_VisionShooter.getYaw());
+            m_Shooter.aimTurretTalonOnboard(m_VisionShooter.getYaw());
         } else {
             m_Shooter.TurnTable(OI.getRightBumperForTurntable(), OI.getLeftBumperForTurntable());
         }
