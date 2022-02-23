@@ -120,6 +120,10 @@ public class Auto {
         return adjustedSpeeds;
     }
 
+    public boolean isTrajectoryCompleted() {
+        return timer.get() > trajectory2.getTotalTimeSeconds();
+    }
+
     // public ChassisSpeeds getNextChassisSpeeds_AroundTheTable(Pose2d currentPose) {
     //     // around table to cadatorium path
     //     if (trajectory3 == null) {

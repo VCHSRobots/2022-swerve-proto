@@ -185,6 +185,7 @@ public class SuperStructure extends Base {
     @Override
     public void autonomousInit() {
         m_auto.autonomousInit();
+        m_Intake.autonomousInit();
 
         PathPlannerState state = new PathPlannerState();
         state.poseMeters = new Pose2d();
@@ -201,7 +202,6 @@ public class SuperStructure extends Base {
         m_SwerveDrive.resetOdometry(new Pose2d(state.poseMeters.getTranslation(), state.holonomicRotation));
 
         m_Timer.reset();
-        m_Timer.start();
     }
 
     @Override
@@ -224,6 +224,30 @@ public class SuperStructure extends Base {
 
         } else if (m_chooser.getSelected() == "Auto2") {
             m_SwerveDrive.driveFromChassisSpeeds(m_auto.getNextChassisSpeeds_Auto2(m_SwerveDrive.getPose2d()));
+
+
+            m_Intake.changeState(false, false);
+
+            if(!m_Intake.getHasDetectedMiddle() || !m_auto.isTrajectoryCompleted()) {
+                return;
+            }
+
+            m_Shooter.shootingRPM(ntTopRPM.getNumber(0).doubleValue(), ntBotRPM.getNumber(0).doubleValue());
+
+            if (!m_Shooter.IsOkToShoot()) {
+                return;
+            }
+
+            m_Intake.loadShooter();
+            m_Timer.start();
+
+            if(m_Timer.get() < 3) {
+                return;
+            }
+
+            m_Shooter.turnOff();
+            m_Intake.turnOffLoadShooter();
+
         } else if (m_chooser.getSelected() == "strafeleft") {
             m_SwerveDrive.driveFromChassisSpeeds(m_auto.getNextChassisSpeeds_Auto3(m_SwerveDrive.getPose2d()));
         }
