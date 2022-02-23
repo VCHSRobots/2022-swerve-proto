@@ -3,12 +3,15 @@
 // the WPILib BSD license file in the root directory of this project.
 package frc.robot.subsystems;
 
+import java.security.PrivilegedActionException;
+
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.StatusFrameEnhanced;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 
 import edu.wpi.first.networktables.NetworkTableEntry;
+import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
@@ -21,6 +24,7 @@ import frc.robot.RobotMap;
 public class Climber extends Base {
 
     private DoubleSolenoid m_solenoid;
+
 
     private WPI_TalonFX m_master;
     private WPI_TalonFX m_follower;
@@ -99,5 +103,6 @@ public class Climber extends Base {
     public void armsStop() {
         m_master.set(ControlMode.PercentOutput, 0);
     }
+
 
 }
