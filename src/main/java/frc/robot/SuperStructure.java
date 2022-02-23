@@ -15,12 +15,20 @@ import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import frc.robot.subsystems.*;
 
+import java.net.CacheRequest;
+
 import com.pathplanner.lib.PathPlannerTrajectory.PathPlannerState;
 
+import org.photonvision.PhotonCamera;
+import org.photonvision.targeting.PhotonPipelineResult;
+
+import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.networktables.NetworkTableEntry;
+
+
 
 /** Add your docs here. */
 public class SuperStructure extends Base {
@@ -46,11 +54,18 @@ public class SuperStructure extends Base {
     private final PneumaticHub m_ph = new PneumaticHub();
 
     ShuffleboardTab ShootMotorTab = Shuffleboard.getTab("super");
+    // shuffleboard: camera, is aimed, is ok to shoot, how many balls are in intake
 
     NetworkTableEntry ntBotRPM = ShootMotorTab.add("Bot RPM", 1900).withPosition(3, 3).withSize(1, 1).getEntry();
     NetworkTableEntry ntTopRPM = ShootMotorTab.add("Top RPM", 1900).withPosition(3, 2).withSize(1, 1).getEntry();
     NetworkTableEntry ntFeetToRPM = ShootMotorTab.add("Feet To Top RPM", 17).withPosition(4, 2).withSize(1, 1)
             .getEntry();
+    
+            
+    
+
+    
+    
     
 
     public SuperStructure(SwerveDrive swerveDrive, Intake intake, Shooter shooter, Climber climber) {
@@ -81,6 +96,12 @@ public class SuperStructure extends Base {
         // Shuffleboard.getTab("super").addNumber("Closed Loop Error Top", () -> m_Shooter.closedLoopErrorTop());
         // Shuffleboard.getTab("super").addNumber("Closed Loop Error Bot", () -> m_Shooter.closedLoopErrorBot());
         Shuffleboard.getTab("super").addNumber("Camera Based Distance", () -> m_VisionShooter.getDistance());
+        Shuffleboard.getTab("super").addNumber("current top RPM", () -> m_Shooter.getTopMotorRPM());
+        Shuffleboard.getTab("super").addNumber("Current bot RPM", () -> m_Shooter.getBotMotorRPM());
+
+        Shuffleboard.getTab("super").addBoolean("Is Ball in Loader", () -> m_Intake.isBallAtLoad());
+        Shuffleboard.getTab("super").addBoolean("Is Ball in Middle", () -> m_Intake.isBallAtMiddle());
+        Shuffleboard.getTab("super").add(CameraServer.putVideo("mmal_service_16.1-output", 2000, 3000));
         Shuffleboard.getTab("super").addNumber("Shooter Yaw", () -> m_VisionShooter.getYaw());
 
         // auto chooser

@@ -77,6 +77,7 @@ public class Shooter extends Base {
                 new distanceRPMPoint(21, 4300, 2400),
                 new distanceRPMPoint(22, 5200, 2200),
                 new distanceRPMPoint(23, 5500, 2400),
+                
 
         };
 
@@ -89,11 +90,11 @@ public class Shooter extends Base {
     }
 
     // SHUFFLEBOARD HELPERS
-    private double getTopMotorRPM() {
+    public double getTopMotorRPM() {
         return ticksPer100msToRPM(m_shootTalonTop.getSelectedSensorVelocity());
     }
 
-    private double getBotMotorRPM() {
+    public double getBotMotorRPM() {
         return ticksPer100msToRPM(m_shootTalonBot.getSelectedSensorVelocity());
     }
 
@@ -292,7 +293,7 @@ public class Shooter extends Base {
         boolean isTopFast = ticksPer100msToRPM(m_shootTalonTop.getSelectedSensorVelocity()) > 1500;
         boolean isBotFast = ticksPer100msToRPM(m_shootTalonBot.getSelectedSensorVelocity()) > 1300;
 
-        if (errorBotRPM < 30 && errorTopRPM < 30 && isBotFast) {
+        if (errorBotRPM < 30 && errorTopRPM < 30 && isBotFast && isTopFast) {
             m_isOKtoShootCounter++;
         } else {
             m_isOKtoShootCounter = 0;
