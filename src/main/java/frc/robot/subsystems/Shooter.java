@@ -30,8 +30,8 @@ public class Shooter extends Base {
     // [motor rot / turret rot]*[enc ticks / motor rot]*[turret rot / 360 degrees]
     private final double kEncoderTicksPerDegree = 21.19 * (2048.0) * (1.0 / 360.0);
     private final double kZeroOffsetEncoderTicks = 0;
-    private final double kMaxAngularVelocity = 135.0;
-    private final double kMaxAngularAcceleration = 455.0;
+    private final double kMaxAngularVelocity = 135.0; //keep within 300, started at 135
+    private final double kMaxAngularAcceleration = 500.0; //keep within 1000, started at 455
 
     // Shuffleboard Tabs and NetworkTableEntries.
     ShuffleboardTab ShootMotorTab = Shuffleboard.getTab("Shooter");
@@ -172,7 +172,7 @@ public class Shooter extends Base {
         turnTableConfig.motionAcceleration = kMaxAngularAcceleration * kEncoderTicksPerDegree * (1.0 / 10.0); // ticks per 100ms per sec
         // // [deg / s] * [tick / deg] * [s / 100ms] = [tick / 100ms]
         turnTableConfig.motionCruiseVelocity = kMaxAngularVelocity * kEncoderTicksPerDegree * (1.0 / 10.0);
-        turnTableConfig.motionCurveStrength = 5;
+        turnTableConfig.motionCurveStrength = 7; 
         m_turnTableTalon.configAllSettings(turnTableConfig, 50);
         
         
@@ -346,7 +346,7 @@ public class Shooter extends Base {
     }
 
     public void aimTurretTalonOnboard(double angleYawDegrees) {
-        if (Math.abs(angleYawDegrees) < 0.5) {
+        if (Math.abs(angleYawDegrees) < 0) {
             m_turnTableTalon.setVoltage(0);
             return;
         }
