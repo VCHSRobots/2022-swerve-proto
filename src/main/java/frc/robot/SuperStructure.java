@@ -15,12 +15,20 @@ import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import frc.robot.subsystems.*;
 
+import java.net.CacheRequest;
+
 import com.pathplanner.lib.PathPlannerTrajectory.PathPlannerState;
 
+import org.photonvision.PhotonCamera;
+import org.photonvision.targeting.PhotonPipelineResult;
+
+import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.networktables.NetworkTableEntry;
+
+
 
 /** Add your docs here. */
 public class SuperStructure extends Base {
@@ -46,11 +54,18 @@ public class SuperStructure extends Base {
     private final PneumaticHub m_ph = new PneumaticHub();
 
     ShuffleboardTab ShootMotorTab = Shuffleboard.getTab("super");
+    // shuffleboard: camera, is aimed, is ok to shoot, how many balls are in intake
 
     NetworkTableEntry ntBotRPM = ShootMotorTab.add("Bot RPM", 1900).withPosition(3, 3).withSize(1, 1).getEntry();
     NetworkTableEntry ntTopRPM = ShootMotorTab.add("Top RPM", 1900).withPosition(3, 2).withSize(1, 1).getEntry();
     NetworkTableEntry ntFeetToRPM = ShootMotorTab.add("Feet To Top RPM", 17).withPosition(4, 2).withSize(1, 1)
             .getEntry();
+    
+            
+    
+
+    
+    
     
 
     public SuperStructure(SwerveDrive swerveDrive, Intake intake, Shooter shooter, Climber climber) {
@@ -81,6 +96,12 @@ public class SuperStructure extends Base {
         // Shuffleboard.getTab("super").addNumber("Closed Loop Error Top", () -> m_Shooter.closedLoopErrorTop());
         // Shuffleboard.getTab("super").addNumber("Closed Loop Error Bot", () -> m_Shooter.closedLoopErrorBot());
         Shuffleboard.getTab("super").addNumber("Camera Based Distance", () -> m_VisionShooter.getDistance());
+        Shuffleboard.getTab("super").addNumber("current top RPM", () -> m_Shooter.getTopMotorRPM());
+        Shuffleboard.getTab("super").addNumber("Current bot RPM", () -> m_Shooter.getBotMotorRPM());
+
+        Shuffleboard.getTab("super").addBoolean("Is Ball in Loader", () -> m_Intake.isBallAtLoad());
+        Shuffleboard.getTab("super").addBoolean("Is Ball in Middle", () -> m_Intake.isBallAtMiddle());
+        Shuffleboard.getTab("super").add(CameraServer.putVideo("mmal_service_16.1-output", 2000, 3000));
         Shuffleboard.getTab("super").addNumber("Shooter Yaw", () -> m_VisionShooter.getYaw());
 
         // auto chooser
@@ -185,6 +206,7 @@ public class SuperStructure extends Base {
     @Override
     public void autonomousInit() {
         m_auto.autonomousInit();
+        m_Intake.autonomousInit();
 
         PathPlannerState state = new PathPlannerState();
         state.poseMeters = new Pose2d();
@@ -201,7 +223,6 @@ public class SuperStructure extends Base {
         m_SwerveDrive.resetOdometry(new Pose2d(state.poseMeters.getTranslation(), state.holonomicRotation));
 
         m_Timer.reset();
-        m_Timer.start();
     }
 
     @Override
@@ -224,6 +245,30 @@ public class SuperStructure extends Base {
 
         } else if (m_chooser.getSelected() == "Auto2") {
             m_SwerveDrive.driveFromChassisSpeeds(m_auto.getNextChassisSpeeds_Auto2(m_SwerveDrive.getPose2d()));
+
+
+            m_Intake.changeState(false, false);
+
+            if(!m_Intake.getHasDetectedMiddle() || !m_auto.isTrajectoryCompleted()) {
+                return;
+            }
+
+            m_Shooter.shootingRPM(ntTopRPM.getNumber(0).doubleValue(), ntBotRPM.getNumber(0).doubleValue());
+
+            if (!m_Shooter.IsOkToShoot()) {
+                return;
+            }
+
+            m_Intake.loadShooter();
+            m_Timer.start();
+
+            if(m_Timer.get() < 3) {
+                return;
+            }
+
+            m_Shooter.turnOff();
+            m_Intake.turnOffLoadShooter();
+
         } else if (m_chooser.getSelected() == "strafeleft") {
             m_SwerveDrive.driveFromChassisSpeeds(m_auto.getNextChassisSpeeds_Auto3(m_SwerveDrive.getPose2d()));
         }

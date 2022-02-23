@@ -8,6 +8,7 @@ import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 
+import edu.wpi.first.math.trajectory.Trajectory.State;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.wpilibj.AnalogInput;
 import edu.wpi.first.wpilibj.AnalogTrigger;
@@ -52,13 +53,13 @@ public class Intake extends Base {
     private final double kBTOut = 0.5;
     private final double kLoaderOut = 0.5;
 
-
-
     enum STATE {
         A, B, C, D, E;
     };
 
     STATE m_state = STATE.A;
+
+    private boolean hasDetectedMiddle;
 
     public Intake() {
         m_colorSensor.init();
@@ -91,6 +92,11 @@ public class Intake extends Base {
     public void robotPeriodic() {
         m_colorSensor.checkColor();
         m_colorSensor.updateNT();
+    }
+
+    public void autonomousInit() {
+        hasDetectedMiddle = false;
+        m_state = STATE.C;
     }
 
     // Teleop Periodic
@@ -177,6 +183,7 @@ public class Intake extends Base {
                 if (isBallAtMiddle()){
                     // 2nd ball loaded, stop intaking
                     m_state = STATE.A;
+                    hasDetectedMiddle = true;
                 }
 
                 // SPIT BALL OUT IF BAD (WRONG COLOR) :))))))
@@ -359,6 +366,10 @@ public class Intake extends Base {
 
     public boolean isBallAtMiddle() {
         return !m_middleDIO.get();
+    }
+
+    public boolean getHasDetectedMiddle() {
+        return hasDetectedMiddle;
     }
 
     private void colorPlaceholder() {
