@@ -95,7 +95,9 @@ public class Intake extends Base {
                 // intake and load off, intake up
 
                 if (startIntake) {
-                    m_state = STATE.B;
+                    if(!isBallAtMiddle()) {
+                        m_state = STATE.B;
+                    }
                 }
 
                 if (stopIntake) {
@@ -317,9 +319,7 @@ public class Intake extends Base {
 
     // Goes back to the first state
     public void turnOffLoadShooter() {
-        if (m_state == STATE.E) {
-            m_state = STATE.A;
-        }
+        m_state = STATE.A;
     }
 
     // continues spinning intake motors if ball is there while shooting
