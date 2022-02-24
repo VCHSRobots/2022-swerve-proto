@@ -30,8 +30,8 @@ public class Robot extends TimedRobot {
   private final Shooter shooter = new Shooter();
   private final Climber climber = new Climber();
 
-  SuperStructure superStructure = new SuperStructure(swerveDrive, intake, shooter, climber);
-  private InterpolatingTreeMap< InterpolatingDouble, InterpolatingDouble> m_DistanceRPMMap = new InterpolatingTreeMap<>();
+  SuperStructure superStructure = new SuperStructure(swerveDrive, intake, shooter, climber); 
+  
   
   /**
    * This function is run when the robot is first started up and should be used
@@ -114,9 +114,7 @@ public class Robot extends TimedRobot {
   /** This function is called periodically during operator control. */
   @Override
   public void teleopPeriodic() {
-    double feetEight = 8;
-    double rpmEight = 2200;
-    m_DistanceRPMMap.put(new InterpolatingDouble(feetEight), new InterpolatingDouble(rpmEight));
+    
     //SUPER STRUCTURE STUFF
     superStructure.teleopPeriodic();
   }

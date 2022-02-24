@@ -8,6 +8,7 @@ import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 
+import edu.wpi.first.math.trajectory.Trajectory.State;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.wpilibj.AnalogInput;
 import edu.wpi.first.wpilibj.AnalogTrigger;
@@ -52,13 +53,13 @@ public class Intake extends Base {
     private final double kBTOut = 0.5;
     private final double kLoaderOut = 0.5;
 
-
-
     enum STATE {
         A, B, C, D, E;
     };
 
     STATE m_state = STATE.A;
+
+    private boolean hasDetectedMiddle;
 
     public Intake() {
         m_colorSensor.init();
@@ -99,6 +100,11 @@ public class Intake extends Base {
         m_colorSensor.updateNT();
     }
 
+    public void autonomousInit() {
+        hasDetectedMiddle = false;
+        m_state = STATE.C;
+    }
+
     // Teleop Periodic
     public void changeState(boolean startIntake, boolean stopIntake) {
         switch (m_state) {
@@ -107,7 +113,9 @@ public class Intake extends Base {
                 // intake and load off, intake up
 
                 if (startIntake) {
-                    m_state = STATE.B;
+                    if(!isBallAtMiddle()) {
+                        m_state = STATE.B;
+                    }
                 }
 
                 if (stopIntake) {
@@ -181,6 +189,7 @@ public class Intake extends Base {
                 if (isBallAtMiddle()){
                     // 2nd ball loaded, stop intaking
                     m_state = STATE.A;
+                    hasDetectedMiddle = true;
                 }
 
                 // SPIT BALL OUT IF BAD (WRONG COLOR) :))))))
@@ -329,9 +338,7 @@ public class Intake extends Base {
 
     // Goes back to the first state
     public void turnOffLoadShooter() {
-        // if (m_state == STATE.E) {
-           m_state = STATE.A;
-        // }
+        m_state = STATE.A;
     }
 
     // continues spinning intake motors if ball is there while shooting
@@ -365,6 +372,10 @@ public class Intake extends Base {
 
     public boolean isBallAtMiddle() {
         return !m_middleDIO.get();
+    }
+
+    public boolean getHasDetectedMiddle() {
+        return hasDetectedMiddle;
     }
 
     private void colorPlaceholder() {

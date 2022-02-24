@@ -30,8 +30,8 @@ public class Shooter extends Base {
     // [motor rot / turret rot]*[enc ticks / motor rot]*[turret rot / 360 degrees]
     private final double kEncoderTicksPerDegree = 21.19 * (2048.0) * (1.0 / 360.0);
     private final double kZeroOffsetEncoderTicks = 0;
-    private final double kMaxAngularVelocity = 135.0;
-    private final double kMaxAngularAcceleration = 455.0;
+    private final double kMaxAngularVelocity = 135.0; //keep within 300, started at 135
+    private final double kMaxAngularAcceleration = 500.0; //keep within 1000, started at 455
 
     // Shuffleboard Tabs and NetworkTableEntries.
     ShuffleboardTab ShootMotorTab = Shuffleboard.getTab("Shooter");
@@ -77,6 +77,7 @@ public class Shooter extends Base {
                 new distanceRPMPoint(21, 4300, 2400),
                 new distanceRPMPoint(22, 5200, 2200),
                 new distanceRPMPoint(23, 5500, 2400),
+                
 
         };
 
@@ -89,11 +90,11 @@ public class Shooter extends Base {
     }
 
     // SHUFFLEBOARD HELPERS
-    private double getTopMotorRPM() {
+    public double getTopMotorRPM() {
         return ticksPer100msToRPM(m_shootTalonTop.getSelectedSensorVelocity());
     }
 
-    private double getBotMotorRPM() {
+    public double getBotMotorRPM() {
         return ticksPer100msToRPM(m_shootTalonBot.getSelectedSensorVelocity());
     }
 
@@ -172,7 +173,7 @@ public class Shooter extends Base {
         turnTableConfig.motionAcceleration = kMaxAngularAcceleration * kEncoderTicksPerDegree * (1.0 / 10.0); // ticks per 100ms per sec
         // // [deg / s] * [tick / deg] * [s / 100ms] = [tick / 100ms]
         turnTableConfig.motionCruiseVelocity = kMaxAngularVelocity * kEncoderTicksPerDegree * (1.0 / 10.0);
-        turnTableConfig.motionCurveStrength = 5;
+        turnTableConfig.motionCurveStrength = 7; 
         m_turnTableTalon.configAllSettings(turnTableConfig, 50);
         
         
@@ -292,7 +293,7 @@ public class Shooter extends Base {
         boolean isTopFast = ticksPer100msToRPM(m_shootTalonTop.getSelectedSensorVelocity()) > 1500;
         boolean isBotFast = ticksPer100msToRPM(m_shootTalonBot.getSelectedSensorVelocity()) > 1300;
 
-        if (errorBotRPM < 30 && errorTopRPM < 30 && isBotFast) {
+        if (errorBotRPM < 30 && errorTopRPM < 30 && isBotFast && isTopFast) {
             m_isOKtoShootCounter++;
         } else {
             m_isOKtoShootCounter = 0;
@@ -346,7 +347,7 @@ public class Shooter extends Base {
     }
 
     public void aimTurretTalonOnboard(double angleYawDegrees) {
-        if (Math.abs(angleYawDegrees) < 0.5) {
+        if (Math.abs(angleYawDegrees) < 0) {
             m_turnTableTalon.setVoltage(0);
             return;
         }
