@@ -78,6 +78,12 @@ public class Intake extends Base {
         // add to shuffleboard
         intakeMotortab.addBoolean("Ball at Middle", () -> !m_middleDIO.get());
         intakeMotortab.addBoolean("Ball at Load", () -> !m_loadDIO.get());
+        intakeMotortab.addNumber("Intake Vel", ()->m_intake.getSelectedSensorVelocity());
+        intakeMotortab.addNumber("Middle Vel", ()->m_mover.getSelectedSensorVelocity());
+        intakeMotortab.addNumber("Loader Vel", ()->m_shooterLoader.getSelectedSensorVelocity());
+        intakeMotortab.addNumber("Intake Cur", () -> m_intake.getSupplyCurrent());
+        intakeMotortab.addNumber("Middle Cur", () -> m_mover.getSupplyCurrent());
+        intakeMotortab.addNumber("Loader Cur", () -> m_shooterLoader.getSupplyCurrent());
     }
 
     // Robot Init
