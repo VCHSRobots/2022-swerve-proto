@@ -148,8 +148,8 @@ public class VisionShooter extends Base {
          * 
          * d = (targetHeight - cameraHeight) / tan(cameraAngle + Pitch)
          */
-        distanceFeet = visionTargetOffsetFromCenter + ((targetHeight - cameraHeight)
-                / (Math.tan(cameraAngle + Units.degreesToRadians(getPitch())))); //* Math.cos(getYaw())));
+        distanceFeet = visionTargetOffsetFromCenter + (targetHeight - cameraHeight)
+                / (Math.tan(cameraAngle + Units.degreesToRadians(getPitch())) * Math.cos(getYaw()));
         return distanceFeet;
     }
 
