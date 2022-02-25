@@ -363,10 +363,22 @@ public class Shooter extends Base {
     public double angleDegreesToEncoderTicks(double degrees) {
         return degrees * kEncoderTicksPerDegree - kZeroOffsetEncoderTicks;
     }
-
     public double getTurretAngleDegrees() {
         return m_turnTableTalon.getSelectedSensorPosition() / kEncoderTicksPerDegree;
     }
+    public void setTurnTableAngleFortFive() {
+        m_turnTableTalon.setSelectedSensorPosition(angleDegreesToEncoderTicks(45));
+    }
+    public void setTurnTableAngleHundred() {
+        m_turnTableTalon.setSelectedSensorPosition(angleDegreesToEncoderTicks(100));
+    }
+    public void setTurnTableAngleNegFortFive() {
+        m_turnTableTalon.setSelectedSensorPosition(angleDegreesToEncoderTicks(-45));
+    }
+    public void setTurnTableAngleNegHundred(){
+        m_turnTableTalon.setSelectedSensorPosition(angleDegreesToEncoderTicks(-100));
+    }
+    
 
 }
 

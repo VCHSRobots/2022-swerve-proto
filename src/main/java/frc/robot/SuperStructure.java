@@ -190,6 +190,8 @@ public class SuperStructure extends Base {
             m_Shooter.TurnTable(OI.getRightBumperForTurntable(), OI.getLeftBumperForTurntable());
         }
         // }
+        
+
 
         // CLIMBER
         climberControl(OI.getSolenoidReverse(), OI.getSolenoidForward(),
@@ -291,6 +293,18 @@ public class SuperStructure extends Base {
             m_SwerveDrive.drive(0.00, -0.01, 0, false);
         } else {
             m_SwerveDrive.drive(0, 0, 0, false);
+        }
+        if(OI.fortFiveTurnTable()){// A
+            m_Shooter.setTurnTableAngleFortFive();
+        }
+        if(OI.hundredTurnTable()){// X
+            m_Shooter.setTurnTableAngleHundred();
+        }
+        if(OI.negFortFiveTurnTable()){// Y
+            m_Shooter.setTurnTableAngleNegFortFive();
+        }
+        if(OI.negHundredTurnTable()){// B
+            m_Shooter.setTurnTableAngleNegHundred();
         }
 
     }

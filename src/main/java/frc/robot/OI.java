@@ -126,6 +126,18 @@ public class OI {
     static public boolean reverseIntake() {
         return xboxIntakeTesting.getBButton();
     }
+    static public boolean fortFiveTurnTable(){
+        return xboxShooterTesting.getAButton();
+    }
+    static public boolean hundredTurnTable(){
+        return xboxShooterTesting.getXButton();
+    }
+    static public boolean negFortFiveTurnTable(){
+        return xboxShooterTesting.getYButton();
+    }
+    static public boolean negHundredTurnTable(){
+        return xboxShooterTesting.getBButton();
+    }
 }
 
 /*
