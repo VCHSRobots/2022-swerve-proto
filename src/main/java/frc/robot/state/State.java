@@ -18,6 +18,7 @@ public class State {
     Rotation2d_4415 m_turretAngle;
     double m_lastTimestamp;
 
+    final Translation2d kFieldToCenterHub = new Translation2d(Units.inchesToMeters(324), Units.inchesToMeters(162));
     final Translation2d kRobotToTurretTranslation = new Translation2d(); // estimate turret in center for now
     final Translation2d kTurretToCamera = new Translation2d(Units.inchesToMeters(12), new Rotation2d());
 
@@ -52,20 +53,37 @@ public class State {
         return m_pose.getPose2d();
     }
 
-    public Translation2d getCameraToTarget(Rotation2d yaw, Rotation2d pitch) {
-        double visionTargetOffsetFromCenter = 2;
-        double distance = 14;
-        double cameraAngle = Units.degreesToRadians(25.0); // angle from horizontal to axis of camera view
-        double cameraHeight = Units.feetToMeters(2); // height of camera on robot
-        double targetHeight = Units.inchesToMeters(8*12.0+8.0-1); // height of retroreflective tape
+    public Translation2d getFieldToTarget() {
+        // return kFieldToCenterHub;
+        Translation2d rTCenter = getRobotToCenterHub();
+        Translation2d EdgeToCenter = rTCenter.div(rTCenter.getNorm()).times(Units.feetToMeters(2));
+        return rTCenter.minus(EdgeToCenter);
+   }
+
+    public Translation2d getRobotToCenterHub() {
+        return kFieldToCenterHub.minus(m_pose.getTranslation());
+    }
+
+    public Translation2d getCameraToTargetPhoton(Rotation2d yaw, Rotation2d pitch) {
+        double distance = getCameraToTargetDistance(yaw, pitch);
+        double visionTargetOffsetFromCenter = Units.feetToMeters(2);
+        double cameraToCenterHub = distance + visionTargetOffsetFromCenter;
+        return PhotonUtils.estimateCameraToTargetTranslation(distance, yaw);
+    }
+
+    public double getCameraToTargetDistance(Rotation2d yaw, Rotation2d pitch) {
+        double distance = 3;
+        double horizontalToCameraAngle = Units.degreesToRadians(53.0); // angle from horizontal to axis of camera view
+        double cameraHeight = Units.inchesToMeters(23.75); // height of camera on robot
+        double targetHeight = Units.inchesToMeters(8 * 12.0 + 8.0 - 1); // height of retroreflective tape
         /*
          * from internet
          * distance = delta_height / (tan(cameraAngle + Pitch) * cos(Yaw))
          * 
          * d = (targetHeight - cameraHeight) / tan(cameraAngle + Pitch)
          */
-        distance = visionTargetOffsetFromCenter + (targetHeight - cameraHeight)
-                / (Math.tan(cameraAngle + pitch.getRadians()) * Math.cos(yaw.getRadians()));
-        return PhotonUtils.estimateCameraToTargetTranslation(distance, yaw);
+        distance = (targetHeight - cameraHeight)
+                / (Math.tan(horizontalToCameraAngle + pitch.getRadians()) * Math.cos(yaw.getRadians()));
+        return distance;
     }
 }
