@@ -107,9 +107,9 @@ public class OI {
         return xboxDrive.getXButtonReleased() || xboxDrive.getYButtonReleased();
     }
 
-    static public boolean getZeroOfTurnTableTalon() {
-        return xboxDrive.getRightTriggerAxis() > 0.5;
-    }
+    // static public boolean getZeroOfTurnTableTalon() {
+    //     return xboxDrive.getRightTriggerAxis() > 0.5;
+    // }
 
     static public boolean getAimTurret() {
         return xboxDrive.getLeftTriggerAxis() > 0.5;
