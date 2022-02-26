@@ -159,7 +159,7 @@ public class Shooter extends Base {
         turnTableConfig.peakOutputReverse = -.3;
         // 0.1 @ 10 degree error
         // (0.1 * 1023) / (deg error * ticks / degree)
-        turnTableConfig.slot0.kP = (1 * 1023) / (60 * kEncoderTicksPerDegree);
+        turnTableConfig.slot0.kP = (1 * 1023) / (80 * kEncoderTicksPerDegree);
         turnTableConfig.slot0.kI = 0;
         turnTableConfig.slot0.kD = 0;
         turnTableConfig.slot0.kF = 0;
@@ -367,16 +367,16 @@ public class Shooter extends Base {
         return m_turnTableTalon.getSelectedSensorPosition() / kEncoderTicksPerDegree;
     }
     public void setTurnTableAngleFortFive() {
-        m_turnTableTalon.setSelectedSensorPosition(angleDegreesToEncoderTicks(45));
+        m_turnTableTalon.set(ControlMode.Position, angleDegreesToEncoderTicks(45));
     }
     public void setTurnTableAngleHundred() {
-        m_turnTableTalon.setSelectedSensorPosition(angleDegreesToEncoderTicks(100));
+        m_turnTableTalon.set(ControlMode.Position, angleDegreesToEncoderTicks(100));
     }
     public void setTurnTableAngleNegFortFive() {
-        m_turnTableTalon.setSelectedSensorPosition(angleDegreesToEncoderTicks(-45));
+        m_turnTableTalon.set(ControlMode.Position, angleDegreesToEncoderTicks(-45));
     }
     public void setTurnTableAngleNegHundred(){
-        m_turnTableTalon.setSelectedSensorPosition(angleDegreesToEncoderTicks(-100));
+        m_turnTableTalon.set(ControlMode.Position, angleDegreesToEncoderTicks(-100));
     }
     
 
