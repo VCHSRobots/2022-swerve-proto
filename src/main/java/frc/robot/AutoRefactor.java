@@ -18,7 +18,7 @@ import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.subsystems.SwerveDrive;
 
-public class Auto {
+public class AutoRefactor {
 
     PathPlannerTrajectory trajectory1;
     PathPlannerTrajectory trajectory2;
@@ -39,7 +39,7 @@ public class Auto {
     NetworkTableEntry ntGoalRot = Shuffleboard.getTab("super").add("Goal/Rot", 0).getEntry();
     NetworkTableEntry ntGoalHolRot = Shuffleboard.getTab("super").add("Goal/Hol Rot", 0).getEntry();
 
-    public Auto() {
+    public AutoRefactor() {
         thetaController.enableContinuousInput(-Math.PI, Math.PI);
         controller = new HolonomicDriveController(xController, yController, thetaController);
 
@@ -73,49 +73,44 @@ public class Auto {
         m_currentAutoStep = 0;
     }
 
-    public void setupAuto1p1() {
+    public PathPlannerState setupAuto1p1() {
         // m_chosenTrajectory = trajectory_auto1_part1;
 
+        return getInitialState(m_chosenTrajectory);
+    } 
+
+    public PathPlannerState setupAuto1p2() {
+        // m_chosenTrajectory = trajectory_auto1_part2;
+
+        return getInitialState(m_chosenTrajectory);
+    }
+
+    public PathPlannerState setupAuto2() {
+        m_chosenTrajectory = trajectory2;
+
+        return getInitialState(m_chosenTrajectory);
+    }
+
+    public PathPlannerState setupAuto3() {
+        m_chosenTrajectory = trajectory3;
+
+        return getInitialState(m_chosenTrajectory);
     }
 
     private PathPlannerState getInitialState(PathPlannerTrajectory traj) {
         return traj.getInitialState();
     }
 
-    public PathPlannerState getInitialState_auto1() {
-        return getInitialState(trajectory1);
-    }
-
-    public PathPlannerState getInitialState_auto2() {
-        return getInitialState(trajectory2);
-    }
-
-    public PathPlannerState getInitialState_auto3() {
-        return getInitialState(trajectory3);
-    }
-
-    public ChassisSpeeds getNextChassisSpeeds_Auto1(Pose2d currentPose) {
-        return getNextChassisSpeeds(currentPose, trajectory1);
-    }
-
-    public ChassisSpeeds getNextChassisSpeeds_Auto2(Pose2d currentPose) {
-        return getNextChassisSpeeds(currentPose, trajectory2);
-    }
-
-    public ChassisSpeeds getNextChassisSpeeds_Auto3(Pose2d currentPose) {
-        return getNextChassisSpeeds(currentPose, trajectory3);
-    }
-
-    public ChassisSpeeds getNextChassisSpeeds(Pose2d currentPose, PathPlannerTrajectory trajectory) {
+    public ChassisSpeeds getNextChassisSpeeds(Pose2d currentPose) {
         // around table to cadatorium path
-        if (trajectory == null) {
+        if (m_chosenTrajectory == null) {
             return new ChassisSpeeds();
         }
         ChassisSpeeds adjustedSpeeds = new ChassisSpeeds();
         PathPlannerState goal = new PathPlannerState();
-        if (timer.get() < trajectory.getTotalTimeSeconds()) {
+        if (timer.get() < m_chosenTrajectory.getTotalTimeSeconds()) {
             // calculate speeds for trajectory
-            goal = (PathPlannerState) trajectory.sample(timer.get());
+            goal = (PathPlannerState) m_chosenTrajectory.sample(timer.get());
             adjustedSpeeds = controller.calculate(currentPose, goal, goal.holonomicRotation);
         }
         ntGoalX.setNumber(goal.poseMeters.getX());
