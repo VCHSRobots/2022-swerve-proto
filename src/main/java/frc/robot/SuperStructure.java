@@ -246,6 +246,101 @@ public class SuperStructure extends Base {
         }
     }
 
+    // where intake started in auto2?
+    // how check middle of trajectory?
+
+    public void Auto1() {
+        if (m_autoStep == 0) {
+            m_Shooter.shootingRPM(ntTopRPM.getNumber(0).doubleValue(), ntBotRPM.getNumber(0).doubleValue());
+            if (m_Shooter.IsOkToShoot()) {
+                m_Intake.loadShooter();
+            }
+            if (m_Intake.getNumberOfBallsHolding() == 0) {
+                m_autoStep = 1;
+            }
+        } else if (m_autoStep == 1) {
+            if (m_Timer.advanceIfElapsed(0.5)) {
+                m_autoStep = 2;
+            }
+            m_Shooter.shootingRPM(ntTopRPM.getNumber(0).doubleValue(), ntBotRPM.getNumber(0).doubleValue());
+            if (m_Shooter.IsOkToShoot()) {
+                m_Intake.loadShooter();
+            }
+        } else if (m_autoStep == 2) {
+            // first trajectory
+            if (m_auto.isTrajectoryCompleted()) {
+                m_autoStep = 3;
+                m_Timer.reset();
+                m_Timer.start();
+            }
+            //  update with trajectory
+            m_SwerveDrive.driveFromChassisSpeeds(m_auto.getNextChassisSpeeds_Auto2(m_SwerveDrive.getPose2d()));
+        } else if (m_autoStep == 3) {
+            // should have picked up 2 balls
+            if (m_Intake.getNumberOfBallsHolding() > 1 || m_Timer.advanceIfElapsed(1)) {
+                m_autoStep = 4;
+            }
+        } else if (m_autoStep == 4) {
+            m_Shooter.shootingRPM(ntTopRPM.getNumber(0).doubleValue(), ntBotRPM.getNumber(0).doubleValue());
+            if (m_Shooter.IsOkToShoot()) {
+                m_Intake.loadShooter();
+            }
+            if (m_Intake.getNumberOfBallsHolding() == 0) {
+                m_autoStep = 5;
+                m_Timer.reset();
+                m_Timer.start();
+            }
+        } else if(m_autoStep == 5) {
+            if (m_Timer.advanceIfElapsed(0.5)) {
+                m_autoStep = 6;
+            }
+            m_Shooter.shootingRPM(ntTopRPM.getNumber(0).doubleValue(), ntBotRPM.getNumber(0).doubleValue());
+            if (m_Shooter.IsOkToShoot()) {
+                m_Intake.loadShooter();
+            }
+        } else if(m_autoStep == 6) {
+            // second trajectory
+            if (m_auto.isTrajectoryCompleted()) {
+                m_autoStep = 7;
+                m_Timer.reset();
+                m_Timer.start();
+            }
+            // update with trajectory
+            m_SwerveDrive.driveFromChassisSpeeds(m_auto.getNextChassisSpeeds_Auto2(m_SwerveDrive.getPose2d()));
+        } else if(m_autoStep == 7) {
+            if (m_Intake.getNumberOfBallsHolding() > 1 || m_Timer.advanceIfElapsed(1)) {
+                m_autoStep = 8;
+            }
+        } else if(m_autoStep == 8) {
+            m_Shooter.shootingRPM(ntTopRPM.getNumber(0).doubleValue(), ntBotRPM.getNumber(0).doubleValue());
+            if (m_Shooter.IsOkToShoot()) {
+                m_Intake.loadShooter();
+            }
+            if (m_Intake.getNumberOfBallsHolding() == 0) {
+                m_autoStep = 9;
+                m_Timer.reset();
+                m_Timer.start();
+            }
+        } else if(m_autoStep == 9) {
+            if (m_Timer.advanceIfElapsed(0.5)) {
+                m_autoStep = 10;
+            }
+            m_Shooter.shootingRPM(ntTopRPM.getNumber(0).doubleValue(), ntBotRPM.getNumber(0).doubleValue());
+            if (m_Shooter.IsOkToShoot()) {
+                m_Intake.loadShooter();
+            }
+        } else if(m_autoStep == 10) {
+            m_Shooter.turnOff();
+            m_Intake.turnOffLoadShooter();
+        } else {
+            m_Shooter.turnOff();
+            m_Intake.turnOffLoadShooter();
+        }
+
+        // always update intake state
+        m_Intake.changeState(false, false);
+    }
+
     public void Auto2() {
         if (m_autoStep == 0) {
             if (m_auto.isTrajectoryCompleted()) {
