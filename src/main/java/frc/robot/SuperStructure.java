@@ -21,8 +21,6 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.networktables.NetworkTableEntry;
 
-
-
 /** Add your docs here. */
 public class SuperStructure extends Base {
 
@@ -40,6 +38,7 @@ public class SuperStructure extends Base {
     private final VisionShooter m_VisionShooter = new VisionShooter();
 
     Timer m_Timer = new Timer();
+    int m_autoStep = 0;
 
     private Auto m_auto = new Auto();
 
@@ -53,13 +52,6 @@ public class SuperStructure extends Base {
     NetworkTableEntry ntTopRPM = ShootMotorTab.add("Top RPM", 1900).withPosition(3, 2).withSize(1, 1).getEntry();
     NetworkTableEntry ntFeetToRPM = ShootMotorTab.add("Feet To Top RPM", 17).withPosition(4, 2).withSize(1, 1)
             .getEntry();
-    
-            
-    
-
-    
-    
-    
 
     public SuperStructure(SwerveDrive swerveDrive, Intake intake, Shooter shooter, Climber climber) {
 
@@ -86,8 +78,10 @@ public class SuperStructure extends Base {
         Shuffleboard.getTab("super").add("compressor", m_phCompressor);
         Shuffleboard.getTab("super").addNumber("compressor/pressure", () -> m_phCompressor.getPressure());
         Shuffleboard.getTab("super").addBoolean("IsOkToShoot", () -> m_Shooter.IsOkToShoot());
-        // Shuffleboard.getTab("super").addNumber("Closed Loop Error Top", () -> m_Shooter.closedLoopErrorTop());
-        // Shuffleboard.getTab("super").addNumber("Closed Loop Error Bot", () -> m_Shooter.closedLoopErrorBot());
+        // Shuffleboard.getTab("super").addNumber("Closed Loop Error Top", () ->
+        // m_Shooter.closedLoopErrorTop());
+        // Shuffleboard.getTab("super").addNumber("Closed Loop Error Bot", () ->
+        // m_Shooter.closedLoopErrorBot());
         Shuffleboard.getTab("super").addNumber("Camera Based Distance", () -> m_VisionShooter.getDistance());
         Shuffleboard.getTab("super").addNumber("current top RPM", () -> m_Shooter.getTopMotorRPM());
         Shuffleboard.getTab("super").addNumber("Current bot RPM", () -> m_Shooter.getBotMotorRPM());
@@ -113,13 +107,19 @@ public class SuperStructure extends Base {
     }
 
     @Override
+    public void teleopInit() {
+        m_Shooter.turnOff();
+        m_Intake.turnOffLoadShooter();
+    }
+
+    @Override
     public void teleopPeriodic() {
         m_phCompressor.enableAnalog(90, 115);
 
         // testing purposaes, changes intake pnuematics
-        if(OI.forwardIntake()) {
+        if (OI.forwardIntake()) {
             m_Intake.setIntakePnuematic(true);
-        } else if(OI.reverseIntake()) {
+        } else if (OI.reverseIntake()) {
             m_Intake.setIntakePnuematic(false);
         }
 
@@ -172,26 +172,25 @@ public class SuperStructure extends Base {
         }
         // climberControl(OI.getSolenoidReverse(), OI.getSolenoidForward(),
         // OI.getArmsUp(), OI.getArmsDown());
-        if (OI.getZeroOfTurnTableTalon()) {
-            m_Shooter.setTurnTableToZero();
-        }
+        // if (OI.getZeroOfTurnTableTalon()) {
+        // m_Shooter.setTurnTableToZero();
+        // }
 
         // TURNTABLE
         // if not zeroed, zero the turntable
-        if (!m_Shooter.m_hasBeenCalibrated) {
-            m_Shooter.setTurnTableToZero();
+        // if (!m_Shooter.m_hasBeenCalibrated) {
+        // m_Shooter.setTurnTableToZero();
 
-        }
+        // }
         // // manual control of turntable
         else if (OI.getAimTurret()) {
             // m_Shooter.aimTurret(m_VisionShooter.getYaw());
-            m_Shooter.aimTurretTalonOnboard(m_VisionShooter.getYaw());
+            // m_Shooter.aimTurretTalonOnboard(m_VisionShooter.getYaw());
         } else {
-            m_Shooter.TurnTable(OI.getRightBumperForTurntable(), OI.getLeftBumperForTurntable());
+            // m_Shooter.TurnTable(OI.getRightBumperForTurntable(),
+            // OI.getLeftBumperForTurntable());
         }
         // }
-        
-
 
         // CLIMBER
         climberControl(OI.getSolenoidReverse(), OI.getSolenoidForward(),
@@ -200,6 +199,7 @@ public class SuperStructure extends Base {
 
     @Override
     public void autonomousInit() {
+        m_autoStep = 0;
         m_auto.autonomousInit();
         m_Intake.autonomousInit();
 
@@ -239,34 +239,53 @@ public class SuperStructure extends Base {
             m_Intake.changeState(false, false);
 
         } else if (m_chooser.getSelected() == "Auto2") {
-            m_SwerveDrive.driveFromChassisSpeeds(m_auto.getNextChassisSpeeds_Auto2(m_SwerveDrive.getPose2d()));
-
-
-            m_Intake.changeState(false, false);
-
-            if(!m_Intake.getHasDetectedMiddle() || !m_auto.isTrajectoryCompleted()) {
-                return;
-            }
-
-            m_Shooter.shootingRPM(ntTopRPM.getNumber(0).doubleValue(), ntBotRPM.getNumber(0).doubleValue());
-
-            if (!m_Shooter.IsOkToShoot()) {
-                return;
-            }
-
-            m_Intake.loadShooter();
-            m_Timer.start();
-
-            if(m_Timer.get() < 3) {
-                return;
-            }
-
-            m_Shooter.turnOff();
-            m_Intake.turnOffLoadShooter();
+            Auto2();
 
         } else if (m_chooser.getSelected() == "strafeleft") {
             m_SwerveDrive.driveFromChassisSpeeds(m_auto.getNextChassisSpeeds_Auto3(m_SwerveDrive.getPose2d()));
         }
+    }
+
+    public void Auto2() {
+        if (m_autoStep == 0) {
+            if (m_auto.isTrajectoryCompleted()) {
+                m_autoStep = 1;
+                m_Timer.reset();
+                m_Timer.start();
+            }
+            m_SwerveDrive.driveFromChassisSpeeds(m_auto.getNextChassisSpeeds_Auto2(m_SwerveDrive.getPose2d()));
+        } else if (m_autoStep == 1) {
+            if (m_Intake.getNumberOfBallsHolding() > 1 || m_Timer.advanceIfElapsed(1)) {
+                m_autoStep = 2;
+            }
+        } else if (m_autoStep == 2) {
+            m_Shooter.shootingRPM(ntTopRPM.getNumber(0).doubleValue(), ntBotRPM.getNumber(0).doubleValue());
+            if (m_Shooter.IsOkToShoot()) {
+                m_Intake.loadShooter();
+            }
+            if (m_Intake.getNumberOfBallsHolding() == 0) {
+                m_autoStep = 3;
+                m_Timer.reset();
+                m_Timer.start();
+            }
+        } else if (m_autoStep == 3) {
+            if (m_Timer.advanceIfElapsed(0.5)) {
+                m_autoStep = 4;
+            }
+            m_Shooter.shootingRPM(ntTopRPM.getNumber(0).doubleValue(), ntBotRPM.getNumber(0).doubleValue());
+            if (m_Shooter.IsOkToShoot()) {
+                m_Intake.loadShooter();
+            }
+        } else if (m_autoStep == 4) {
+            m_Shooter.turnOff();
+            m_Intake.turnOffLoadShooter();
+        } else {
+            m_Shooter.turnOff();
+            m_Intake.turnOffLoadShooter();
+        }
+
+        // always update intake state
+        m_Intake.changeState(false, false);
     }
 
     @Override
@@ -294,16 +313,16 @@ public class SuperStructure extends Base {
         } else {
             m_SwerveDrive.drive(0, 0, 0, false);
         }
-        if(OI.fortFiveTurnTable()){// A
+        if (OI.fortFiveTurnTable()) {// A
             m_Shooter.setTurnTableAngleFortFive();
         }
-        if(OI.hundredTurnTable()){// X
+        if (OI.hundredTurnTable()) {// X
             m_Shooter.setTurnTableAngleHundred();
         }
-        if(OI.negFortFiveTurnTable()){// Y
+        if (OI.negFortFiveTurnTable()) {// Y
             m_Shooter.setTurnTableAngleNegFortFive();
         }
-        if(OI.negHundredTurnTable()){// B
+        if (OI.negHundredTurnTable()) {// B
             m_Shooter.setTurnTableAngleNegHundred();
         }
 

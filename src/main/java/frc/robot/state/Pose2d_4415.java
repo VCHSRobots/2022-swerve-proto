@@ -5,7 +5,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import frc.robot.util.Interpolable;
 
-public class Pose2d_4415 extends Pose2d implements Interpolable<Pose2d_4415> {
+public class Pose2d_4415 extends Pose2d {// implements Interpolable<Pose2d_4415> {
     public Pose2d_4415() {
         super();
     }
@@ -22,9 +22,9 @@ public class Pose2d_4415 extends Pose2d implements Interpolable<Pose2d_4415> {
         super(other.getTranslation(), other.getRotation());
     }
 
-    public Pose2d_4415 interpolate(Pose2d_4415 endValue, double t) {
-        return this.interpolate(endValue, t);
-    }
+    // public Pose2d_4415 interpolate(Pose2d_4415 endValue, double t) {
+    //     return this.interpolate(endValue, t);
+    // }
 
     public Pose2d getPose2d() {
         return (Pose2d) this;

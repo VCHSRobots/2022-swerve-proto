@@ -57,7 +57,7 @@ public class SwerveModule implements Sendable {
 
         // Gains are for example purposes only - must be determined for your own robot!
         private final ProfiledPIDController m_turningPIDController = new ProfiledPIDController(
-                        2.0,
+                        1.0,
                         0,
                         0,
                         new TrapezoidProfile.Constraints(
