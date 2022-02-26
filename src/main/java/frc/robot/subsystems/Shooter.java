@@ -375,9 +375,7 @@ public class Shooter extends Base {
     public void setTurnTableAngleNegFortFive() {
         m_turnTableTalon.setSelectedSensorPosition(angleDegreesToEncoderTicks(-45), 0, 50);
     }
-    public void setTurnTableAngleNegHundred(){
-        m_turnTableTalon.setSelectedSensorPosition(angleDegreesToEncoderTicks(-100), 0, 50);
-    }
+    
     
 
 }
