@@ -65,8 +65,8 @@ public class Climber extends Base {
         m_solenoid.set(Value.kReverse);
 
         // init limit switches
-        bottomLimit = new DigitalInput(RobotMap.kClimber_BottomLimitSwitch);
-        topLimit = new DigitalInput(RobotMap.kClimber_TopLimitSwitch);
+        // bottomLimit = new DigitalInput(RobotMap.kClimber_BottomLimitSwitch);
+        // topLimit = new DigitalInput(RobotMap.kClimber_TopLimitSwitch);
 
         // encoder Value
         encoderValue = m_follower.getSelectedSensorPosition();
@@ -80,6 +80,25 @@ public class Climber extends Base {
         }
     }
 
+    // public boolean setTurnTableToZero() {
+    //     if (getTurnTableZero()) {
+    //         // 13 to 62, 52 to 231, GEAR RATIO: 21.19
+    //         m_hasBeenCalibrated = true;
+    //         m_turnTableTalon.set(ControlMode.PercentOutput, 0);
+
+    //         m_turnTableTalon.setSelectedSensorPosition(0);
+    //         m_turnTableTalon.configReverseSoftLimitThreshold(-16000, 50);
+    //         m_turnTableTalon.configForwardSoftLimitThreshold(16000, 50);
+    //         m_turnTableTalon.configForwardSoftLimitEnable(true, 50);
+    //         m_turnTableTalon.configReverseSoftLimitEnable(true, 50);
+
+    //         return true;
+    //     } else {
+    //         m_turnTableTalon.set(ControlMode.PercentOutput, -0.07);
+    //         return false;
+    //     }
+
+    // }
     public void hooksForward() {
         m_solenoid.set(Value.kForward);
 

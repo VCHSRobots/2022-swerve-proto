@@ -41,7 +41,7 @@ public class Shooter extends Base {
     WPI_TalonFX m_turnTableTalon = new WPI_TalonFX(RobotMap.kTurnTableMotor_TalonFX, RobotMap.kCANivore_name);
     DigitalInput m_TurnTableZero = new DigitalInput(RobotMap.kShooter_TurretZeroDIO);
 
-    // public boolean m_hasBeenCalibrated = false;
+    public boolean m_hasBeenCalibrated = false;
 
     private int m_isOKtoShootCounter = 0;
 
@@ -305,29 +305,29 @@ public class Shooter extends Base {
         setShootSpeeds(0, 0);
     }
 
-    // public boolean setTurnTableToZero() {
-    //     if (getTurnTableZero()) {
-    //         // 13 to 62, 52 to 231, GEAR RATIO: 21.19
-    //         m_hasBeenCalibrated = true;
-    //         m_turnTableTalon.set(ControlMode.PercentOutput, 0);
+    public boolean setTurnTableToZero() {
+        if (getTurnTableZero()) {
+            // 13 to 62, 52 to 231, GEAR RATIO: 21.19
+            m_hasBeenCalibrated = true;
+            m_turnTableTalon.set(ControlMode.PercentOutput, 0);
 
-    //         m_turnTableTalon.setSelectedSensorPosition(0);
-    //         m_turnTableTalon.configReverseSoftLimitThreshold(-16000, 50);
-    //         m_turnTableTalon.configForwardSoftLimitThreshold(16000, 50);
-    //         m_turnTableTalon.configForwardSoftLimitEnable(true, 50);
-    //         m_turnTableTalon.configReverseSoftLimitEnable(true, 50);
+            m_turnTableTalon.setSelectedSensorPosition(0);
+            m_turnTableTalon.configReverseSoftLimitThreshold(-16000, 50);
+            m_turnTableTalon.configForwardSoftLimitThreshold(16000, 50);
+            m_turnTableTalon.configForwardSoftLimitEnable(true, 50);
+            m_turnTableTalon.configReverseSoftLimitEnable(true, 50);
 
-    //         return true;
-    //     } else {
-    //         m_turnTableTalon.set(ControlMode.PercentOutput, -0.07);
-    //         return false;
-    //     }
+            return true;
+        } else {
+            m_turnTableTalon.set(ControlMode.PercentOutput, -0.07);
+            return false;
+        }
 
-    //}
+    }
 
-    // public boolean getTurnTableZero() {
-    //     return !m_TurnTableZero.get();
-    // }
+    public boolean getTurnTableZero() {
+        return !m_TurnTableZero.get();
+    }
 
     public boolean aimTurret(double angleYaw) {
         final double percentOut = 0.15;

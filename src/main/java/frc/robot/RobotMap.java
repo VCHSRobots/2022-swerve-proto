@@ -73,8 +73,8 @@ public class RobotMap {
     // END SOLENOID //
     
     // DIO //
-    public static final int kClimber_BottomLimitSwitch = 0;
-    public static final int kClimber_TopLimitSwitch = 1;
+    public static final int kClimber_LeftBottomLimit = 0;
+    public static final int kClimber_RightBottomLimit = 1;
     public static final int kIntake_LoadDIO = 3;
     public static final int kIntake_MiddleDIO = 2;
     public static final int kShooter_TurretZeroDIO = 4;
