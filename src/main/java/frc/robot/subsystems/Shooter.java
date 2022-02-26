@@ -367,17 +367,17 @@ public class Shooter extends Base {
         return m_turnTableTalon.getSelectedSensorPosition() / kEncoderTicksPerDegree;
     }
     public void setTurnTableAngleFortFive() {
-        m_turnTableTalon.set(ControlMode.Position, angleDegreesToEncoderTicks(45));
+        m_turnTableTalon.setSelectedSensorPosition(angleDegreesToEncoderTicks(45));
     }
     public void setTurnTableAngleHundred() {
-        m_turnTableTalon.set(ControlMode.Position, angleDegreesToEncoderTicks(100));
+        m_turnTableTalon.setSelectedSensorPosition(angleDegreesToEncoderTicks(100));
     }
     public void setTurnTableAngleNegFortFive() {
-        m_turnTableTalon.set(ControlMode.Position, angleDegreesToEncoderTicks(-45));
+        m_turnTableTalon.setSelectedSensorPosition(angleDegreesToEncoderTicks(-45));
     }
     public void setTurnTableAngleNegHundred(){
-      m_turnTableTalon.set(ControlMode.Position, angleDegreesToEncoderTicks(-100));
-}
+        m_turnTableTalon.setSelectedSensorPosition(angleDegreesToEncoderTicks(-100));
+    }
     
 
 }
