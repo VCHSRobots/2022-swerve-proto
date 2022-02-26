@@ -41,7 +41,11 @@ public class SwerveDrive extends Base {
     private final Translation2d m_frontLeftLocation = new Translation2d(inches15toMeters, inches15toMeters);
     private final Translation2d m_frontRightLocation = new Translation2d(inches15toMeters, -inches15toMeters);
     private final Translation2d m_backLeftLocation = new Translation2d(-inches15toMeters, inches15toMeters);
-    private final Translation2d m_backRightLocation = new Translation2d(-inches15toMeters, -inches15toMeters);
+    private final Translation2d m_backRightLocation = new Translation2d(-inches15toMeters, -inches15toMeters);    
+    // private final Translation2d m_backRightLocation = new Translation2d(inches15toMeters, inches15toMeters);
+    // private final Translation2d m_backLeftLocation = new Translation2d(inches15toMeters, -inches15toMeters);
+    // private final Translation2d m_frontRightLocation = new Translation2d(-inches15toMeters, inches15toMeters);
+    // private final Translation2d m_frontLeftLocation = new Translation2d(-inches15toMeters, -inches15toMeters);
 
     private final SwerveModule m_frontLeft;
     private final SwerveModule m_frontRight;
@@ -74,16 +78,19 @@ public class SwerveDrive extends Base {
         double backLeftoffset = 0;
         double backRightoffset = 0;
         if (Constants.isPracticeBot) {
-            frontLeftOffset = Constants.SwerveModuleOffsetRadiansPractice.FRONT_LEFT;
-            frontRightoffset = Constants.SwerveModuleOffsetRadiansPractice.FRONT_RIGHT;
-            backLeftoffset = Constants.SwerveModuleOffsetRadiansPractice.BACK_LEFT;
-            backRightoffset = Constants.SwerveModuleOffsetRadiansPractice.BACK_RIGHT;
+            // frontLeftOffset = Constants.SwerveModuleOffsetRadiansPractice.FRONT_LEFT;
+            // frontRightoffset = Constants.SwerveModuleOffsetRadiansPractice.FRONT_RIGHT;
+            // backLeftoffset = Constants.SwerveModuleOffsetRadiansPractice.BACK_LEFT;
+            // backRightoffset = Constants.SwerveModuleOffsetRadiansPractice.BACK_RIGHT;
+            frontLeftOffset  = Constants.SwerveModuleOffsetRadiansPractice.kFRONT_LEFT;
+            frontRightoffset = Constants.SwerveModuleOffsetRadiansPractice.kFRONT_RIGHT;
+            backLeftoffset   = Constants.SwerveModuleOffsetRadiansPractice.kBACK_LEFT;
+            backRightoffset  = Constants.SwerveModuleOffsetRadiansPractice.kBACK_RIGHT;
         } else {
             frontLeftOffset = Constants.SwerveModuleOffsetRadiansComp.FRONT_LEFT;
             frontRightoffset = Constants.SwerveModuleOffsetRadiansComp.FRONT_RIGHT;
             backLeftoffset = Constants.SwerveModuleOffsetRadiansComp.BACK_LEFT;
             backRightoffset = Constants.SwerveModuleOffsetRadiansComp.BACK_RIGHT;
-
         }
 
         m_frontLeft = new SwerveModule(RobotMap.kDrive_FrontLeftDrive_TalonFX,

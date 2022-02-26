@@ -180,7 +180,7 @@ public class OI {
  * 
  * AtRest Returns true if joys sticks and triggers in neutral position, false
  * otherwise.(AtRest is a property you can access in your programming - not
- * actually a “button” on the controller)
+ * actually a "button" on the controller)
  * 
  * link:
  * https://ftcforum.firstinspires.org/forum/first-tech-challenge-community-forum

@@ -13,7 +13,6 @@ import frc.robot.Constants;
 
 import com.revrobotics.ColorSensorV3;
 import com.revrobotics.ColorMatchResult;
-import com.kauailabs.navx.frc.Quaternion;
 import com.revrobotics.ColorMatch;
 
 /** Add your docs here. */

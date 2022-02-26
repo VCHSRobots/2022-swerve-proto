@@ -17,6 +17,11 @@ public class Constants {
         public static final double FRONT_RIGHT = Units.degreesToRadians(29.5);
         public static final double BACK_LEFT = Units.degreesToRadians(-16.5);
         public static final double BACK_RIGHT = Units.degreesToRadians(172.0);
+
+        public static final double kBACK_RIGHT  = Units.degreesToRadians(-42.5) + Math.PI;
+        public static final double kBACK_LEFT   = Units.degreesToRadians(29.5) - Math.PI;
+        public static final double kFRONT_RIGHT = Units.degreesToRadians(-16.5) + Math.PI;
+        public static final double kFRONT_LEFT = Units.degreesToRadians(172.0) - Math.PI;
     }
     public static final class SwerveModuleOffsetRadiansComp {
         public static final double FRONT_LEFT = Units.degreesToRadians(0.0);

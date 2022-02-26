@@ -413,4 +413,10 @@ public class Intake extends Base {
         }
     }
 
+    public int getNumberOfBallsHolding() {
+        int count = 0;
+        count += isBallAtLoad() ? 1:0;
+        count += isBallAtMiddle() ? 1:0;
+        return count;
+    }
 }

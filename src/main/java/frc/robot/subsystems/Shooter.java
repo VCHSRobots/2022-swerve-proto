@@ -159,7 +159,7 @@ public class Shooter extends Base {
         turnTableConfig.peakOutputReverse = -.3;
         // 0.1 @ 10 degree error
         // (0.1 * 1023) / (deg error * ticks / degree)
-        turnTableConfig.slot0.kP = (1 * 1023) / (60 * kEncoderTicksPerDegree);
+        turnTableConfig.slot0.kP = (1 * 1023) / (80 * kEncoderTicksPerDegree);
         turnTableConfig.slot0.kI = 0;
         turnTableConfig.slot0.kD = 0;
         turnTableConfig.slot0.kF = 0;

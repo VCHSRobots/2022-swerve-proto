@@ -94,7 +94,7 @@ public class VisionBall extends Base {
                 hasTarget = false;
             }
             if (hasLastTarget) {
-                if (Math.abs((target.getYaw() - m_lastTarget.getYaw()) / target.getYaw()) > 0.5
+                if (Math.abs((target.getYaw() - m_lastTarget.getYaw()) / m_lastTarget.getYaw()) > 0.5
                         || Math.abs(target.getArea() - m_lastTarget.getArea()) / m_lastTarget.getArea() > 0.3) {
                     hasTarget = false;
                 }
