@@ -47,9 +47,9 @@ public class SuperStructure extends Base {
 
     ShuffleboardTab ShootMotorTab = Shuffleboard.getTab("super");
 
-    NetworkTableEntry ntBotRPM = ShootMotorTab.add("Bot RPM", 1900).withPosition(3, 3).withSize(1, 1).getEntry();
-    NetworkTableEntry ntTopRPM = ShootMotorTab.add("Top RPM", 1900).withPosition(3, 2).withSize(1, 1).getEntry();
-    NetworkTableEntry ntFeetToRPM = ShootMotorTab.add("Feet To Top RPM", 17).withPosition(4, 2).withSize(1, 1)
+    NetworkTableEntry ntBotRPM = ShootMotorTab.add("Bot RPM", 1900).withPosition(3, 5).withSize(1, 1).getEntry();
+    NetworkTableEntry ntTopRPM = ShootMotorTab.add("Top RPM", 1900).withPosition(3, 4).withSize(1, 1).getEntry();
+    NetworkTableEntry ntFeetToRPM = ShootMotorTab.add("Feet To Top RPM", 17).withPosition(0, 0).withSize(1, 1)
             .getEntry();
     
 
@@ -74,14 +74,14 @@ public class SuperStructure extends Base {
         m_VisionBall.robotInit();
         m_VisionShooter.robotInit();
 
-        Shuffleboard.getTab("super").add("swervedrive", m_SwerveDrive);
-        Shuffleboard.getTab("super").add("compressor", m_phCompressor);
+        Shuffleboard.getTab("super").add("swervedrive", m_SwerveDrive).withPosition(8, 1).withSize(2, 2);
+        Shuffleboard.getTab("super").add("compressor", m_phCompressor).withPosition(8, 3).withSize(2, 2);
         Shuffleboard.getTab("super").addNumber("compressor/pressure", () -> m_phCompressor.getPressure());
-        Shuffleboard.getTab("super").addBoolean("IsOkToShoot", () -> m_Shooter.IsOkToShoot());
+        Shuffleboard.getTab("super").addBoolean("IsOkToShoot", () -> m_Shooter.IsOkToShoot()).withPosition(4, 1);
         // Shuffleboard.getTab("super").addNumber("Closed Loop Error Top", () -> m_Shooter.closedLoopErrorTop());
         // Shuffleboard.getTab("super").addNumber("Closed Loop Error Bot", () -> m_Shooter.closedLoopErrorBot());
-        Shuffleboard.getTab("super").addNumber("Camera Based Distance", () -> m_VisionShooter.getDistance());
-        Shuffleboard.getTab("super").addNumber("Shooter Yaw", () -> m_VisionShooter.getYaw());
+        Shuffleboard.getTab("super").addNumber("Camera Based Distance", () -> m_VisionShooter.getDistance()).withPosition(6, 2).withSize(2, 1);
+        Shuffleboard.getTab("super").addNumber("Shooter Yaw", () -> m_VisionShooter.getYaw()).withPosition(6, 1).withSize(2, 1);
 
         // auto chooser
         m_chooser.setDefaultOption("Auto1", kDefaultAuto);
@@ -158,16 +158,16 @@ public class SuperStructure extends Base {
         }
         // climberControl(OI.getSolenoidReverse(), OI.getSolenoidForward(),
         // OI.getArmsUp(), OI.getArmsDown());
-        if (OI.getZeroOfTurnTableTalon()) {
-            m_Shooter.setTurnTableToZero();
-        }
+        // if (OI.getZeroOfTurnTableTalon()) {
+        //     m_Shooter.setTurnTableToZero();
+        // }
 
-        // TURNTABLE
-        // if not zeroed, zero the turntable
-        if (!m_Shooter.m_hasBeenCalibrated) {
-            m_Shooter.setTurnTableToZero();
+        // // TURNTABLE
+        // // if not zeroed, zero the turntable
+        // if (!m_Shooter.m_hasBeenCalibrated) {
+        //     m_Shooter.setTurnTableToZero();
 
-        }
+        // }
         // // manual control of turntable
         else if (OI.getAimTurret()) {
             // m_Shooter.aimTurret(m_VisionShooter.getYaw());
@@ -186,7 +186,7 @@ public class SuperStructure extends Base {
             m_Shooter.setTurnTableAngleNegFortFive();
         }
         if(OI.negHundredTurnTable()){// B
-            m_Shooter.setTurnTableAngleNegHundred();
+            m_Shooter.setTurnTableAngleHundred();
         }
         
 

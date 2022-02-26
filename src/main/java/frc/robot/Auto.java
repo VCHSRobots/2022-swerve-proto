@@ -46,6 +46,7 @@ public class Auto {
         trajectory1 = PathPlanner.loadPath("auto1", 3, 3);
         trajectory2 = PathPlanner.loadPath("auto2", 1, 1);
         trajectory3 = PathPlanner.loadPath("strafeleft", 1, 1);
+        
 
         Shuffleboard.getTab("super").addNumber("timer", ()->timer.get());
 
@@ -76,7 +77,7 @@ public class Auto {
     private PathPlannerState getInitialState(PathPlannerTrajectory traj) {
         return traj.getInitialState();
     }
-
+    
     public PathPlannerState getInitialState_auto1() {
         return getInitialState(trajectory1);
     }
