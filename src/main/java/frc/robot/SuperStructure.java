@@ -288,6 +288,45 @@ public class SuperStructure extends Base {
         m_Intake.changeState(false, false);
     }
 
+    public void Auto3() {
+        if (m_autoStep == 0) {
+            m_Shooter.shootingRPM(ntTopRPM.getNumber(0).doubleValue(), ntBotRPM.getNumber(0).doubleValue());
+            if (m_Shooter.IsOkToShoot()) {
+                m_Intake.loadShooter();
+            }
+            if (m_Intake.getNumberOfBallsHolding() == 0) {
+                m_autoStep = 1;
+                m_Timer.reset();
+                m_Timer.start();
+
+            }
+
+        } else if (m_autoStep == 1) {
+            m_Shooter.shootingRPM(ntTopRPM.getNumber(0).doubleValue(), ntBotRPM.getNumber(0).doubleValue());
+            if (m_Shooter.IsOkToShoot()) {
+                m_Intake.loadShooter();
+            }
+            if (m_Timer.advanceIfElapsed(0.5)) {
+                m_autoStep = 2;
+            }
+        } else if (m_autoStep == 2) {
+            m_SwerveDrive.driveFromChassisSpeeds(m_auto.getNextChassisSpeeds_Auto2(m_SwerveDrive.getPose2d()));
+            if (m_auto.isTrajectoryCompleted()) {
+                m_autoStep = 3;
+
+            }
+            m_Shooter.turnOff();
+            m_Intake.turnOffLoadShooter();
+        } else if (m_autoStep == 3) {
+            m_Shooter.turnOff();
+            m_Intake.turnOffLoadShooter();
+
+        }
+
+        // always update intake state
+        m_Intake.changeState(false, false);
+    }
+
     @Override
     public void disabledInit() {
         m_phCompressor.disable();
