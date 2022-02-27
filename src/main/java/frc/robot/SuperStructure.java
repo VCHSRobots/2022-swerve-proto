@@ -168,6 +168,7 @@ public class SuperStructure extends Base {
         if (OI.getXorYforShootingReleased()) {
             m_Intake.turnOffLoadShooter();
         }
+
         // climberControl(OI.getSolenoidReverse(), OI.getSolenoidForward(),
         // OI.getArmsUp(), OI.getArmsDown());
         // if (OI.getZeroOfTurnTableTalon()) {
@@ -205,8 +206,14 @@ public class SuperStructure extends Base {
 
 
         // CLIMBER
-        climberControl(OI.getSolenoidReverse(), OI.getSolenoidForward(),
-                OI.getArmsUp(), OI.getArmsDown());
+
+        // left & right bumpers hold down
+        if(OI.getArmsDown() && OI.getArmsUp()) {
+            m_Climber.setClimberToZero();
+        } else {
+            climberControl(OI.getSolenoidReverse(), OI.getSolenoidForward(),
+            OI.getArmsUp(), OI.getArmsDown());
+        }
     }
 
     @Override
@@ -257,9 +264,6 @@ public class SuperStructure extends Base {
             m_SwerveDrive.driveFromChassisSpeeds(m_auto.getNextChassisSpeeds_Auto3(m_SwerveDrive.getPose2d()));
         }
     }
-
-    // where intake started in auto2?
-    // how check middle of trajectory?
 
     public void Auto1() {
         if (m_autoStep == 0) {

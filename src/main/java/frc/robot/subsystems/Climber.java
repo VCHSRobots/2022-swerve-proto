@@ -33,6 +33,8 @@ public class Climber extends Base {
     private DigitalInput topLimit;
     public double encoderValue;
 
+    private boolean m_hasBeenCalibrated = false;
+
     ShuffleboardTab ClimberTab = Shuffleboard.getTab("Climber Encoder");
     NetworkTableEntry ntClimberEncoderValue = ClimberTab.add("Climber Encoder Value", encoderValue).withPosition(2, 2)
             .withSize(1, 1).getEntry();
@@ -65,8 +67,8 @@ public class Climber extends Base {
         m_solenoid.set(Value.kReverse);
 
         // init limit switches
-        bottomLimit = new DigitalInput(RobotMap.kClimber_BottomLimitSwitch);
-        topLimit = new DigitalInput(RobotMap.kClimber_TopLimitSwitch);
+        bottomLimit = new DigitalInput(RobotMap.kClimber_LeftBottomLimit);
+        // topLimit = new DigitalInput(RobotMap.kClimber_TopLimitSwitch);
 
         // encoder Value
         encoderValue = m_follower.getSelectedSensorPosition();
@@ -78,6 +80,25 @@ public class Climber extends Base {
         if (bottomLimit.get()) {
             m_follower.setSelectedSensorPosition(0);
         }
+    }
+
+    public boolean setClimberToZero() {
+        if (getClimberToZero()) {
+            // 13 to 62, 52 to 231, GEAR RATIO: 21.19
+            m_hasBeenCalibrated = true;
+            m_master.set(ControlMode.PercentOutput, 0);
+
+            m_master.setSelectedSensorPosition(0);
+            return true;
+        } else {
+            m_master.set(ControlMode.PercentOutput, -0.07);
+            return false;
+        }
+    }
+
+    public boolean getClimberToZero() {
+        // add other limit too?
+        return !bottomLimit.get();
     }
 
     public void hooksForward() {
