@@ -52,7 +52,7 @@ public class OI {
         return xboxDrive.getPOV() == 180;
     }
 
-    static public boolean getCenterOfRotationFrontLeft() {
+    static public boolean getAimBasedOnOdometry() {
         return xboxDrive.getLeftBumper();
     }
 

@@ -14,6 +14,7 @@ import com.ctre.phoenix.sensors.SensorVelocityMeasPeriod;
 
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
@@ -329,6 +330,7 @@ public class Shooter extends Base {
     //     return !m_TurnTableZero.get();
     // }
 
+    /* move Turret to the direction to reduce angleYaw; moving speed is proportional to angleYaw */
     public boolean aimTurret(double angleYaw) {
         final double percentOut = 0.15;
         final double kS = 0.035;
@@ -346,6 +348,7 @@ public class Shooter extends Base {
         return speed == 0;
     }
 
+    /* move turret angle in angleYawDegrees */
     public void aimTurretTalonOnboard(double angleYawDegrees) {
         if (Math.abs(angleYawDegrees) < 0) {
             m_turnTableTalon.setVoltage(0);
@@ -360,6 +363,29 @@ public class Shooter extends Base {
 
     }
 
+    public static double feetToMeters(double feet){
+        return feet/3.28084;
+    }
+
+    /* air turret to the target based on the Robot odometry */
+    public void aimTurretByOdomety(Pose2d p) {
+        /*
+        1. calculate field-based angle to the target
+        2. get robot pose angle
+        3. calculate turret angle based robot-pose and target angle
+        */
+        double targetX=feetToMeters(27.0);
+        double targetY=feetToMeters(13.5);
+        double dx=targetX-p.getX();
+        double dy=targetY-p.getY();
+        double A=Math.toDegrees(Math.atan(dy/dx)); /* -90 to 90 */
+        if (dx<0) A=180-A; /* 90 to 270, so final range for A is -90 to 270*/
+
+        double targetAngle=-(A-p.getRotation().getDegrees()); //or A+p?
+        aimTurretTalonOnboard(targetAngle);
+    }
+
+    /* get encoder tickets of shooter angle, relative to robot */
     public double angleDegreesToEncoderTicks(double degrees) {
         return degrees * kEncoderTicksPerDegree - kZeroOffsetEncoderTicks;
     }

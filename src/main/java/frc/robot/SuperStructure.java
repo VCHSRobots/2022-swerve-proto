@@ -129,7 +129,7 @@ public class SuperStructure extends Base {
         } else {
             // XBOX DRIVING CODE
             m_SwerveDrive.driveWithXbox(OI.getDriveY(), OI.getDriveX(), OI.getDriveRot(),
-                    OI.getCenterOfRotationFrontLeft(),
+                    false,
                     OI.getCenterOfRotationFrontRight());
         }
 
@@ -188,7 +188,11 @@ public class SuperStructure extends Base {
             // m_Shooter.TurnTable(OI.getRightBumperForTurntable(),
             // OI.getLeftBumperForTurntable());
         }
-        // }
+
+        if (OI.getAimBasedOnOdometry()) {
+            m_Shooter.aimTurretByOdomety(m_SwerveDrive.getPose2d());
+        }
+
         if(OI.fortFiveTurnTable()){// A
             m_Shooter.setTurnTableAngleFortFive();
         }
