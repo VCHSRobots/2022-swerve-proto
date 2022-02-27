@@ -49,9 +49,9 @@ public class Intake extends Base {
     NetworkTableEntry ntMotorSpeed = intakeMotortab.add("Intake percent out", 0.3).getEntry();
     NetworkTableEntry ntBTPercentOut = intakeMotortab.add("BT percent out", 0.5).getEntry();
     NetworkTableEntry ntLoaderPercentOut = intakeMotortab.add("loader percent out", 0.5).getEntry();
-    private final double kIntakeOut = 0.3;
-    private final double kBTOut = 0.5;
-    private final double kLoaderOut = 0.5;
+    private final double kIntakeOut = 0.25;
+    private final double kBTOut = 0.25;
+    private final double kLoaderOut = 0.25;
 
     enum STATE {
         A, B, C, D, E;

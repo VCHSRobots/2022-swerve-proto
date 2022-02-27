@@ -131,10 +131,20 @@ public class Shooter extends Base {
         baseConfig.slot0.closedLoopPeakOutput = 1.0;
         baseConfig.slot0.closedLoopPeriod = 20;
         baseConfig.slot0.integralZone = 100;
-        baseConfig.slot0.kI = 0.0;
-        baseConfig.slot0.kD = 0.0;
-        baseConfig.slot0.kF = 0.075;
-        baseConfig.slot0.kP = 0.041; // 0.03
+        
+
+        TalonFXConfiguration topConfig = baseConfig;
+        topConfig.slot0.kI = 0.0;
+        topConfig.slot0.kD = 0.0;
+        topConfig.slot0.kF = 0.058;
+        topConfig.slot0.kP = 0.0; // 0.03
+
+
+        TalonFXConfiguration botConfig = baseConfig;
+        botConfig.slot0.kI = 0.0;
+        botConfig.slot0.kD = 0.0;
+        botConfig.slot0.kF = 0.0515;
+        botConfig.slot0.kP = 0.0; // 0.03
 
         m_shootTalonBot.configFactoryDefault(100);
         m_shootTalonTop.configFactoryDefault(100);

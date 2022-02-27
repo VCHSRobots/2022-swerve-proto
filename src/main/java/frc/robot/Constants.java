@@ -10,7 +10,7 @@ import edu.wpi.first.wpilibj.util.Color;
 /** Add your docs here. */
 public class Constants {
 
-    public static final boolean isPracticeBot = true;
+    public static final boolean isPracticeBot = false;
 
     public static final class SwerveModuleOffsetRadiansPractice {
         public static final double FRONT_LEFT = Units.degreesToRadians(-42.5);
@@ -24,10 +24,10 @@ public class Constants {
         public static final double kFRONT_LEFT = Units.degreesToRadians(172.0) - Math.PI;
     }
     public static final class SwerveModuleOffsetRadiansComp {
-        public static final double FRONT_LEFT = Units.degreesToRadians(0.0);
-        public static final double FRONT_RIGHT = Units.degreesToRadians(0.0);
-        public static final double BACK_LEFT = Units.degreesToRadians( 0.0);
-        public static final double BACK_RIGHT = Units.degreesToRadians(0.0);
+        public static final double FRONT_LEFT = Units.degreesToRadians(-40.00);
+        public static final double FRONT_RIGHT = Units.degreesToRadians(97.21);
+        public static final double BACK_LEFT = Units.degreesToRadians(76.82);
+        public static final double BACK_RIGHT = Units.degreesToRadians(15.91);
     }
     public static final double xboxDeadband = 0.09;
 }

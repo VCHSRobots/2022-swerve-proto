@@ -283,20 +283,20 @@ public class SwerveModule implements Sendable {
 
         @Override
         public void initSendable(SendableBuilder builder) {
-                // builder.setSmartDashboardType("Swerve Module");
-                // builder.addDoubleProperty("Actual Drive m-s", () ->
-                // this.getDriveRatePerSecond(), null);
-                // builder.addDoubleProperty("Drive Position Meters",
-                // () -> (kDriveMetersPerIntegratedTick *
-                // m_driveMotor.getSelectedSensorPosition()),
-                // null);
-                // builder.addDoubleProperty("Actual Angle deg", () ->
-                // m_turningEncoder.getPosition(), null);
-                // builder.addDoubleProperty("Actual Angle with offset deg",
-                // () -> Units.radiansToDegrees(getTurningPositionRadians()), null);
-                // builder.addDoubleProperty("Desired Drive m-s", () ->
-                // m_desiredState.speedMetersPerSecond, null);
-                // builder.addDoubleProperty("Desired Angle deg", () ->
-                // m_desiredState.angle.getDegrees(), null);
+                builder.setSmartDashboardType("Swerve Module");
+                builder.addDoubleProperty("Actual Drive m-s", () ->
+                this.getDriveRatePerSecond(), null);
+                builder.addDoubleProperty("Drive Position Meters",
+                () -> (kDriveMetersPerIntegratedTick *
+                m_driveMotor.getSelectedSensorPosition()),
+                null);
+                builder.addDoubleProperty("Actual Angle deg", () ->
+                m_turningEncoder.getPosition(), null);
+                builder.addDoubleProperty("Actual Angle with offset deg",
+                () -> Units.radiansToDegrees(getTurningPositionRadians()), null);
+                builder.addDoubleProperty("Desired Drive m-s", () ->
+                m_desiredState.speedMetersPerSecond, null);
+                builder.addDoubleProperty("Desired Angle deg", () ->
+                m_desiredState.angle.getDegrees(), null);
         }
 }
