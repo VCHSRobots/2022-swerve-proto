@@ -160,6 +160,9 @@ public class SwerveModule implements Sendable {
                 m_driveMotor.selectProfileSlot(0, 0);
                 m_driveMotor.configSelectedFeedbackCoefficient(1);
 
+                m_driveMotor.setSafetyEnabled(false);
+                m_turningMotor.setSafetyEnabled(false);
+
                 m_turningEncoder = new CANCoder(turningEncoderChannel, RobotMap.kCANivore_name);
                 m_turningEncoder.configFactoryDefault(100);
                 m_turningEncoder.configAbsoluteSensorRange(AbsoluteSensorRange.Signed_PlusMinus180);

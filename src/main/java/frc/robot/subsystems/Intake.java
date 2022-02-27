@@ -49,9 +49,9 @@ public class Intake extends Base {
     NetworkTableEntry ntMotorSpeed = intakeMotortab.add("Intake percent out", 0.3).getEntry();
     NetworkTableEntry ntBTPercentOut = intakeMotortab.add("BT percent out", 0.5).getEntry();
     NetworkTableEntry ntLoaderPercentOut = intakeMotortab.add("loader percent out", 0.5).getEntry();
-    private final double kIntakeOut = 0.25;
-    private final double kBTOut = 0.25;
-    private final double kLoaderOut = 0.25;
+    private final double kIntakeOut = 0.6;
+    private final double kBTOut = 0.6;
+    private final double kLoaderOut = 0.6;
 
     enum STATE {
         A, B, C, D, E;
@@ -339,6 +339,13 @@ public class Intake extends Base {
     // Goes back to the first state
     public void turnOffLoadShooter() {
         m_state = STATE.A;
+    }
+
+    public void stopMotors() {
+        m_state = STATE.A;
+        m_intake.stopMotor();
+        m_mover.stopMotor();
+        m_shooterLoader.stopMotor();
     }
 
     // continues spinning intake motors if ball is there while shooting

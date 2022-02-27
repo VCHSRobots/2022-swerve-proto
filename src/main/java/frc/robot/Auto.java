@@ -1,5 +1,7 @@
 package frc.robot;
 
+import java.nio.file.Path;
+
 import com.pathplanner.lib.PathPlanner;
 import com.pathplanner.lib.PathPlannerTrajectory;
 import com.pathplanner.lib.PathPlannerTrajectory.PathPlannerState;
@@ -20,14 +22,16 @@ import frc.robot.subsystems.SwerveDrive;
 
 public class Auto {
 
-    PathPlannerTrajectory trajectory1;
     PathPlannerTrajectory trajectory2;
     PathPlannerTrajectory trajectory3;
+    PathPlannerTrajectory trajectory_auto1_part1;
+    PathPlannerTrajectory trajectory_auto1_part2;
+
     PathPlannerTrajectory m_chosenTrajectory;
 
     int m_currentAutoStep = 0;
-    PIDController xController = new PIDController(0.5, 0, 0);
-    PIDController yController = new PIDController(0.5, 0, 0);
+    PIDController xController = new PIDController(0.6, 0, 0);
+    PIDController yController = new PIDController(0.6, 0, 0);
     static ProfiledPIDController thetaController = new ProfiledPIDController(2.7, 0, 0,
             new Constraints(SwerveDrive.kMaxAngularSpeed, 2 * SwerveDrive.kMaxAngularSpeed));
     HolonomicDriveController controller;
@@ -43,9 +47,10 @@ public class Auto {
         thetaController.enableContinuousInput(-Math.PI, Math.PI);
         controller = new HolonomicDriveController(xController, yController, thetaController);
 
-        trajectory1 = PathPlanner.loadPath("auto1", 3, 3);
         trajectory2 = PathPlanner.loadPath("auto2", 1, 1);
-        trajectory3 = PathPlanner.loadPath("strafeleft", 1, 1);
+        trajectory_auto1_part1 = PathPlanner.loadPath("auto1_part1", 3, 3);
+        trajectory_auto1_part2 = PathPlanner.loadPath("auto1_part2", 3, 3);
+        trajectory3 = PathPlanner.loadPath("auto3", 1, 1);
         
 
         Shuffleboard.getTab("super").addNumber("timer", ()->timer.get());
@@ -60,63 +65,50 @@ public class Auto {
 
     }
 
-    public void startTimer() {
-        timer.start();
-    }
-
-    public void resetTimer() {
-        timer.reset();
-    }
-
     public void autonomousInit() {
-        resetTimer();
-        startTimer();
+        timer.start();
+        timer.reset();
         m_currentAutoStep = 0;
     }
 
     public void setupAuto1p1() {
-        // m_chosenTrajectory = trajectory_auto1_part1;
-
+        m_chosenTrajectory = trajectory_auto1_part1;
+        timer.start();
+        timer.reset();
     }
 
-    private PathPlannerState getInitialState(PathPlannerTrajectory traj) {
-        return traj.getInitialState();
-    }
-    
-    public PathPlannerState getInitialState_auto1() {
-        return getInitialState(trajectory1);
+    public void setupAuto1p2() {
+        m_chosenTrajectory = trajectory_auto1_part2;
+        timer.start();
+        timer.reset();
     }
 
-    public PathPlannerState getInitialState_auto2() {
-        return getInitialState(trajectory2);
+    public void setupAuto2() {
+        m_chosenTrajectory = trajectory2;
+        timer.start();
+        timer.reset();
     }
 
-    public PathPlannerState getInitialState_auto3() {
-        return getInitialState(trajectory3);
+    public void setupAuto3() {
+        m_chosenTrajectory = trajectory3;
+        timer.start();
+        timer.reset();
     }
 
-    public ChassisSpeeds getNextChassisSpeeds_Auto1(Pose2d currentPose) {
-        return getNextChassisSpeeds(currentPose, trajectory1);
+    public PathPlannerState getInitialState() {
+        return m_chosenTrajectory.getInitialState();
     }
 
-    public ChassisSpeeds getNextChassisSpeeds_Auto2(Pose2d currentPose) {
-        return getNextChassisSpeeds(currentPose, trajectory2);
-    }
-
-    public ChassisSpeeds getNextChassisSpeeds_Auto3(Pose2d currentPose) {
-        return getNextChassisSpeeds(currentPose, trajectory3);
-    }
-
-    public ChassisSpeeds getNextChassisSpeeds(Pose2d currentPose, PathPlannerTrajectory trajectory) {
+    public ChassisSpeeds getNextChassisSpeeds(Pose2d currentPose) {
         // around table to cadatorium path
-        if (trajectory == null) {
+        if (m_chosenTrajectory == null) {
             return new ChassisSpeeds();
         }
         ChassisSpeeds adjustedSpeeds = new ChassisSpeeds();
         PathPlannerState goal = new PathPlannerState();
-        if (timer.get() < trajectory.getTotalTimeSeconds()) {
+        if (timer.get() < m_chosenTrajectory.getTotalTimeSeconds()) {
             // calculate speeds for trajectory
-            goal = (PathPlannerState) trajectory.sample(timer.get());
+            goal = (PathPlannerState) m_chosenTrajectory.sample(timer.get());
             adjustedSpeeds = controller.calculate(currentPose, goal, goal.holonomicRotation);
         }
         ntGoalX.setNumber(goal.poseMeters.getX());
@@ -127,94 +119,8 @@ public class Auto {
     }
 
     public boolean isTrajectoryCompleted() {
-        return timer.get() > trajectory2.getTotalTimeSeconds();
+        return timer.get() > m_chosenTrajectory.getTotalTimeSeconds();
     }
-
-    // public ChassisSpeeds getNextChassisSpeeds_AroundTheTable(Pose2d currentPose) {
-    //     // around table to cadatorium path
-    //     if (trajectory3 == null) {
-    //         return new ChassisSpeeds();
-    //     }
-    //     ChassisSpeeds adjustedSpeeds = new ChassisSpeeds();
-    //     PathPlannerState goal = new PathPlannerState();
-    //     if (timer.get() < trajectory3.getTotalTimeSeconds()) {
-    //         // calculate speeds for trajectory
-    //         goal = (PathPlannerState) trajectory3.sample(timer.get());
-    //         adjustedSpeeds = controller.calculate(currentPose, goal, goal.holonomicRotation);
-    //     }
-    //     // Robot.m_swerve.driveFromChassisSpeeds(adjustedSpeeds);
-    //     return adjustedSpeeds;
-    // }
-
-    // public ChassisSpeeds getNextChassisSpeeds_TrajWithPause(Pose2d currentPose) {
-
-    //     // pause traj
-    //     if (trajectory1 == null || trajectory2 == null) {
-    //         System.out.println("could not load trajectory1 or trajectory2");
-    //         return new ChassisSpeeds();
-    //     }
-
-    //     ChassisSpeeds adjustedSpeeds = new ChassisSpeeds();
-    //     PathPlannerState goal = new PathPlannerState();
-
-    //     // step 0 trajectory 1
-    //     if (m_currentAutoStep == 0) {
-    //         // if time is still less that total planned trajectory time
-    //         if (timer.get() < trajectory1.getTotalTimeSeconds()) {
-    //             // calculate speeds for trajectory
-    //             goal = (PathPlannerState) trajectory1.sample(timer.get());
-    //             adjustedSpeeds = controller.calculate(currentPose, goal, goal.holonomicRotation);
-
-    //         }
-    //         // if the trajectory is over
-    //         else {
-    //             // reset timer and go on to next step
-    //             timer.reset();
-    //             timer.start();
-    //             m_currentAutoStep++;
-    //         }
-    //     }
-    //     // step 1 pause in place
-    //     else if (m_currentAutoStep == 1) {
-    //         double time_to_wait = 1.5;
-    //         if (timer.get() < time_to_wait) {
-    //             // pause for shooting
-    //         }
-    //         // else, pause is over
-    //         else {
-    //             timer.reset();
-    //             timer.start();
-    //             m_currentAutoStep++;
-    //         }
-    //     }
-    //     // step 2 trajectory 2
-    //     else if (m_currentAutoStep == 2) {
-    //         // if time is still left in trajectory, then run it
-    //         if (timer.get() < trajectory2.getTotalTimeSeconds()) {
-    //             // calc for trajectory
-    //             goal = (PathPlannerState) trajectory2.sample(timer.get());
-    //             adjustedSpeeds = controller.calculate(currentPose, goal, goal.holonomicRotation);
-    //         }
-    //     }
-    //     // end of auto...
-    //     else {
-    //         adjustedSpeeds = new ChassisSpeeds();
-    //     }
-
-    //     // System.out.println(Robot.m_swerve.getPose2d());
-
-    //     SmartDashboard.putNumber("goal/x", goal.poseMeters.getX());
-    //     SmartDashboard.putNumber("goal/y", goal.poseMeters.getY());
-    //     SmartDashboard.putNumber("goal/theta", goal.poseMeters.getRotation().getDegrees());
-
-    //     SmartDashboard.putNumber("adjustedSpeeds/x", adjustedSpeeds.vxMetersPerSecond);
-    //     SmartDashboard.putNumber("adjustedSpeeds/y", adjustedSpeeds.vyMetersPerSecond);
-    //     SmartDashboard.putNumber("adjustedSpeeds/theta", adjustedSpeeds.omegaRadiansPerSecond);
-
-    //     // Robot.m_swerve.driveFromChassisSpeeds(adjustedSpeeds);
-    //     return adjustedSpeeds;
-
-    // }
 
     public void robotPeriodic() {
 
