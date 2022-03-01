@@ -137,6 +137,9 @@ public class VisionShooter extends Base {
     }
 
     public double getDistance() {
+        if (m_lastTarget == null) {
+            return -1;
+        }
         double visionTargetOffsetFromCenter = 2;
         double distanceFeet = 14;
         double cameraAngle = Units.degreesToRadians(25.0); // angle from horizontal to axis of camera view

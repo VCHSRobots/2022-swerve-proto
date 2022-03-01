@@ -150,6 +150,15 @@ public class SuperStructure extends Base {
             }
         } else if (OI.getXButtonForShootDist()) {
             double distFeet = m_VisionShooter.getDistance();
+            /* use pose distance if vision target not found */
+            if (distFeet<0){
+                var p=m_SwerveDrive.getPose2d();
+                double targetX = Shooter.feetToMeters(27.0);
+                double targetY = Shooter.feetToMeters(13.5);
+                double dx = targetX - p.getX();
+                double dy = targetY - p.getY();
+                distFeet=Math.sqrt(dx*dx+dy*dy);
+            }
 
             // turn shooter on in Dist
             m_Shooter.shootingDist(distFeet);
