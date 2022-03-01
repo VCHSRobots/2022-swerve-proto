@@ -138,8 +138,8 @@ public class Shooter extends Base {
         TalonFXConfiguration topConfig = baseConfig;
         topConfig.slot0.kI = 0.0;
         topConfig.slot0.kD = 0.0;
-        topConfig.slot0.kF = 0.149;
-        topConfig.slot0.kP = 0.03; // 0.03
+        topConfig.slot0.kF = 0.155;
+        topConfig.slot0.kP = 0.04; // 0.03
 
 
         TalonFXConfiguration botConfig = baseConfig;
@@ -314,15 +314,18 @@ public class Shooter extends Base {
                 - m_shootTalonTop.getSelectedSensorVelocity());
         double errorBotRPM = ticksPer100msToRPM(m_shootTalonBot.getClosedLoopTarget()
                 - m_shootTalonBot.getSelectedSensorVelocity());
-        boolean isTopFast = ticksPer100msToRPM(m_shootTalonTop.getSelectedSensorVelocity()) > 1500;
         boolean isBotFast = ticksPer100msToRPM(m_shootTalonBot.getSelectedSensorVelocity()) > 1300;
 
-        if (errorBotRPM < 100 && errorTopRPM < 100 && isBotFast) {
+        if (errorBotRPM < 80 && errorTopRPM < 80 && isBotFast) {
             m_isOKtoShootCounter++;
         } else {
             m_isOKtoShootCounter = 0;
         }
-        return m_isOKtoShootCounter > 5;
+        return m_isOKtoShootCounter > 7;
+    }
+
+    public void barf() {
+        setSpeedsRPM(2300, 2300);
     }
 
     public void turnMotorsOff() {
@@ -340,8 +343,8 @@ public class Shooter extends Base {
             m_turnTableTalon.set(ControlMode.PercentOutput, 0);
 
             m_turnTableTalon.setSelectedSensorPosition(0);
-            m_turnTableTalon.configReverseSoftLimitThreshold(-28000, 50);
-            m_turnTableTalon.configForwardSoftLimitThreshold(17300, 50);
+            m_turnTableTalon.configReverseSoftLimitThreshold(-24000, 50);
+            m_turnTableTalon.configForwardSoftLimitThreshold(13000, 50);
             m_turnTableTalon.configForwardSoftLimitEnable(true, 50);
             m_turnTableTalon.configReverseSoftLimitEnable(true, 50);
 

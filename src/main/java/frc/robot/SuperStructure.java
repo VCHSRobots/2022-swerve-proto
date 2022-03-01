@@ -17,6 +17,7 @@ import frc.robot.subsystems.*;
 import com.pathplanner.lib.PathPlannerTrajectory.PathPlannerState;
 
 import edu.wpi.first.cameraserver.CameraServer;
+import edu.wpi.first.cscore.UsbCamera;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
@@ -38,6 +39,8 @@ public class SuperStructure extends Base {
     private final VisionShooter m_VisionShooter = new VisionShooter();
 
     private RobotState m_state;
+    private Thread m_cameraThread;
+    boolean m_barfTimerStarted = false;
 
     Timer m_Timer = new Timer();
     int m_autoStep = 0;
@@ -76,6 +79,13 @@ public class SuperStructure extends Base {
         m_VisionBall.robotInit();
         m_VisionShooter.robotInit();
 
+        m_cameraThread = new Thread(
+                () -> {
+                    UsbCamera camera = CameraServer.startAutomaticCapture();
+                });
+        m_cameraThread.setDaemon(true);
+        m_cameraThread.start();
+
         Shuffleboard.getTab("super").add("swervedrive", m_SwerveDrive).withPosition(8, 1).withSize(2, 2);
         Shuffleboard.getTab("super").add("compressor", m_phCompressor).withPosition(8, 3).withSize(2, 2);
         Shuffleboard.getTab("super").addNumber("compressor/pressure", () -> m_phCompressor.getPressure());
@@ -93,6 +103,7 @@ public class SuperStructure extends Base {
         Shuffleboard.getTab("super").addBoolean("Is Ball in Loader", () -> m_Intake.isBallAtLoad());
         Shuffleboard.getTab("super").addBoolean("Is Ball in Middle", () -> m_Intake.isBallAtMiddle());
         Shuffleboard.getTab("super").add(CameraServer.putVideo("mmal_service_16.1-output", 2000, 3000));
+        Shuffleboard.getTab("super").addNumber("pressure", () -> m_phCompressor.getPressure());
 
         // auto chooser
         m_chooser.setDefaultOption(kDefaultAuto, kDefaultAuto);
@@ -121,7 +132,7 @@ public class SuperStructure extends Base {
 
     @Override
     public void teleopPeriodic() {
-        m_phCompressor.enableAnalog(90, 115);
+        m_phCompressor.enableAnalog(40, 60);
 
         // testing purposaes, changes intake pnuematics
         if (OI.forwardIntake()) {
@@ -138,17 +149,34 @@ public class SuperStructure extends Base {
         } else {
             // XBOX DRIVING CODE
             m_SwerveDrive.driveWithXbox(OI.getDriveY(), OI.getDriveX(), OI.getDriveRot(),
-                    OI.getCenterOfRotationFrontLeft(),
-                    OI.getCenterOfRotationFrontRight());
+                    false, false);
         }
 
         // INTAKE STATE UPDATE
         m_Intake.changeState(OI.startIntake(), OI.stopIntake());
 
         // INTAKE / SHOOTING
-        if (OI.getYButtonForShootRPM()) {
+        if (OI.getBarf()) {
+            // m_Shooter.shootingRPM(2700, 2700);
+            // if (m_Intake.getNumberOfBallsHolding() == 0) {
+            //     m_barfTimerStarted = false;
+            //     m_Timer.reset();
+            //     m_Timer.stop();
+            //     m_Intake.turnOffLoadShooter();
+            // }
+            // if (m_barfTimerStarted && m_Timer.advanceIfElapsed(0.5)) {
+            //     m_Intake.loadShooter();
+            // } else if (!m_barfTimerStarted) {
+            //     m_Timer.reset();
+            //     m_Timer.start();
+            //     m_barfTimerStarted = true;
+            // }
+            m_Intake.unjamShooter();
+
+            
+        } else if (OI.getYButtonForShootRPM()) {
             // turn shooter on in rpm mode
-            m_Shooter.shootingRPM(ntTopRPM.getNumber(0).doubleValue(), ntBotRPM.getNumber(0).doubleValue());
+            m_Shooter.shootingRPM(2500, 2650);
 
             if (m_Shooter.IsOkToShoot()) {
                 // Load shooter
@@ -158,11 +186,8 @@ public class SuperStructure extends Base {
                 m_Intake.countinueIntakeMotors();
             }
         } else if (OI.getXButtonForShootDist()) {
-            double distFeet = m_VisionShooter.getDistance();
-
-            // turn shooter on in Dist
-            m_Shooter.shootingDist(distFeet);
-
+            // 4000, 2900 for vision target on bot of screen
+            m_Shooter.shootingRPM(4000, 2900);
             if (m_Shooter.IsOkToShoot()) {
                 // load shooter
                 m_Intake.loadShooter();
@@ -197,11 +222,13 @@ public class SuperStructure extends Base {
         }
         // // manual control of turntable
         else if (OI.getAimTurret()) {
-            m_Shooter.aimTurret(m_VisionShooter.getYaw());
+            // m_Shooter.aimTurret(m_VisionShooter.getYaw());
             m_Shooter.aimTurretTalonOnboard(m_VisionShooter.getYaw());
+            m_Shooter.shootingRPM(2500, 2650);
+
         } else {
-            m_Shooter.TurnTable(OI.getRightBumperForTurntable(),
-                    OI.getLeftBumperForTurntable());
+            m_Shooter.TurnTable(OI.getRightTurntable(),
+                    OI.getLeftTurntable());
         }
 
         if (OI.fortFiveTurnTable()) {// A
@@ -227,6 +254,8 @@ public class SuperStructure extends Base {
                     OI.getArmsUp(), OI.getArmsDown());
         }
     }
+
+    // auto coding
 
     @Override
     public void autonomousInit() {
@@ -307,7 +336,7 @@ public class SuperStructure extends Base {
                 m_autoStep = 4;
             }
         } else if (m_autoStep == 4) {
-             // shoot balls
+            // shoot balls
             m_Shooter.shootingRPM(ntTopRPM.getNumber(0).doubleValue(), ntBotRPM.getNumber(0).doubleValue());
             if (m_Shooter.IsOkToShoot()) {
                 m_Intake.loadShooter();
@@ -472,7 +501,7 @@ public class SuperStructure extends Base {
 
     @Override
     public void testInit() {
-        m_phCompressor.enableAnalog(80, 115);
+        m_phCompressor.enableAnalog(40, 60);
     }
 
     @Override
@@ -503,8 +532,8 @@ public class SuperStructure extends Base {
             m_Shooter.setTurnTableAngleNegFortFive();
         }
 
-        m_Shooter.TurnTable(OI.getRightBumperForTurntable(),
-                OI.getLeftBumperForTurntable());
+        m_Shooter.TurnTable(OI.getRightTurntable(),
+                OI.getLeftTurntable());
 
     }
 

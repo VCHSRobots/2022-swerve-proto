@@ -57,7 +57,7 @@ public class SwerveModule implements Sendable {
 
         // Gains are for example purposes only - must be determined for your own robot!
         private final ProfiledPIDController m_turningPIDController = new ProfiledPIDController(
-                        1.0,
+                        2.5,
                         0,
                         0,
                         new TrapezoidProfile.Constraints(
@@ -65,7 +65,7 @@ public class SwerveModule implements Sendable {
 
         // Gains are for example purposes only - must be determined for your own robot!
         private final SimpleMotorFeedforward m_driveFeedforward = new SimpleMotorFeedforward(0.4, 2.2); // 0.4, 1.93
-        private final SimpleMotorFeedforward m_turnFeedforward = new SimpleMotorFeedforward(0.3, 0.19); // 0.1,0.25
+        private final SimpleMotorFeedforward m_turnFeedforward = new SimpleMotorFeedforward(0.34, 0.32); // 0.1,0.25
 
         private final SimpleMotorFeedforward m_driveFeedforwardIntegrated = new SimpleMotorFeedforward(0, 0);
 

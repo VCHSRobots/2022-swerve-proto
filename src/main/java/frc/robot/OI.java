@@ -4,6 +4,8 @@
 
 package frc.robot;
 
+import javax.xml.crypto.dsig.keyinfo.RetrievalMethod;
+
 /** Add your docs here. **/
 public class OI {
     static xbox4415 xboxDrive = new xbox4415(0);
@@ -32,6 +34,10 @@ public class OI {
         return xboxDrive.getLeftY();
     }
 
+    static public boolean getBarf() {
+        return xboxDrive.getRightBumper() && xboxDrive.getRightTriggerAxis() > 0.4;
+    }
+
     static public double getDriveX() {
         return xboxDrive.getLeftX();
     }
@@ -52,14 +58,6 @@ public class OI {
         return xboxDrive.getPOV() == 180;
     }
 
-    static public boolean getCenterOfRotationFrontLeft() {
-        return xboxDrive.getLeftBumper();
-    }
-
-    static public boolean getCenterOfRotationFrontRight() {
-        return xboxDrive.getRightBumper();
-    }
-
     static public boolean startIntake() {
         return xboxDrive.getAButton();
     }
@@ -68,12 +66,12 @@ public class OI {
         return xboxDrive.getBButton();
     }
 
-    static public boolean getLeftBumperForTurntable() {
+    static public boolean getLeftTurntable() {
         // return xboxDrive.getBackButton();
         return xboxDrive.getRawButton(8);
     }
 
-    static public boolean getRightBumperForTurntable() {
+    static public boolean getRightTurntable() {
         // return xboxDrive.getStartButton();
         return xboxDrive.getRawButton(7);
 
@@ -107,10 +105,6 @@ public class OI {
         return xboxDrive.getXButtonReleased() || xboxDrive.getYButtonReleased();
     }
 
-    // static public boolean getZeroOfTurnTableTalon() {
-    //     return xboxDrive.getRightTriggerAxis() > 0.5;
-    // }
-
     static public boolean getAimTurret() {
         return xboxDrive.getLeftTriggerAxis() > 0.5;
     }
@@ -126,16 +120,20 @@ public class OI {
     static public boolean reverseIntake() {
         return xboxIntakeTesting.getBButton();
     }
-    static public boolean fortFiveTurnTable(){
+
+    static public boolean fortFiveTurnTable() {
         return xboxShooterTesting.getAButton();
     }
-    static public boolean hundredTurnTable(){
+
+    static public boolean hundredTurnTable() {
         return xboxShooterTesting.getXButton();
     }
-    static public boolean negFortFiveTurnTable(){
+
+    static public boolean negFortFiveTurnTable() {
         return xboxShooterTesting.getYButton();
     }
-    static public boolean negHundredTurnTable(){
+
+    static public boolean negHundredTurnTable() {
         return xboxShooterTesting.getBButton();
     }
 }

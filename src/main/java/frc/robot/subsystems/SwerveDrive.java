@@ -33,9 +33,9 @@ public class SwerveDrive extends Base {
     public static final double kMaxSpeed = 3.5; // 3 meters per second
     public static final double kMaxAngularSpeed = 3 * Math.PI; // 1 rotation per second
 
-    private final SlewRateLimiter m_xSpeedLimiter = new SlewRateLimiter(10);
-    private final SlewRateLimiter m_ySpeedLimiter = new SlewRateLimiter(10);
-    private final SlewRateLimiter m_rotLimiter = new SlewRateLimiter(10);
+    private final SlewRateLimiter m_xSpeedLimiter = new SlewRateLimiter(7);
+    private final SlewRateLimiter m_ySpeedLimiter = new SlewRateLimiter(7);
+    private final SlewRateLimiter m_rotLimiter = new SlewRateLimiter(7);
 
     private final double inches15toMeters = Units.inchesToMeters(11);
     private final Translation2d m_frontLeftLocation = new Translation2d(inches15toMeters, inches15toMeters);
@@ -125,16 +125,7 @@ public class SwerveDrive extends Base {
     }
 
     public Rotation2d getGyroRotation2d() {
-        // return Rotation2d.fromDegrees(-m_gyro.getAngle());
         double angle = Math.IEEEremainder(-m_gyro.getAngle(), 360);
-        // double angle = m_turningEncoder.getPosition() - Units.radiansToDegrees(m_turningEncoderOffset);
-        //         angle = angle % 360;
-        //         if (angle > 180) {
-        //                 angle -= (360);
-        //         } else if (angle < -180) {
-        //                 angle += (360);
-        //         }
-        //         return Units.degreesToRadians(angle);
         return Rotation2d.fromDegrees(angle);
     }
 
