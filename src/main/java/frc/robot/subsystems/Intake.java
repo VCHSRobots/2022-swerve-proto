@@ -96,6 +96,10 @@ public class Intake extends Base {
 
     }
 
+    public void turnOn() {
+        m_state = STATE.B;
+    }
+
     @Override
     public void robotPeriodic() {
         m_colorSensor.checkColor();

@@ -30,9 +30,9 @@ public class Auto {
     PathPlannerTrajectory m_chosenTrajectory;
 
     int m_currentAutoStep = 0;
-    PIDController xController = new PIDController(0.6, 0, 0);
-    PIDController yController = new PIDController(0.6, 0, 0);
-    static ProfiledPIDController thetaController = new ProfiledPIDController(2.7, 0, 0,
+    PIDController xController = new PIDController(2.6, 0, 0);
+    PIDController yController = new PIDController(2.6, 0, 0);
+    static ProfiledPIDController thetaController = new ProfiledPIDController(2.65, 0, 0,
             new Constraints(SwerveDrive.kMaxAngularSpeed, 2 * SwerveDrive.kMaxAngularSpeed));
     HolonomicDriveController controller;
 
@@ -48,8 +48,8 @@ public class Auto {
         controller = new HolonomicDriveController(xController, yController, thetaController);
 
         trajectory2 = PathPlanner.loadPath("auto2", 1, 1);
-        trajectory_auto1_part1 = PathPlanner.loadPath("auto1_part1", 3, 3);
-        trajectory_auto1_part2 = PathPlanner.loadPath("auto1_part2", 3, 3);
+        trajectory_auto1_part1 = PathPlanner.loadPath("auto1_part1", 3.5, 2.0);
+        trajectory_auto1_part2 = PathPlanner.loadPath("auto1_part2", 3.5, 2.0);
         trajectory3 = PathPlanner.loadPath("auto3", 1, 1);
         
 

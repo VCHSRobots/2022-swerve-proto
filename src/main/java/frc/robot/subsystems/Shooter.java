@@ -139,14 +139,14 @@ public class Shooter extends Base {
         topConfig.slot0.kI = 0.0;
         topConfig.slot0.kD = 0.0;
         topConfig.slot0.kF = 0.155;
-        topConfig.slot0.kP = 0.04; // 0.03
+        topConfig.slot0.kP = 0.042; // 0.03
 
 
         TalonFXConfiguration botConfig = baseConfig;
         botConfig.slot0.kI = 0.0;
         botConfig.slot0.kD = 0.0;
         botConfig.slot0.kF = 0.0539;
-        botConfig.slot0.kP = 0.04; // 0.03
+        botConfig.slot0.kP = 0.040; // 0.03
 
         m_shootTalonBot.configFactoryDefault(100);
         m_shootTalonTop.configFactoryDefault(100);
@@ -221,6 +221,10 @@ public class Shooter extends Base {
     public void teleopInit() {
         m_state = STATE.NotShooting;
         m_isOKtoShootCounter = 0;       
+    }
+
+    public void warmUp() {
+        setShootSpeeds(2200, 2200);
     }
 
     // Shooting function with Distance. (NOT READY!!)
@@ -407,7 +411,7 @@ public class Shooter extends Base {
         return degrees * kEncoderTicksPerDegree - kZeroOffsetEncoderTicks;
     }
     public double getTurretAngleDegrees() {
-        return m_turnTableTalon.getSelectedSensorPosition() / kEncoderTicksPerDegree;
+        return Math.IEEEremainder(m_turnTableTalon.getSelectedSensorPosition() / kEncoderTicksPerDegree, 360);
     }
     public void setTurnTableAngleFortFive() {
         m_turnTableTalon.setSelectedSensorPosition(angleDegreesToEncoderTicks(45), 0, 50);

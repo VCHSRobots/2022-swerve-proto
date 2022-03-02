@@ -35,7 +35,7 @@ import com.ctre.phoenix.sensors.SensorVelocityMeasPeriod;
 public class SwerveModule implements Sendable {
         private static final double kWheelRadius = Units.inchesToMeters(2.0);
         private static final int kTalonFXEncoderResolution = 2048;
-        private static final double kDriveMetersPerIntegratedTick = 2.0 * Math.PI * kWheelRadius * (1.0 / 6.0)
+        private static final double kDriveMetersPerIntegratedTick = 2.0 * Math.PI * kWheelRadius * (1.0 / 6.54)
                         * (1.0 / (double) kTalonFXEncoderResolution);
 
         // TODO: find this.
