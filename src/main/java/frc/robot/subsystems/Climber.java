@@ -69,9 +69,9 @@ public class Climber extends Base {
         m_follower_1.setStatusFramePeriod(StatusFrameEnhanced.Status_1_General, 255, 50);
         // m_follower_1.setStatusFramePeriod(StatusFrameEnhanced.Status_2_Feedback0, 255, 50);
 
-
-        m_follower_2.setStatusFramePeriod(StatusFrameEnhanced.Status_1_General, 255, 50);
-        // m_follower_2.setStatusFramePeriod(StatusFrameEnhanced.Status_2_Feedback0, 255, 50);
+        m_master.setSelectedSensorPosition(0);
+        m_master.configForwardSoftLimitEnable(true);
+        // m_master.configForwardSoftLimitThreshold(200000);
 
         // init solenoids
         m_solenoid = new DoubleSolenoid(PneumaticsModuleType.REVPH, RobotMap.kClimb_SolenoidForward,

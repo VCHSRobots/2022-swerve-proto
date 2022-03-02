@@ -68,6 +68,8 @@ public class SuperStructure extends Base {
 
     }
 
+    private int pastAngle;
+
     @Override
     public void robotInit() {
         m_phCompressor.disable();
@@ -102,6 +104,7 @@ public class SuperStructure extends Base {
         Shuffleboard.getTab("super").addNumber("Current bot RPM", () -> m_Shooter.getBotMotorRPM());
         Shuffleboard.getTab("super").addBoolean("Is Ball in Loader", () -> m_Intake.isBallAtLoad());
         Shuffleboard.getTab("super").addBoolean("Is Ball in Middle", () -> m_Intake.isBallAtMiddle());
+        Shuffleboard.getTab("super").addBoolean("Both balls loaded", () -> m_Intake.isBallAtMiddle() && m_Intake.isBallAtLoad());
         Shuffleboard.getTab("super").add(CameraServer.putVideo("mmal_service_16.1-output", 2000, 3000));
         Shuffleboard.getTab("super").addNumber("pressure", () -> m_phCompressor.getPressure());
 
@@ -401,7 +404,33 @@ public class SuperStructure extends Base {
         m_Intake.changeState(false, false);
     }
 
+    // public abstract class Person {
+    //     protected String name;
+    //     protected int strength;
+    //     protected double health;
+
+    //     public void damagePerson(double damageAmount) {
+    //         health-=damageAmount;
+    //         if(health <= 0) {
+    //             System.out.println("YOU DIE LOWDLWDPWIOWFWDFI");
+    //         }
+    //     }
+
+    //     public void attackPerson()
+    // }
+
+    // public class DumbPerson extends Person {
+
+    //    public DumbPerson(String name, int strength, double health) {
+    //        this.name = name;
+    //        this.strength = strength;
+    //        this.health = health;
+    //    }
+
+    // }
+
     public void Auto2() {
+
         if (m_autoStep == 0) {
             m_Shooter.setTurretAngle(m_state.getTurretToCenterHub().getRotation().getDegrees());
             if (m_auto.isTrajectoryCompleted()) {
@@ -411,34 +440,48 @@ public class SuperStructure extends Base {
             }
             m_SwerveDrive.driveFromChassisSpeeds(m_auto.getNextChassisSpeeds(m_SwerveDrive.getPose2d()));
         } else if (m_autoStep == 1) {
-            m_Shooter.setTurretAngle(m_state.getTurretToCenterHub().getRotation().getDegrees());
             if (m_Intake.getNumberOfBallsHolding() > 1 || m_Timer.advanceIfElapsed(1)) {
                 m_autoStep = 2;
             }
             m_SwerveDrive.stopModules();
-        } else if (m_autoStep == 2) {
-            m_Shooter.shootingRPM(ntTopRPM.getNumber(0).doubleValue(), ntBotRPM.getNumber(0).doubleValue());
+        } else if(m_autoStep == 2) {
+
+            m_Shooter.setTurretAngle(180);
+            double turretAngle = Math.IEEEremainder(m_Shooter.getTurretAngleDegrees(), 360);
+            System.out.printf("turret angle: %f", turretAngle);
+            if(turretAngle < 0) {
+                turretAngle+=360;
+            }
+
+            if(Math.abs(180-turretAngle) < 10) {
+                m_autoStep = 3;
+            }
+            // if(m_VisionShooter.getYaw() <= 0.1) {
+            //     m_autoStep++;
+            // }
+        } else if (m_autoStep == 3) {
+            m_Shooter.shootingRPM(2600, 2800);
             if (m_Shooter.IsOkToShoot()) {
                 m_Intake.loadShooter();
             }
             if (m_Intake.getNumberOfBallsHolding() == 0) {
-                m_autoStep = 3;
+                m_autoStep++;
                 m_Timer.reset();
                 m_Timer.start();
             }
             m_SwerveDrive.stopModules();
 
-        } else if (m_autoStep == 3) {
+        } else if (m_autoStep == 4) {
             if (m_Timer.advanceIfElapsed(0.5)) {
-                m_autoStep = 4;
+                m_autoStep++;
             }
-            m_Shooter.shootingRPM(ntTopRPM.getNumber(0).doubleValue(), ntBotRPM.getNumber(0).doubleValue());
+            m_Shooter.shootingRPM(2600, 2800);
             if (m_Shooter.IsOkToShoot()) {
                 m_Intake.loadShooter();
             }
             m_SwerveDrive.stopModules();
 
-        } else if (m_autoStep == 4) {
+        } else if (m_autoStep == 5) {
             m_Shooter.turnOff();
             m_Intake.turnOffLoadShooter();
             m_SwerveDrive.stopModules();

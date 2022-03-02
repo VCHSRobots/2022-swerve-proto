@@ -317,11 +317,7 @@ public class Intake extends Base {
 
     // toggles intake pnuematic, for testing purposes
     public void setIntakePnuematic(boolean forward) {
-        if (forward) {
-            m_doublePCM.set(Value.kForward);
-        } else {
-            m_doublePCM.set(Value.kReverse);
-        }
+        m_doublePCM.set(forward ? Value.kForward : Value.kReverse);
     }
 
     // Turns on shooter intake and mover to put balls in shooter.
