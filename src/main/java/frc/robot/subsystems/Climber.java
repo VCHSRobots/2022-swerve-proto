@@ -28,14 +28,9 @@ public class Climber extends Base {
     private DoubleSolenoid m_solenoid;
 
     private WPI_TalonFX m_master;
-<<<<<<< Updated upstream
-    private WPI_TalonFX m_follower;
-    private WPI_TalonFX m_follower2;
-=======
     private WPI_TalonFX m_follower_1;
     private WPI_TalonFX m_follower_2;
     
->>>>>>> Stashed changes
 
     private DigitalInput bottomLeftLimit = new DigitalInput(RobotMap.kClimber_LeftBottomLimit);
     private DigitalInput bottomRightLimit = new DigitalInput(RobotMap.kClimber_RightBottomLimit);
@@ -52,51 +47,8 @@ public class Climber extends Base {
     public void robotInit() {
         // init motors
         m_master = new WPI_TalonFX(RobotMap.kClimb_master_TalonFX, RobotMap.kCANivore_name);
-<<<<<<< Updated upstream
-        m_follower = new WPI_TalonFX(RobotMap.kClimb_follower_TalonFX, RobotMap.kCANivore_name);
-        m_follower2 = new WPI_TalonFX(RobotMap.kClimb_follower2_TalonFX, RobotMap.kCANivore_name);
-
-        // motor configs
-        m_master.configFactoryDefault(50);
-        m_follower.configFactoryDefault(50);
-        m_follower2.configFactoryDefault(50);
-
-        TalonFXConfiguration config = new TalonFXConfiguration();
-        config.slot0.kP = 0.11;
-        config.slot0.kI = 0.0;
-        config.slot0.kD = 0.5;
-        config.slot0.kF = 0.0;
-        config.motionAcceleration = 24 / kInchesPerEncoderTick; // 6 in/ s*s
-        config.motionCruiseVelocity = 18 / kInchesPerEncoderTick; // 12in per sec
-        config.motionCurveStrength = 6;
-        config.supplyCurrLimit.currentLimit = 30;
-        config.supplyCurrLimit.enable = true;
-        config.supplyCurrLimit.triggerThresholdCurrent = 30;
-        config.supplyCurrLimit.triggerThresholdTime = 0.5;
-        m_master.configAllSettings(config);
-
-        m_master.setNeutralMode(NeutralMode.Brake);
-        m_follower.setNeutralMode(NeutralMode.Brake);
-        m_follower2.setNeutralMode(NeutralMode.Brake);
-
-        m_master.setInverted(false);
-        m_follower.setInverted(InvertType.FollowMaster);
-        m_follower2.setInverted(InvertType.OpposeMaster);
-
-        m_follower.follow(m_master);
-        m_follower2.follow(m_master);
-
-        m_follower.setStatusFramePeriod(StatusFrameEnhanced.Status_1_General, 255, 50);
-        m_follower.setStatusFramePeriod(StatusFrameEnhanced.Status_2_Feedback0, 255, 50);
-        m_follower2.setStatusFramePeriod(StatusFrameEnhanced.Status_1_General, 255, 50);
-        m_follower2.setStatusFramePeriod(StatusFrameEnhanced.Status_2_Feedback0, 255, 50);
-
-        m_master.setSelectedSensorPosition(0);
-        m_master.configForwardSoftLimitEnable(true);
-        m_master.configForwardSoftLimitThreshold(200000);
-=======
-        m_follower_1 = new WPI_TalonFX(RobotMap.kClimb_follower_TalonFX_1, RobotMap.kCANivore_name);
-        m_follower_2 = new WPI_TalonFX(RobotMap.kClimb_follower_TalonFX_2, RobotMap.kCANivore_name);
+        m_follower_1 = new WPI_TalonFX(RobotMap.kClimb_follower_TalonFX, RobotMap.kCANivore_name);
+        m_follower_2 = new WPI_TalonFX(RobotMap.kClimb_follower2_TalonFX, RobotMap.kCANivore_name);
 
         // motor configs
         m_master.configFactoryDefault(100);
@@ -120,7 +72,6 @@ public class Climber extends Base {
 
         m_follower_2.setStatusFramePeriod(StatusFrameEnhanced.Status_1_General, 255, 50);
         // m_follower_2.setStatusFramePeriod(StatusFrameEnhanced.Status_2_Feedback0, 255, 50);
->>>>>>> Stashed changes
 
         // init solenoids
         m_solenoid = new DoubleSolenoid(PneumaticsModuleType.REVPH, RobotMap.kClimb_SolenoidForward,
@@ -128,26 +79,16 @@ public class Climber extends Base {
         m_solenoid.set(Value.kReverse);
 
         // encoder Value
-<<<<<<< Updated upstream
-        encoderValue = m_master.getSelectedSensorPosition();
-
-        // shuffleboard send
-        Shuffleboard.getTab("climber").addNumber("climber pos", () -> m_master.getSelectedSensorPosition());
-=======
         // encoderValue = m_follower_1.getSelectedSensorPosition();
->>>>>>> Stashed changes
     }
 
     // Teleop Periodic
     public void climberMove() {
         // limit switch
-<<<<<<< Updated upstream
-=======
-        if (bottomLimit.get()) {
+        // if (bottomLimit.get()) {
             m_follower_1.setSelectedSensorPosition(0);
             m_follower_2.setSelectedSensorPosition(0);
-        }
->>>>>>> Stashed changes
+        // }
     }
 
     public void hooksForward() {
