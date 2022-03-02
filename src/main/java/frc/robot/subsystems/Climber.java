@@ -28,8 +28,14 @@ public class Climber extends Base {
     private DoubleSolenoid m_solenoid;
 
     private WPI_TalonFX m_master;
+<<<<<<< Updated upstream
     private WPI_TalonFX m_follower;
     private WPI_TalonFX m_follower2;
+=======
+    private WPI_TalonFX m_follower_1;
+    private WPI_TalonFX m_follower_2;
+    
+>>>>>>> Stashed changes
 
     private DigitalInput bottomLeftLimit = new DigitalInput(RobotMap.kClimber_LeftBottomLimit);
     private DigitalInput bottomRightLimit = new DigitalInput(RobotMap.kClimber_RightBottomLimit);
@@ -46,6 +52,7 @@ public class Climber extends Base {
     public void robotInit() {
         // init motors
         m_master = new WPI_TalonFX(RobotMap.kClimb_master_TalonFX, RobotMap.kCANivore_name);
+<<<<<<< Updated upstream
         m_follower = new WPI_TalonFX(RobotMap.kClimb_follower_TalonFX, RobotMap.kCANivore_name);
         m_follower2 = new WPI_TalonFX(RobotMap.kClimb_follower2_TalonFX, RobotMap.kCANivore_name);
 
@@ -87,6 +94,33 @@ public class Climber extends Base {
         m_master.setSelectedSensorPosition(0);
         m_master.configForwardSoftLimitEnable(true);
         m_master.configForwardSoftLimitThreshold(200000);
+=======
+        m_follower_1 = new WPI_TalonFX(RobotMap.kClimb_follower_TalonFX_1, RobotMap.kCANivore_name);
+        m_follower_2 = new WPI_TalonFX(RobotMap.kClimb_follower_TalonFX_2, RobotMap.kCANivore_name);
+
+        // motor configs
+        m_master.configFactoryDefault(100);
+        m_follower_1.configFactoryDefault(100);
+        m_follower_2.configFactoryDefault(100);
+
+        m_master.setNeutralMode(NeutralMode.Brake);
+        m_follower_1.setNeutralMode(NeutralMode.Brake);
+        m_follower_2.setNeutralMode(NeutralMode.Brake);
+
+        m_master.setInverted(false);
+        m_follower_1.setInverted(false);
+        m_follower_2.setInverted(true);
+
+        m_follower_1.follow(m_master);
+        m_follower_2.follow(m_master);
+
+        m_follower_1.setStatusFramePeriod(StatusFrameEnhanced.Status_1_General, 255, 50);
+        // m_follower_1.setStatusFramePeriod(StatusFrameEnhanced.Status_2_Feedback0, 255, 50);
+
+
+        m_follower_2.setStatusFramePeriod(StatusFrameEnhanced.Status_1_General, 255, 50);
+        // m_follower_2.setStatusFramePeriod(StatusFrameEnhanced.Status_2_Feedback0, 255, 50);
+>>>>>>> Stashed changes
 
         // init solenoids
         m_solenoid = new DoubleSolenoid(PneumaticsModuleType.REVPH, RobotMap.kClimb_SolenoidForward,
@@ -94,15 +128,26 @@ public class Climber extends Base {
         m_solenoid.set(Value.kReverse);
 
         // encoder Value
+<<<<<<< Updated upstream
         encoderValue = m_master.getSelectedSensorPosition();
 
         // shuffleboard send
         Shuffleboard.getTab("climber").addNumber("climber pos", () -> m_master.getSelectedSensorPosition());
+=======
+        // encoderValue = m_follower_1.getSelectedSensorPosition();
+>>>>>>> Stashed changes
     }
 
     // Teleop Periodic
     public void climberMove() {
         // limit switch
+<<<<<<< Updated upstream
+=======
+        if (bottomLimit.get()) {
+            m_follower_1.setSelectedSensorPosition(0);
+            m_follower_2.setSelectedSensorPosition(0);
+        }
+>>>>>>> Stashed changes
     }
 
     public void hooksForward() {
