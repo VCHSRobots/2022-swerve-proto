@@ -400,7 +400,7 @@ public class SuperStructure extends Base {
             double targetAngle = -139;
             m_Shooter.setTurretAngle(targetAngle);
             // shoot ball holding
-            m_Shooter.shootingRPM(3100, 2800);
+            m_Shooter.shootingRPM(3080, 2800);
 
             if (m_Shooter.IsOkToShoot() && Math.abs(targetAngle - m_Shooter.getTurretAngleDegrees()) < 5) {
                 m_Intake.loadShooter();
@@ -424,7 +424,7 @@ public class SuperStructure extends Base {
                 m_auto.setupAuto1p2();
             }
 
-            m_Shooter.shootingRPM(3100, 2800);
+            m_Shooter.shootingRPM(3080, 2800);
             if (m_Shooter.IsOkToShoot()) {
                 m_Intake.loadShooter();
             } else {
@@ -446,7 +446,7 @@ public class SuperStructure extends Base {
             // update with trajectory
             m_SwerveDrive.driveFromChassisSpeeds(m_auto.getNextChassisSpeeds(m_SwerveDrive.getPose2d()));
             m_Intake.turnOn();
-            m_Shooter.setTurretAngle(m_state.getTurretAimingAngle().getDegrees());
+            m_Shooter.setTurretAngle(-178);
 
         } else if (m_autoStep == 7) {
             // picked up balls and stopped traj
@@ -458,7 +458,7 @@ public class SuperStructure extends Base {
 
         } else if (m_autoStep == 8) {
             // shoot balls
-            double targetAngle = 180;
+            double targetAngle = -178;
             m_Shooter.setTurretAngle(targetAngle);
             double angle = m_Shooter.getTurretAngleDegrees();
             if (angle < 0) {
@@ -467,7 +467,7 @@ public class SuperStructure extends Base {
             // shoot ball holding
             m_Shooter.shootingRPM(2650, 2550);
 
-            if (m_Shooter.IsOkToShoot() && Math.abs(targetAngle - angle) < 7) {
+            if (m_Shooter.IsOkToShoot() && Math.abs(targetAngle - angle) < 5) {
                 m_Intake.loadShooter();
             } else {
                 m_Intake.turnOffLoadShooter();
