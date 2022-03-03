@@ -4,8 +4,6 @@
 
 package frc.robot;
 
-import javax.xml.crypto.dsig.keyinfo.RetrievalMethod;
-
 /** Add your docs here. **/
 public class OI {
     static xbox4415 xboxDrive = new xbox4415(0);
@@ -13,6 +11,7 @@ public class OI {
     // static xbox4415 xboxShooterTesting = new xbox4415(2);
     // static xbox4415 xboxIntakeTesting = new xbox4415(3);
     // static xbox4415 xbox_drive_test = new xbox4415(4);
+    static boolean m_prevTrigger = false;
 
     static public boolean getDriveForward() {
         // return xbox_drive_test.getYButton();
@@ -38,11 +37,11 @@ public class OI {
         return xboxDrive.getLeftY();
     }
 
-    static public boolean getBarf() {
+    static public boolean getUnjam() {
         return xboxDrive.getRightBumper() && xboxDrive.getRightTriggerAxis() > 0.4;
     }
 
-    static public boolean getUnjam() {
+    static public boolean getBarf() {
         return xboxDrive.getRightBumper() && xboxDrive.getLeftBumper();
     }
 
@@ -109,12 +108,15 @@ public class OI {
         return xboxDrive.getRightBumper();
     }
 
-    static public boolean getRightTriggerForShootingAuto() {
-        return xboxDrive.getRightTriggerAxis() > 0.4;
+    static public boolean getRightTriggerForShooting() {
+        m_prevTrigger = xboxDrive.getRightTriggerAxis() > 0.4;
+        return m_prevTrigger;
     }
 
-    static public boolean getXorYforShootingReleased() {
-        return xboxDrive.getXButtonReleased() || xboxDrive.getYButtonReleased();
+    static public boolean getShootingReleased() {
+        boolean currentTrigger = xboxDrive.getRightTriggerAxis() > 0.4;
+        return xboxDrive.getRightBumperReleased() || xboxDrive.getLeftBumperReleased() || xboxDrive.getYButtonReleased()
+        || (m_prevTrigger && (m_prevTrigger != currentTrigger));
     }
 
     static public boolean getAimTurret() {

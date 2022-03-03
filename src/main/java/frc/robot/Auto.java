@@ -48,8 +48,8 @@ public class Auto {
         controller = new HolonomicDriveController(xController, yController, thetaController);
 
         trajectory2 = PathPlanner.loadPath("auto2", 1, 1);
-        trajectory_auto1_part1 = PathPlanner.loadPath("auto1_part1", 3.5, 2.0);
-        trajectory_auto1_part2 = PathPlanner.loadPath("auto1_part2", 3.5, 2.0);
+        trajectory_auto1_part1 = PathPlanner.loadPath("auto1_part1", 3.5, 2.2);
+        trajectory_auto1_part2 = PathPlanner.loadPath("auto1_part2", 3.5, 2.2);
         trajectory3 = PathPlanner.loadPath("auto3", 1, 1);
         
 

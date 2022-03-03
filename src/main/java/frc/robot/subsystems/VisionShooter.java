@@ -35,7 +35,7 @@ public class VisionShooter extends Base {
     private int m_lostCount = 0;
     private int m_icount = 0;
     private int m_MAXLOSTCOUNT = 10;
-    // private SwerveDrive m_SwerveDrive;
+    private double m_yawOffset = 2;
 
     // public VisionBall(SwerveDrive sd) {
     public VisionShooter() {
@@ -126,7 +126,7 @@ public class VisionShooter extends Base {
     public double getYaw() {
         if (m_lastTarget == null)
             return 0.0;
-        return m_lastTarget.getYaw();
+        return -m_lastTarget.getYaw();
     }
 
     public double getPitch() {

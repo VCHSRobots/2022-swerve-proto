@@ -31,8 +31,9 @@ public class Shooter extends Base {
     // [motor rot / turret rot]*[enc ticks / motor rot]*[turret rot / 360 degrees]
     // private final double kEncoderTicksPerDegree = 21.19 * (2048.0) * (1.0 / 360.0);
     private final double kEncoderTicksPerDegree = 113.061; // 20351 / 180 measured cuz math didn't work
-    private final double kZeroOffsetEncoderTicks = 0;
-    private final double kMaxAngularVelocity = 500.0; //keep within 300, started at 135
+    private final double kZeroOffsetEncoderTicks = -4590;
+    private final double kAngleOffset = 180;
+    private final double kMaxAngularVelocity = 525.0; //keep within 300, started at 135
     private final double kMaxAngularAcceleration = 18000.0; //keep within 1000, started at 455
 
     // Shuffleboard Tabs and NetworkTableEntries.
@@ -47,6 +48,7 @@ public class Shooter extends Base {
 
     private int m_isOKtoShootCounter = 0;
     private int m_zeroCounter = 0;
+
     // private ProfiledPIDController m_turretPIDController = new
     // ProfiledPIDController(0.1, 0, 0,
     // new Constraints(kMaxAngularVelocity, kMaxAngularAcceleration));
@@ -146,7 +148,7 @@ public class Shooter extends Base {
         botConfig.slot0.kI = 0.0;
         botConfig.slot0.kD = 0.0;
         botConfig.slot0.kF = 0.0539;
-        botConfig.slot0.kP = 0.040; // 0.03
+        botConfig.slot0.kP = 0.042; // 0.03
 
         m_shootTalonBot.configFactoryDefault(100);
         m_shootTalonTop.configFactoryDefault(100);
@@ -171,7 +173,7 @@ public class Shooter extends Base {
         turnTableConfig.peakOutputReverse = -.3;
         // 0.1 @ 10 degree error
         // (0.1 * 1023) / (deg error * ticks / degree)
-        turnTableConfig.slot0.kP = (1 * 1023) / (60 * kEncoderTicksPerDegree);
+        turnTableConfig.slot0.kP = (1 * 1023) / (58 * kEncoderTicksPerDegree);
         turnTableConfig.slot0.kI = 0;
         turnTableConfig.slot0.kD = 0;
         turnTableConfig.slot0.kF = 0;
@@ -224,7 +226,7 @@ public class Shooter extends Base {
     }
 
     public void warmUp() {
-        setShootSpeeds(2400, 2400);
+        shootingRPM(2400, 2400);
     }
 
     // Shooting function with Distance. (NOT READY!!)
@@ -329,14 +331,14 @@ public class Shooter extends Base {
     }
 
     public boolean isSpinningFastEnoughForBarf() {
-        boolean isBotFast = ticksPer100msToRPM(m_shootTalonBot.getSelectedSensorVelocity()) > 1200;
-        boolean isTopFast = ticksPer100msToRPM(m_shootTalonTop.getSelectedSensorVelocity()) > 1200;
+        boolean isBotFast = ticksPer100msToRPM(m_shootTalonBot.getSelectedSensorVelocity()) > 1100;
+        boolean isTopFast = ticksPer100msToRPM(m_shootTalonTop.getSelectedSensorVelocity()) > 1100;
         return isBotFast && isTopFast;
     }
 
-    public void setVoltage() {
-        m_shootTalonBot.setVoltage(5);
-        m_shootTalonTop.setVoltage(5);
+    public void setBarfVoltage() {
+        m_shootTalonBot.setVoltage(3.5);
+        m_shootTalonTop.setVoltage(3.5);
 
     }
 
@@ -355,18 +357,19 @@ public class Shooter extends Base {
             m_turnTableTalon.set(ControlMode.PercentOutput, 0);
 
             m_turnTableTalon.setSelectedSensorPosition(0);
-            m_turnTableTalon.configReverseSoftLimitThreshold(-24000, 50);
-            m_turnTableTalon.configForwardSoftLimitThreshold(13000, 50);
+            m_turnTableTalon.configReverseSoftLimitThreshold(-16100, 50);
+            m_turnTableTalon.configForwardSoftLimitThreshold(8100, 50);
             m_turnTableTalon.configForwardSoftLimitEnable(true, 50);
             m_turnTableTalon.configReverseSoftLimitEnable(true, 50);
 
             return true;
         } else if (m_zeroCounter > 5) {
-            m_turnTableTalon.set(ControlMode.PercentOutput, -0.07);
+            m_turnTableTalon.set(ControlMode.PercentOutput, 0.05);
             return false;
         } else {
             m_turnTableTalon.set(ControlMode.PercentOutput, 0);
             m_zeroCounter++;
+
             return false;
         }
 
@@ -376,57 +379,42 @@ public class Shooter extends Base {
         return !m_TurnTableZero.get();
     }
 
-    public boolean aimTurret(double angleYaw) {
-        final double percentOut = 0.15;
-        final double kS = 0.035;
-        final double kP = 1 / 60.0;
-        double speed = 0;
-        if (Math.abs(angleYaw) < 0.5) {
-            speed = 0;
-        } else if (angleYaw > 0) {
-            speed = -percentOut * angleYaw * kP;
-        } else {// angleYaw < 0
-            speed = -percentOut * angleYaw * kP;
-        }
-        speed = speed + Math.copySign(kS, speed);
-        m_turnTableTalon.set(ControlMode.PercentOutput, speed);
-        return speed == 0;
-    }
-
     public void aimTurretTalonOnboard(double angleYawDegreesOffset) {
-        if (Math.abs(angleYawDegreesOffset) < 0) {
+        if (Math.abs(angleYawDegreesOffset) < 0.5) {
             m_turnTableTalon.setVoltage(0);
             return;
         }
-        double targetAngle = getTurretAngleDegrees() - angleYawDegreesOffset;
+        double targetAngle = getTurretAngleDegrees() + angleYawDegreesOffset;
         setTurretAngle(targetAngle);
     }
 
     public void setTurretAngle(double angleTargetDegrees) {
-        if (angleTargetDegrees > 150) {
-            angleTargetDegrees-=360;
-        } else if (angleTargetDegrees <= -245) {
-            angleTargetDegrees+=360;
-        }
-
-        double targetAngleTicks = angleTargetDegrees * kEncoderTicksPerDegree;
-        double ff = Math.copySign(0.038, -angleTargetDegrees); // kS to overcome friction
+        double targetAngleTicks = angleDegreesToEncoderTicks(angleTargetDegrees);
+        // double ff = Math.copySign(0.038, -angleTargetDegrees); // kS to overcome friction
+        double ff = Math.copySign(0.033, targetAngleTicks-m_turnTableTalon.getSelectedSensorPosition()); // kS to overcome friction
         m_turnTableTalon.set(ControlMode.MotionMagic, targetAngleTicks, DemandType.ArbitraryFeedForward, ff);
     }
 
-
     public double angleDegreesToEncoderTicks(double degrees) {
-        return degrees * kEncoderTicksPerDegree - kZeroOffsetEncoderTicks;
+        double newAngle = degrees-kAngleOffset;
+        double setAngle = Math.IEEEremainder(newAngle, 360);
+
+        return (setAngle) * kEncoderTicksPerDegree + kZeroOffsetEncoderTicks;
     }
+
     public double getTurretAngleDegrees() {
-        return Math.IEEEremainder(m_turnTableTalon.getSelectedSensorPosition() / kEncoderTicksPerDegree, 360);
+        double angleDegrees = (m_turnTableTalon.getSelectedSensorPosition() - kZeroOffsetEncoderTicks) / kEncoderTicksPerDegree;
+        return Math.IEEEremainder(kAngleOffset + angleDegrees, 360);
     }
+
     public void setTurnTableAngleFortFive() {
         m_turnTableTalon.setSelectedSensorPosition(angleDegreesToEncoderTicks(45), 0, 50);
     }
+
     public void setTurnTableAngleHundred() {
         m_turnTableTalon.setSelectedSensorPosition(angleDegreesToEncoderTicks(100), 0, 50);
     }
+
     public void setTurnTableAngleNegFortFive() {
         m_turnTableTalon.setSelectedSensorPosition(angleDegreesToEncoderTicks(-45), 0, 50);
     }
