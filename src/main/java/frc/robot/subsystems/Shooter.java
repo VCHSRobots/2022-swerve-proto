@@ -224,7 +224,7 @@ public class Shooter extends Base {
     }
 
     public void warmUp() {
-        setShootSpeeds(2200, 2200);
+        setShootSpeeds(2400, 2400);
     }
 
     // Shooting function with Distance. (NOT READY!!)
@@ -328,8 +328,16 @@ public class Shooter extends Base {
         return m_isOKtoShootCounter > 7;
     }
 
-    public void barf() {
-        setSpeedsRPM(2300, 2300);
+    public boolean isSpinningFastEnoughForBarf() {
+        boolean isBotFast = ticksPer100msToRPM(m_shootTalonBot.getSelectedSensorVelocity()) > 1200;
+        boolean isTopFast = ticksPer100msToRPM(m_shootTalonTop.getSelectedSensorVelocity()) > 1200;
+        return isBotFast && isTopFast;
+    }
+
+    public void setVoltage() {
+        m_shootTalonBot.setVoltage(5);
+        m_shootTalonTop.setVoltage(5);
+
     }
 
     public void turnMotorsOff() {

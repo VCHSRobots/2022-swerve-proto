@@ -4,7 +4,9 @@ import org.photonvision.PhotonUtils;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.interpolation.TimeInterpolatableBuffer;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.util.Units;
@@ -18,57 +20,55 @@ public class RobotState {
     Rotation2d_4415 m_turretAngle;
     double m_lastTimestamp;
 
-    final Translation2d kFieldToCenterHub = new Translation2d(Units.inchesToMeters(324), Units.inchesToMeters(162));
+    final Pose2d kFieldToCenterHub = new Pose2d(new Translation2d(Units.inchesToMeters(324), Units.inchesToMeters(162)),
+            new Rotation2d());
     final Translation2d kRobotToTurretTranslation = new Translation2d(); // estimate turret in center for now
-    final Translation2d kTurretToCamera = new Translation2d(Units.inchesToMeters(12), new Rotation2d());
+    final Transform2d kTurretToCamera = new Transform2d(new Translation2d(Units.inchesToMeters(12), new Rotation2d()),
+            new Rotation2d());
 
-    final int kMapSize = 50; // 50 20 ms loops per second
-    // InterpolatingTreeMap<InterpolatingDouble, Pose2d_4415> m_fieldToRobot = new InterpolatingTreeMap<>(
-    //         kMapSize);
-    // InterpolatingTreeMap<InterpolatingDouble, Rotation2d_4415> m_robotToTurret = new InterpolatingTreeMap<>(
-    //         kMapSize);
-    InterpolatingTreeMap<InterpolatingDouble, InterpolatingDouble> m_targetYawMap = new InterpolatingTreeMap<>(
-            kMapSize);
-    InterpolatingTreeMap<InterpolatingDouble, InterpolatingDouble> m_targetPitchMap = new InterpolatingTreeMap<>(
-            kMapSize);
+    TimeInterpolatableBuffer<Pose2d> m_fieldToRobot = TimeInterpolatableBuffer.createBuffer(1);
+    TimeInterpolatableBuffer<Pose2d> m_robotToTurret = TimeInterpolatableBuffer.createBuffer(1);
+
+    // Translation X = Yaw, Y = Pitch.
+    TimeInterpolatableBuffer<Translation2d> m_visionTargetYawPitch = TimeInterpolatableBuffer.createBuffer(1);
 
     public RobotState(Pose2d pose, Rotation2d turretAngleRadians) {
         update(pose, turretAngleRadians);
     }
 
     public void update(Pose2d pose, Rotation2d turretRotation) {
-        InterpolatingDouble timestamp = new InterpolatingDouble(Timer.getFPGATimestamp());
-        m_pose = new Pose2d_4415(pose);
-        m_turretAngle = new Rotation2d_4415(turretRotation);
-
-        // m_fieldToRobot.put(timestamp, m_pose);
-        // m_robotToTurret.put(timestamp, new Rotation2d_4415(turretAngleRadians));
+        double timestamp = Timer.getFPGATimestamp();
+        m_fieldToRobot.addSample(timestamp, pose);
+        m_robotToTurret.addSample(timestamp, new Pose2d(kRobotToTurretTranslation, turretRotation));
     }
 
-    public Pose2d getRobotToTurretPose() {
-        return new Pose2d(kRobotToTurretTranslation, m_turretAngle.getRotation2d());
+    public Pose2d getFieldToRobotPose(double sampleTimeSeconds) {
+        return m_fieldToRobot.getSample(sampleTimeSeconds);
     }
 
-    public Pose2d getFieldToRobotPose() {
-        return m_pose.getPose2d();
+    public Pose2d getFieldToTarget() {
+        return kFieldToCenterHub;
     }
 
-    public Translation2d getFieldToTarget() {
-        // return kFieldToCenterHub;
-        Translation2d rTCenter = getRobotToCenterHub();
-        Translation2d EdgeToCenter = rTCenter.div(rTCenter.getNorm()).times(Units.feetToMeters(2));
-        return rTCenter.minus(EdgeToCenter);
-   }
-
-    public Translation2d getRobotToCenterHub() {
-        return kFieldToCenterHub.minus(m_pose.getTranslation());
+    public Pose2d getRobotToCenterHub(double sampleTimeSeconds) {
+        Pose2d robot = m_fieldToRobot.getSample(sampleTimeSeconds);
+        return kFieldToCenterHub.relativeTo(robot);
     }
 
-    public Pose2d getTurretToCenterHub() {
-        Translation2d robotToCenter = getRobotToCenterHub();
-        return new Pose2d(robotToCenter, m_pose.getRotation().minus(new Rotation2d(robotToCenter.getX(), robotToCenter.getY())));
+    public Pose2d getTurretToCenterHub(double sampleTimeSeconds) {
+        Pose2d robotToCenter = getRobotToCenterHub(sampleTimeSeconds);
+        return robotToCenter.relativeTo(m_robotToTurret.getSample(sampleTimeSeconds));            
     }
 
+    public Rotation2d getTurretAimingAngle() {
+        Pose2d robotToCenter = getRobotToCenterHub(Timer.getFPGATimestamp());
+        Translation2d tr = robotToCenter.getTranslation();
+        Rotation2d rot = new Rotation2d(tr.getX(), tr.getY());
+        return rot;
+    }
+
+
+    // not tested
     public Translation2d getCameraToTargetPhoton(Rotation2d yaw, Rotation2d pitch) {
         double distance = getCameraToTargetDistance(yaw, pitch);
         double visionTargetOffsetFromCenter = Units.feetToMeters(2);
