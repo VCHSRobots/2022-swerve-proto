@@ -41,9 +41,9 @@ public class Climber extends Base {
     // init
     public void robotInit() {
         // sensors send
-        Shuffleboard.getTab("super").addBoolean("Left Limit", () -> !m_bottomLeftLimit.get());
-        Shuffleboard.getTab("super").addBoolean("Right Limit", () -> !m_bottomRightLimit.get());
-        Shuffleboard.getTab("super").addNumber("climbenc", () -> m_master.getSelectedSensorPosition());
+        Shuffleboard.getTab("computil").addBoolean("Left Limit", () -> !m_bottomLeftLimit.get());
+        Shuffleboard.getTab("computil").addBoolean("Right Limit", () -> !m_bottomRightLimit.get());
+        Shuffleboard.getTab("super").addNumber("climbenc", () -> m_master.getSelectedSensorPosition()).withPosition(12, 3);
         // init motors
         m_master = new WPI_TalonFX(RobotMap.kClimb_master_TalonFX, RobotMap.kCANivore_name);
         m_follower_1 = new WPI_TalonFX(RobotMap.kClimb_follower_TalonFX, RobotMap.kCANivore_name);
