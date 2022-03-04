@@ -149,30 +149,30 @@ public class Intake extends Base {
                     m_state = STATE.C;
                 }
 
-                // switch (DriverStation.getAlliance()) {
-                // case Blue:
-                // if (m_colorSensor.isRedBallDetected()) {
+                switch (DriverStation.getAlliance()) {
+                    case Blue:
+                        if (m_colorSensor.isRedBallDetected()) {
 
-                // isChanging = true;
+                            isChanging = true;
 
-                // m_timer.reset();
-                // m_timer.start();
-                // // turns back to normal (isChanging = False) after 1 seconds
-                // }
-                // break;
-                // case Red:
-                // if (m_colorSensor.isBlueBallDetected()) {
+                            m_timer.reset();
+                            m_timer.start();
+                            // turns back to normal (isChanging = False) after 1 seconds
+                        }
+                        break;
+                    case Red:
+                        if (m_colorSensor.isBlueBallDetected()) {
 
-                // isChanging = true;
+                            isChanging = true;
 
-                // m_timer.reset();
-                // m_timer.start();
-                // // turns back to normal (isChanging = False) after 1 seconds
-                // }
-                // break;
-                // case Invalid:
-                // break;
-                // }
+                            m_timer.reset();
+                            m_timer.start();
+                            // turns back to normal (isChanging = False) after 1 seconds
+                        }
+                        break;
+                    case Invalid:
+                        break;
+                }
 
                 break;
             case C:
@@ -199,28 +199,28 @@ public class Intake extends Base {
                 }
                 // SPIT BALL OUT IF BAD (WRONG COLOR) :))))))
                 // add spit out ball logic somewhere else
-                // switch (DriverStation.getAlliance()) {
-                // case Blue:
-                // if (m_colorSensor.isRedBallDetected()) {
-                // isChanging = true;
-                // m_timer.reset();
-                // m_timer.start();
-                // // turns back to normal (isChanging = False) after 1 seconds
-                // }
-                // break;
-                // case Red:
-                // if (m_colorSensor.isBlueBallDetected()) {
+                switch (DriverStation.getAlliance()) {
+                    case Blue:
+                        if (m_colorSensor.isRedBallDetected()) {
+                            isChanging = true;
+                            m_timer.reset();
+                            m_timer.start();
+                            // turns back to normal (isChanging = False) after 1 seconds
+                        }
+                        break;
+                    case Red:
+                        if (m_colorSensor.isBlueBallDetected()) {
 
-                // isChanging = true;
+                            isChanging = true;
 
-                // m_timer.reset();
-                // m_timer.start();
-                // // turns back to normal (isChanging = False) after 1 seconds
-                // }
-                // break;
-                // case Invalid:
-                // break;
-                // }
+                            m_timer.reset();
+                            m_timer.start();
+                            // turns back to normal (isChanging = False) after 1 seconds
+                        }
+                        break;
+                    case Invalid:
+                        break;
+                }
                 break;
             case D:
                 // state changes to E after timer (inbetween state)
