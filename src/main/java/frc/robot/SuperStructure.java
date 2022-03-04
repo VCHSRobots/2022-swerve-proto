@@ -129,6 +129,7 @@ public class SuperStructure extends Base {
         m_VisionShooter.calculateAngleError();
 
         m_Climber.checkZero();
+        m_Shooter.checkZero();
 
         m_state.update(m_SwerveDrive.getPose2d(), Rotation2d.fromDegrees(m_Shooter.getTurretAngleDegrees()));
     }
@@ -252,7 +253,7 @@ public class SuperStructure extends Base {
         // // TURNTABLE
         // // if not zeroed, zero the turntable
         if (!m_Shooter.m_hasBeenCalibrated) {
-            m_Shooter.setTurnTableToZero();
+            m_Shooter.setTurnTableZero();
         }
         // // manual control of turntable
         else if (OI.getAimTurret()) {
@@ -298,6 +299,8 @@ public class SuperStructure extends Base {
         m_autoStep = 0;
         m_auto.autonomousInit();
         m_Intake.autonomousInit();
+        m_Climber.hooksReverse();
+
         m_timestamp = Timer.getFPGATimestamp();
 
         PathPlannerState state = new PathPlannerState();

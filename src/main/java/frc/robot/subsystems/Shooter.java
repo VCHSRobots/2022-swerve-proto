@@ -346,21 +346,17 @@ public class Shooter extends Base {
         setShootSpeeds(0, 0);
     }
 
-    public boolean setTurnTableToZero() {
+    public boolean setTurnTableZero() {
         if (m_hasBeenCalibrated){
             return true;
         }
         else if (getTurnTableZero()) {
             // 13 to 62, 52 to 231, GEAR RATIO: 21.19
             m_hasBeenCalibrated = true;
-            m_zeroCounter =0;
+            m_zeroCounter = 0;
             m_turnTableTalon.set(ControlMode.PercentOutput, 0);
 
-            m_turnTableTalon.setSelectedSensorPosition(0);
-            m_turnTableTalon.configReverseSoftLimitThreshold(-16100, 50);
-            m_turnTableTalon.configForwardSoftLimitThreshold(8100, 50);
-            m_turnTableTalon.configForwardSoftLimitEnable(true, 50);
-            m_turnTableTalon.configReverseSoftLimitEnable(true, 50);
+            configZeroSettings();
 
             return true;
         } else if (m_zeroCounter > 5) {
@@ -373,6 +369,23 @@ public class Shooter extends Base {
             return false;
         }
 
+    }
+
+    public void configZeroSettings() {
+        m_turnTableTalon.setSelectedSensorPosition(0);
+        m_turnTableTalon.configReverseSoftLimitThreshold(-16100, 50);
+        m_turnTableTalon.configForwardSoftLimitThreshold(8100, 50);
+        m_turnTableTalon.configForwardSoftLimitEnable(true, 50);
+        m_turnTableTalon.configReverseSoftLimitEnable(true, 50);
+    }
+
+    public void checkZero() {
+        if (getTurnTableZero() && !m_hasBeenCalibrated) {
+            configZeroSettings();
+            // m_master.configReverseSoftLimitEnable(false);
+            // m_master.configReverseSoftLimitThreshold(0);
+            m_hasBeenCalibrated = true;
+        }
     }
 
     public boolean getTurnTableZero() {
