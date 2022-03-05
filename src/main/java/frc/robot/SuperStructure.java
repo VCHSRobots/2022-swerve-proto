@@ -340,14 +340,14 @@ public class SuperStructure extends Base {
         // m_Shooter.setTurretAngle(m_state.getTurretToCenterHub().getRotation().getDegrees());
 
         if (m_autoStep == 0) {
-            double targetAngle = 160;
+            double targetAngle = 165;
             m_Shooter.setTurretAngle(targetAngle);
             double angle = m_Shooter.getTurretAngleDegrees();
             if (angle < 0) {
                 angle += 360;
             }
             // shoot ball holding
-            m_Shooter.shootingRPM(1050, 3300);
+            m_Shooter.shootingRPM(1000, 3300);
 
             if (m_Shooter.IsOkToShoot() && Math.abs(targetAngle - angle) < 7) {
                 m_Intake.loadShooter();
@@ -368,7 +368,7 @@ public class SuperStructure extends Base {
                 m_autoStep = 2;
                 m_auto.setupAuto1p1();
             }
-            m_Shooter.shootingRPM(1050, 3300);
+            m_Shooter.shootingRPM(1000, 3300);
             if (m_Shooter.IsOkToShoot()) {
                 m_Intake.loadShooter();
             }
@@ -389,7 +389,7 @@ public class SuperStructure extends Base {
             // update with trajectory
             m_SwerveDrive.driveFromChassisSpeeds(m_auto.getNextChassisSpeeds(m_SwerveDrive.getPose2d()));
             m_Intake.turnOn();
-            double targetAngle = -139;
+            double targetAngle = -134;
             m_Shooter.setTurretAngle(targetAngle);
 
         } else if (m_autoStep == 3) {
@@ -402,7 +402,7 @@ public class SuperStructure extends Base {
 
         } else if (m_autoStep == 4) {
             // shoot balls
-            double targetAngle = -139;
+            double targetAngle = -134;
             m_Shooter.setTurretAngle(targetAngle);
             // shoot ball holding
             m_Shooter.shootingRPM(3080, 2800);
@@ -451,7 +451,7 @@ public class SuperStructure extends Base {
             // update with trajectory
             m_SwerveDrive.driveFromChassisSpeeds(m_auto.getNextChassisSpeeds(m_SwerveDrive.getPose2d()));
             m_Intake.turnOn();
-            m_Shooter.setTurretAngle(-178);
+            m_Shooter.setTurretAngle(-175);
 
         } else if (m_autoStep == 7) {
             // picked up balls and stopped traj
@@ -463,7 +463,7 @@ public class SuperStructure extends Base {
 
         } else if (m_autoStep == 8) {
             // shoot balls
-            double targetAngle = -178;
+            double targetAngle = -175;
             m_Shooter.setTurretAngle(targetAngle);
             double angle = m_Shooter.getTurretAngleDegrees();
             if (angle > 0) {
@@ -540,36 +540,40 @@ public class SuperStructure extends Base {
     public void Auto2() {
 
         if (m_autoStep == 0) {
-            m_Shooter.setTurretAngle(-180);
+            m_Shooter.setTurretAngle(175);
             if (m_auto.isTrajectoryCompleted()) {
                 m_autoStep = 1;
                 m_Timer.reset();
                 m_Timer.start();
             }
+            m_Intake.turnOn();
             m_SwerveDrive.driveFromChassisSpeeds(m_auto.getNextChassisSpeeds(m_SwerveDrive.getPose2d()));
         } else if (m_autoStep == 1) {
-            m_Shooter.setTurretAngle(-180);
+            m_Shooter.setTurretAngle(175);
             if (m_Intake.getNumberOfBallsHolding() > 1 || m_Timer.advanceIfElapsed(1)) {
                 m_autoStep = 2;
             }
             m_SwerveDrive.stopModules();
+            m_Intake.turnOn();
         } else if (m_autoStep == 2) {
 
-            double targetAngle = -180;
+            double targetAngle = 175;
             m_Shooter.setTurretAngle(targetAngle);
             double turretAngle = m_Shooter.getTurretAngleDegrees();
-            if (turretAngle > 0) {
-                turretAngle -= 360;
+            if (turretAngle < 0) {
+                turretAngle += 360;
             }
 
-            if (Math.abs(targetAngle - turretAngle) < 8) {
+            if (Math.abs(targetAngle - turretAngle) < 7) {
                 m_autoStep = 3;
             }
             // if(m_VisionShooter.getYaw() <= 0.1) {
             // m_autoStep++;
             // }
         } else if (m_autoStep == 3) {
-            m_Shooter.shootingRPM(2600, 2800);
+            m_Shooter.setTurretAngle(175);
+
+            m_Shooter.shootingRPM(2650, 2800);
             if (m_Shooter.IsOkToShoot()) {
                 m_Intake.loadShooter();
             }
@@ -584,7 +588,7 @@ public class SuperStructure extends Base {
             if (m_Timer.advanceIfElapsed(5)) {
                 m_autoStep++;
             }
-            m_Shooter.shootingRPM(2600, 2800);
+            m_Shooter.shootingRPM(2650, 2800);
             if (m_Shooter.IsOkToShoot()) {
                 m_Intake.loadShooter();
             }
