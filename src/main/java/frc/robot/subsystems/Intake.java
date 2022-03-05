@@ -119,11 +119,13 @@ public class Intake extends Base {
                 // intake and load off, intake up
 
                 if (startIntake) {
-                    if (!isBallAtMiddle()) {
+                    if (isBallAtMiddle() && isBallAtLoad()) {
+                        m_state = STATE.A;
+                    } else {
                         m_state = STATE.B;
                     }
                 }
-
+        
                 if (stopIntake) {
                     // don't care
                 }
