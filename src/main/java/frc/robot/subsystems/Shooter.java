@@ -140,15 +140,15 @@ public class Shooter extends Base {
         TalonFXConfiguration topConfig = baseConfig;
         topConfig.slot0.kI = 0.0;
         topConfig.slot0.kD = 0.0;
-        topConfig.slot0.kF = 0.155;
+        topConfig.slot0.kF = 0.158;
         topConfig.slot0.kP = 0.042; // 0.03
 
 
         TalonFXConfiguration botConfig = baseConfig;
         botConfig.slot0.kI = 0.0;
         botConfig.slot0.kD = 0.0;
-        botConfig.slot0.kF = 0.0539;
-        botConfig.slot0.kP = 0.405; // 0.03
+        botConfig.slot0.kF = 0.054;
+        botConfig.slot0.kP = 0.045; // 0.03
 
         m_shootTalonBot.configFactoryDefault(100);
         m_shootTalonTop.configFactoryDefault(100);

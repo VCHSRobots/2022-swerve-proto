@@ -347,7 +347,7 @@ public class SuperStructure extends Base {
                 angle += 360;
             }
             // shoot ball holding
-            m_Shooter.shootingRPM(1050, 3250);
+            m_Shooter.shootingRPM(1050, 3300);
 
             if (m_Shooter.IsOkToShoot() && Math.abs(targetAngle - angle) < 7) {
                 m_Intake.loadShooter();
@@ -368,7 +368,7 @@ public class SuperStructure extends Base {
                 m_autoStep = 2;
                 m_auto.setupAuto1p1();
             }
-            m_Shooter.shootingRPM(1050, 3250);
+            m_Shooter.shootingRPM(1050, 3300);
             if (m_Shooter.IsOkToShoot()) {
                 m_Intake.loadShooter();
             }
