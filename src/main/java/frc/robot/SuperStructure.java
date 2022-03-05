@@ -138,7 +138,9 @@ public class SuperStructure extends Base {
     public void teleopInit() {
         m_Shooter.turnOff();
         m_Intake.turnOffLoadShooter();
+        m_Climber.hooksReverse();
     }
+
 
     @Override
     public void teleopPeriodic() {
@@ -464,20 +466,23 @@ public class SuperStructure extends Base {
             double targetAngle = -178;
             m_Shooter.setTurretAngle(targetAngle);
             double angle = m_Shooter.getTurretAngleDegrees();
-            if (angle < 0) {
-                angle += 360;
+            if (angle > 0) {
+                angle = angle - 360;
             }
+            // if (angle < 0) {
+            //     angle += 360;
+            // }
             // shoot ball holding
             m_Shooter.shootingRPM(2650, 2550);
 
-            if (m_Shooter.IsOkToShoot() && Math.abs(targetAngle - angle) < 5) {
+            if (m_Shooter.IsOkToShoot() && Math.abs(targetAngle - angle) < 8) {
                 m_Intake.loadShooter();
             } else {
                 m_Intake.turnOffLoadShooter();
             }
             if (m_Intake.getNumberOfBallsHolding() == 0) {
                 m_zeroBallCounter++;
-                if (m_zeroBallCounter > 3) {
+                if (m_zeroBallCounter > 10) {
                     m_zeroBallCounter = 0;
                     m_autoStep = 9;
                     m_Timer.reset();
@@ -485,7 +490,7 @@ public class SuperStructure extends Base {
                 }
             }
         } else if (m_autoStep == 9) {
-            if (m_Timer.advanceIfElapsed(0.1)) {
+            if (m_Timer.advanceIfElapsed(10)) {
                 m_autoStep = 10;
             }
             m_Shooter.shootingRPM(2650, 2550);
@@ -535,7 +540,7 @@ public class SuperStructure extends Base {
     public void Auto2() {
 
         if (m_autoStep == 0) {
-            m_Shooter.setTurretAngle(-170);
+            m_Shooter.setTurretAngle(-180);
             if (m_auto.isTrajectoryCompleted()) {
                 m_autoStep = 1;
                 m_Timer.reset();
@@ -543,21 +548,21 @@ public class SuperStructure extends Base {
             }
             m_SwerveDrive.driveFromChassisSpeeds(m_auto.getNextChassisSpeeds(m_SwerveDrive.getPose2d()));
         } else if (m_autoStep == 1) {
-            m_Shooter.setTurretAngle(-170);
+            m_Shooter.setTurretAngle(-180);
             if (m_Intake.getNumberOfBallsHolding() > 1 || m_Timer.advanceIfElapsed(1)) {
                 m_autoStep = 2;
             }
             m_SwerveDrive.stopModules();
         } else if (m_autoStep == 2) {
 
-            m_Shooter.setTurretAngle(-170);
-            double turretAngle = Math.IEEEremainder(m_Shooter.getTurretAngleDegrees(), 360);
-            System.out.printf("turret angle: %f", turretAngle);
-            if (turretAngle < 0) {
-                turretAngle += 360;
+            double targetAngle = -180;
+            m_Shooter.setTurretAngle(targetAngle);
+            double turretAngle = m_Shooter.getTurretAngleDegrees();
+            if (turretAngle > 0) {
+                turretAngle -= 360;
             }
 
-            if (Math.abs(180 - turretAngle) < 10) {
+            if (Math.abs(targetAngle - turretAngle) < 8) {
                 m_autoStep = 3;
             }
             // if(m_VisionShooter.getYaw() <= 0.1) {
@@ -576,7 +581,7 @@ public class SuperStructure extends Base {
             m_SwerveDrive.stopModules();
 
         } else if (m_autoStep == 4) {
-            if (m_Timer.advanceIfElapsed(0.5)) {
+            if (m_Timer.advanceIfElapsed(5)) {
                 m_autoStep++;
             }
             m_Shooter.shootingRPM(2600, 2800);

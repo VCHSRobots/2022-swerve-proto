@@ -148,7 +148,7 @@ public class Shooter extends Base {
         botConfig.slot0.kI = 0.0;
         botConfig.slot0.kD = 0.0;
         botConfig.slot0.kF = 0.0539;
-        botConfig.slot0.kP = 0.042; // 0.03
+        botConfig.slot0.kP = 0.405; // 0.03
 
         m_shootTalonBot.configFactoryDefault(100);
         m_shootTalonTop.configFactoryDefault(100);
@@ -331,14 +331,14 @@ public class Shooter extends Base {
     }
 
     public boolean isSpinningFastEnoughForBarf() {
-        boolean isBotFast = ticksPer100msToRPM(m_shootTalonBot.getSelectedSensorVelocity()) > 1100;
-        boolean isTopFast = ticksPer100msToRPM(m_shootTalonTop.getSelectedSensorVelocity()) > 1100;
+        boolean isBotFast = ticksPer100msToRPM(m_shootTalonBot.getSelectedSensorVelocity()) > 1000;
+        boolean isTopFast = ticksPer100msToRPM(m_shootTalonTop.getSelectedSensorVelocity()) > 1000;
         return isBotFast && isTopFast;
     }
 
     public void setBarfVoltage() {
-        m_shootTalonBot.setVoltage(3.5);
-        m_shootTalonTop.setVoltage(3.5);
+        m_shootTalonBot.setVoltage(2.75);
+        m_shootTalonTop.setVoltage(2.75);
 
     }
 
@@ -415,6 +415,7 @@ public class Shooter extends Base {
         return (setAngle) * kEncoderTicksPerDegree + kZeroOffsetEncoderTicks;
     }
 
+    // returns [-180, 180]
     public double getTurretAngleDegrees() {
         double angleDegrees = (m_turnTableTalon.getSelectedSensorPosition() - kZeroOffsetEncoderTicks) / kEncoderTicksPerDegree;
         return Math.IEEEremainder(kAngleOffset + angleDegrees, 360);
