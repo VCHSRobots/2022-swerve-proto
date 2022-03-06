@@ -389,7 +389,7 @@ public class SuperStructure extends Base {
             // update with trajectory
             m_SwerveDrive.driveFromChassisSpeeds(m_auto.getNextChassisSpeeds(m_SwerveDrive.getPose2d()));
             m_Intake.turnOn();
-            double targetAngle = -134;
+            double targetAngle = -138;
             m_Shooter.setTurretAngle(targetAngle);
 
         } else if (m_autoStep == 3) {
@@ -402,7 +402,7 @@ public class SuperStructure extends Base {
 
         } else if (m_autoStep == 4) {
             // shoot balls
-            double targetAngle = -134;
+            double targetAngle = -138;
             m_Shooter.setTurretAngle(targetAngle);
             // shoot ball holding
             m_Shooter.shootingRPM(3080, 2800);
