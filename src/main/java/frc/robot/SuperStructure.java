@@ -340,14 +340,14 @@ public class SuperStructure extends Base {
         // m_Shooter.setTurretAngle(m_state.getTurretToCenterHub().getRotation().getDegrees());
 
         if (m_autoStep == 0) {
-            double targetAngle = 165;
+            double targetAngle = 168;
             m_Shooter.setTurretAngle(targetAngle);
             double angle = m_Shooter.getTurretAngleDegrees();
             if (angle < 0) {
                 angle += 360;
             }
             // shoot ball holding
-            m_Shooter.shootingRPM(1000, 3300);
+            m_Shooter.shootingRPM(1000, 3250);
 
             if (m_Shooter.IsOkToShoot() && Math.abs(targetAngle - angle) < 7) {
                 m_Intake.loadShooter();
@@ -368,7 +368,7 @@ public class SuperStructure extends Base {
                 m_autoStep = 2;
                 m_auto.setupAuto1p1();
             }
-            m_Shooter.shootingRPM(1000, 3300);
+            m_Shooter.shootingRPM(1000, 3250);
             if (m_Shooter.IsOkToShoot()) {
                 m_Intake.loadShooter();
             }
