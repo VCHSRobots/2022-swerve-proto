@@ -10,7 +10,12 @@ import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.SlotConfiguration;
 import com.ctre.phoenix.motorcontrol.can.TalonFXConfiguration;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
+import com.ctre.phoenix.sensors.AbsoluteSensorRange;
+import com.ctre.phoenix.sensors.CANCoder;
+import com.ctre.phoenix.sensors.CANCoderConfiguration;
+import com.ctre.phoenix.sensors.CANCoderStatusFrame;
 import com.ctre.phoenix.sensors.SensorInitializationStrategy;
+import com.ctre.phoenix.sensors.SensorTimeBase;
 import com.ctre.phoenix.sensors.SensorVelocityMeasPeriod;
 
 import edu.wpi.first.math.controller.ProfiledPIDController;
@@ -192,6 +197,22 @@ public class Shooter extends Base {
         
         
         m_turnTableTalon.configOpenloopRamp(0.1);
+
+        // initialize Turn Table CanCoder
+        // set units of the CANCoder to radians, with velocity being radians per second
+        var turntableEncoderChannel=22;
+        var m_turntableEncoder = new CANCoder(turntableEncoderChannel, RobotMap.kCANivore_name);
+        var config = new CANCoderConfiguration();
+        config.sensorCoefficient = 2 * Math.PI / 4096.0;
+        config.unitString = "rad";
+        config.sensorTimeBase = SensorTimeBase.PerSecond;
+        m_turntableEncoder.configAllSettings(config);
+        m_turntableEncoder.configFactoryDefault(100);
+        m_turntableEncoder.configAbsoluteSensorRange(AbsoluteSensorRange.Signed_PlusMinus180);
+        m_turntableEncoder.configSensorInitializationStrategy(
+                        SensorInitializationStrategy.BootToAbsolutePosition);
+        m_turntableEncoder.setPositionToAbsolute();
+        m_turntableEncoder.setStatusFramePeriod(CANCoderStatusFrame.SensorData, 20, 50);
 
         new Thread(() -> {
             try {
