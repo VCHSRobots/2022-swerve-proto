@@ -208,8 +208,8 @@ public class Shooter extends Base {
         config.sensorCoefficient = 2 * Math.PI / 4096.0;
         config.unitString = "rad";
         config.sensorTimeBase = SensorTimeBase.PerSecond;
-        m_turntableEncoder.configAllSettings(config);
         m_turntableEncoder.configFactoryDefault(100);
+        m_turntableEncoder.configAllSettings(config);
         m_turntableEncoder.configAbsoluteSensorRange(AbsoluteSensorRange.Signed_PlusMinus180);
         m_turntableEncoder.configSensorInitializationStrategy(
                         SensorInitializationStrategy.BootToAbsolutePosition);
