@@ -214,7 +214,7 @@ public class Shooter extends Base {
         m_turntableEncoder.configSensorInitializationStrategy(
                         SensorInitializationStrategy.BootToAbsolutePosition);
         m_turntableEncoder.setPositionToAbsolute();
-        m_turntableEncoder.setStatusFramePeriod(CANCoderStatusFrame.SensorData, 20, 50);
+        m_turntableEncoder.setStatusFramePeriod(CANCoderStatusFrame.SensorData, 10, 50);
 
         new Thread(() -> {
             try {
