@@ -94,6 +94,7 @@ public class SuperStructure extends Base {
         Shuffleboard.getTab("super").add("swervedrive", m_SwerveDrive).withPosition(8, 1).withSize(2, 2);
         Shuffleboard.getTab("super").add("compressor", m_phCompressor).withPosition(8, 3).withSize(2, 2);
         Shuffleboard.getTab("super").addNumber("compressor/pressure", () -> m_phCompressor.getPressure());
+        
         Shuffleboard.getTab("super").addBoolean("IsOkToShoot", () -> m_Shooter.IsOkToShoot()).withPosition(4, 1);
         // Shuffleboard.getTab("super").addNumber("Closed Loop Error Top", () ->
         // m_Shooter.closedLoopErrorTop());
@@ -102,7 +103,8 @@ public class SuperStructure extends Base {
         Shuffleboard.getTab("super").addNumber("Camera Based Distance", () -> m_VisionShooter.getDistance())
                 .withPosition(6, 2).withSize(2, 1);
         Shuffleboard.getTab("shooter debug").addNumber("Camera to Target Yaw", () -> m_VisionShooter.getYaw());
-        Shuffleboard.getTab("shooter debug").addNumber("Turret Angle", () -> m_Shooter.getTurretAngleDegrees());
+        Shuffleboard.getTab("shooter debug").addNumber("Turret", () -> m_Shooter.getTurretAngleDegrees());
+        Shuffleboard.getTab("shooter debug").addNumber("Turret CANcoder", () -> m_Shooter.getTurretAngleCANcoder());
         Shuffleboard.getTab("super").addNumber("current top RPM", () -> m_Shooter.getTopMotorRPM());
         Shuffleboard.getTab("super").addNumber("Current bot RPM", () -> m_Shooter.getBotMotorRPM());
         Shuffleboard.getTab("super").addBoolean("Is Ball in Loader", () -> m_Intake.isBallAtLoad());
@@ -129,7 +131,6 @@ public class SuperStructure extends Base {
         m_VisionShooter.calculateAngleError();
 
         m_Climber.checkZero();
-        m_Shooter.checkZero();
 
         m_state.update(m_SwerveDrive.getPose2d(), Rotation2d.fromDegrees(m_Shooter.getTurretAngleDegrees()));
     }
@@ -253,12 +254,7 @@ public class SuperStructure extends Base {
         }
 
         // // TURNTABLE
-        // // if not zeroed, zero the turntable
-        if (!m_Shooter.m_hasBeenCalibrated) {
-            m_Shooter.setTurnTableZero();
-        }
-        // // manual control of turntable
-        else if (OI.getAimTurret()) {
+        if (OI.getAimTurret()) {
             // m_Shooter.aimTurret(m_VisionShooter.getYaw());
             m_Shooter.aimTurretTalonOnboard(m_VisionShooter.getYaw());
 
