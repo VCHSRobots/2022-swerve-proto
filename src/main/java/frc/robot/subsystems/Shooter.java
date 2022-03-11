@@ -202,7 +202,7 @@ public class Shooter extends Base {
 
         // initialize Turn Table CanCoder
         // set units of the CANCoder to radians, with velocity being radians per second
-        var turntableEncoderChannel=22;
+        var turntableEncoderChannel=RobotMap.kShooter_TurretEncoder;
         var m_turntableEncoder = new CANCoder(turntableEncoderChannel, RobotMap.kCANivore_name);
         var config = new CANCoderConfiguration();
         config.sensorCoefficient = 2 * Math.PI / 4096.0;
