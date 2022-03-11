@@ -10,7 +10,12 @@ import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.SlotConfiguration;
 import com.ctre.phoenix.motorcontrol.can.TalonFXConfiguration;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
+import com.ctre.phoenix.sensors.AbsoluteSensorRange;
+import com.ctre.phoenix.sensors.CANCoder;
+import com.ctre.phoenix.sensors.CANCoderConfiguration;
+import com.ctre.phoenix.sensors.CANCoderStatusFrame;
 import com.ctre.phoenix.sensors.SensorInitializationStrategy;
+import com.ctre.phoenix.sensors.SensorTimeBase;
 import com.ctre.phoenix.sensors.SensorVelocityMeasPeriod;
 
 import edu.wpi.first.math.controller.ProfiledPIDController;
@@ -67,8 +72,10 @@ public class Shooter extends Base {
 
     public Shooter() {
         distanceRPMPoint[] distanceRPMlist = {
-                new distanceRPMPoint(10, 2500, 2500),
-                new distanceRPMPoint(11, 2500, 2500),
+                new distanceRPMPoint(8, 2050, 2200),
+                new distanceRPMPoint(9, 2100, 2250),
+                new distanceRPMPoint(10, 2300, 2400),
+                new distanceRPMPoint(11, 2350, 2450),
                 new distanceRPMPoint(12, 2550, 2550),
                 new distanceRPMPoint(13, 2600, 2650),
                 new distanceRPMPoint(14, 2670, 2720),
@@ -77,7 +84,7 @@ public class Shooter extends Base {
                 new distanceRPMPoint(17, 3480, 2480),
                 new distanceRPMPoint(18, 3565, 2565),
                 new distanceRPMPoint(19, 3900, 2550),
-                new distanceRPMPoint(20, 3900, 2550),
+                new distanceRPMPoint(20, 4100, 2350),
                 new distanceRPMPoint(21, 4300, 2400),
                 new distanceRPMPoint(22, 5200, 2200),
                 new distanceRPMPoint(23, 5500, 2400),
@@ -192,6 +199,22 @@ public class Shooter extends Base {
         
         
         m_turnTableTalon.configOpenloopRamp(0.1);
+
+        // initialize Turn Table CanCoder
+        // set units of the CANCoder to radians, with velocity being radians per second
+        var turntableEncoderChannel=RobotMap.kShooter_TurretEncoder;
+        var m_turntableEncoder = new CANCoder(turntableEncoderChannel, RobotMap.kCANivore_name);
+        var config = new CANCoderConfiguration();
+        config.sensorCoefficient = 2 * Math.PI / 4096.0;
+        config.unitString = "rad";
+        config.sensorTimeBase = SensorTimeBase.PerSecond;
+        m_turntableEncoder.configFactoryDefault(100);
+        m_turntableEncoder.configAllSettings(config);
+        m_turntableEncoder.configAbsoluteSensorRange(AbsoluteSensorRange.Signed_PlusMinus180);
+        m_turntableEncoder.configSensorInitializationStrategy(
+                        SensorInitializationStrategy.BootToAbsolutePosition);
+        m_turntableEncoder.setPositionToAbsolute();
+        m_turntableEncoder.setStatusFramePeriod(CANCoderStatusFrame.SensorData, 10, 50);
 
         new Thread(() -> {
             try {
