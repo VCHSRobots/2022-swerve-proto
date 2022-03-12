@@ -165,8 +165,8 @@ public class Shooter extends Base {
         m_shootTalonTop.setSensorPhase(false);
 
         TalonFXConfiguration turnTableConfig = baseConfig;
-        turnTableConfig.peakOutputForward = .3;
-        turnTableConfig.peakOutputReverse = -.3;
+        turnTableConfig.peakOutputForward = .33;
+        turnTableConfig.peakOutputReverse = -.33;
         // 0.1 @ 10 degree error
         // (0.1 * 1023) / (deg error * ticks / degree)
         turnTableConfig.slot0.kP = (1 * 1023) / (58 * kEncoderTicksPerDegree);
@@ -191,7 +191,7 @@ public class Shooter extends Base {
 
         m_turnTableTalon.configAllSettings(turnTableConfig, 100);
 
-        m_turnTableTalon.configOpenloopRamp(0.1);
+        m_turnTableTalon.configOpenloopRamp(0.0);
 
         // initialize Turn Table CanCoder
         // set units of the CANCoder to radians, with velocity being radians per second
@@ -400,7 +400,8 @@ public class Shooter extends Base {
                 .calculate(getTurretAngleDegrees(), newAngle);
         final double turnFeedforward = m_turretFeedForward
                 .calculate(m_turretPIDController.getSetpoint().velocity);
-        m_turnTableTalon.setVoltage(turnOutput + turnFeedforward);
+        // m_turnTableTalon.setVoltage(turnOutput + turnFeedforward);
+        m_turnTableTalon.setVoltage(turnFeedforward);
     }
 
     public double angleDegreesToEncoderTicks(double degrees) {
@@ -437,8 +438,8 @@ public class Shooter extends Base {
     }
 
     public void setTurntableToNTValue() {
-        // m_turnTableTalon.setVoltage(ntVoltage.getDouble(0.0));
-        setTurretAngle(ntVoltage.getDouble(0.0));
+        m_turnTableTalon.setVoltage(ntVoltage.getDouble(0.0));
+        // setTurretAngle(ntVoltage.getDouble(0.0));
     }
 
 }

@@ -146,7 +146,8 @@ public class VisionShooter extends Base {
     public double getYaw() {
         // if (m_lastTarget == null)
         //     return 0.0;
-        return -m_lastTx;
+        return -ntTargetYaw.getDouble(0);
+        // return -m_lastTx;
     }
 
     public double getPitch() {
