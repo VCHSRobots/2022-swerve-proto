@@ -372,6 +372,9 @@ public class SuperStructure extends Base {
             if (m_Shooter.IsOkToShoot()) {
                 m_Intake.loadShooter();
             }
+
+//INCREASE TIME THAT SHOOTER IS RUNNING BEFORE BEGINNING NEXT STEP IN AUTO (+1 to 2 sec)
+//SHOOTER NOT SHOOTING ALL BALLS BEFORE MOVING ON
         } else if (m_autoStep == 2) {
             // follow first trajectory to pick up 2 balls
             // move to next step when traj complete
@@ -395,7 +398,7 @@ public class SuperStructure extends Base {
         } else if (m_autoStep == 3) {
             // should have picked up 2 balls, or wait 1 second
             if (m_Intake.getNumberOfBallsHolding() > 1 || m_Timer.advanceIfElapsed(0.05)) {
-                m_autoStep = 4;
+                m_autoStep = 4; 
             }
             m_Shooter.warmUp();
             m_Intake.turnOn();
@@ -405,6 +408,8 @@ public class SuperStructure extends Base {
             double targetAngle = -138;
             m_Shooter.setTurretAngle(targetAngle);
             // shoot ball holding
+
+//INCREASE SHOOTING RPM BY ABOUT 20
             m_Shooter.shootingRPM(3080, 2800);
 
             if (m_Shooter.IsOkToShoot() && Math.abs(targetAngle - m_Shooter.getTurretAngleDegrees()) < 5) {
@@ -415,7 +420,7 @@ public class SuperStructure extends Base {
             // when no balls, move to next step
             if (m_Intake.getNumberOfBallsHolding() == 0) {
                 m_zeroBallCounter++;
-                if (m_zeroBallCounter > 5) {
+                if (m_zeroBallCounter > 9) {
                     m_zeroBallCounter = 0;
                     m_autoStep = 5;
                     m_Timer.reset();
@@ -473,7 +478,7 @@ public class SuperStructure extends Base {
             //     angle += 360;
             // }
             // shoot ball holding
-            m_Shooter.shootingRPM(2650, 2550);
+            m_Shooter.shootingRPM(2650, 2590);
 
             if (m_Shooter.IsOkToShoot() && Math.abs(targetAngle - angle) < 8) {
                 m_Intake.loadShooter();
@@ -493,7 +498,7 @@ public class SuperStructure extends Base {
             if (m_Timer.advanceIfElapsed(10)) {
                 m_autoStep = 10;
             }
-            m_Shooter.shootingRPM(2650, 2550);
+            m_Shooter.shootingRPM(2650, 2590);
             if (m_Shooter.IsOkToShoot()) {
                 m_Intake.loadShooter();
             } else {
