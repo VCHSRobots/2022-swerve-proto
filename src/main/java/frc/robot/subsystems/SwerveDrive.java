@@ -8,7 +8,6 @@ import java.nio.file.Path;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.kauailabs.navx.frc.AHRS;
-import com.pathplanner.lib.PathPlannerTrajectory.PathPlannerState;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.filter.SlewRateLimiter;
@@ -23,19 +22,17 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
-import frc.robot.OI;
 import frc.robot.RobotMap;
 
 /** Add your docs here. */
 public class SwerveDrive extends Base {
-    public static final double kMaxSpeed = 3.5; // 3 meters per second
+    public static final double kMaxSpeed = 4.8; // 3 meters per second
     public static final double kMaxAngularSpeed = 3 * Math.PI; // 1 rotation per second
 
-    private final SlewRateLimiter m_xSpeedLimiter = new SlewRateLimiter(7);
-    private final SlewRateLimiter m_ySpeedLimiter = new SlewRateLimiter(7);
-    private final SlewRateLimiter m_rotLimiter = new SlewRateLimiter(7);
+    private final SlewRateLimiter m_xSpeedLimiter = new SlewRateLimiter(8);
+    private final SlewRateLimiter m_ySpeedLimiter = new SlewRateLimiter(8);
+    private final SlewRateLimiter m_rotLimiter = new SlewRateLimiter(8);
 
     private final double inches15toMeters = Units.inchesToMeters(11);
     private final Translation2d m_frontLeftLocation = new Translation2d(inches15toMeters, inches15toMeters);
