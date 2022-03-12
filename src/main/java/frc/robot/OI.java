@@ -160,6 +160,11 @@ public class OI {
     static public boolean turntableVoltage() {
         return xboxShooterTesting.getRightBumper();
     }
+
+    static public boolean aimTurretTest() {
+        return xboxShooterTesting.getLeftTriggerAxis() > 0.3;
+        // return false;
+    }
 }
 
 /*

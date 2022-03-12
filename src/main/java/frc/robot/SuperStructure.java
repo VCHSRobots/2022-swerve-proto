@@ -671,6 +671,8 @@ public class SuperStructure extends Base {
             m_SwerveDrive.drive(0, 0, 0, false);
         }
 
+                // // TURNTABLE
+
         if (OI.fortFiveTurnTable()) {// A
             m_Shooter.setTurretAngle(0);
         } else if (OI.hundredTurnTable()) {// X
@@ -681,12 +683,13 @@ public class SuperStructure extends Base {
             m_Shooter.setTurretAngle(90);
         } else if (OI.turntableVoltage()) {
             m_Shooter.setTurntableToNTValue();
+        } else if (OI.aimTurretTest()) {
+            // m_Shooter.aimTurret(m_VisionShooter.getYaw());
+            m_Shooter.aimTurret(m_VisionShooter.getYaw());
         } else {
-
             m_Shooter.TurnTable(OI.getRightTurntable(),
                     OI.getLeftTurntable());
         }
-
     }
 
     private void climberControl(boolean shortHookBack, boolean shortHookForward, boolean armsUp, boolean armsDown) {
