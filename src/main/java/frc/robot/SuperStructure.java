@@ -168,6 +168,12 @@ public class SuperStructure extends Base {
         m_Intake.changeState(OI.startIntake(), OI.stopIntake());
 
         // INTAKE / SHOOTING
+
+        // speed up shooter automatically
+        if(m_Intake.getBothBallsLoaded()) {
+            m_Shooter.shootingRPM(ntTopRPM.getDouble(0), ntBotRPM.getDouble(0));
+        }
+
         if (OI.getUnjam()) {
             // m_Shooter.shootingRPM(2700, 2700);
             // if (m_Intake.getNumberOfBallsHolding() == 0) {
