@@ -21,6 +21,7 @@ import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.RemoteFeedbackDevice;
 import com.ctre.phoenix.motorcontrol.RemoteSensorSource;
+import com.ctre.phoenix.motorcontrol.StatusFrameEnhanced;
 import com.ctre.phoenix.motorcontrol.TalonFXFeedbackDevice;
 import com.ctre.phoenix.motorcontrol.can.FilterConfiguration;
 import com.ctre.phoenix.motorcontrol.can.TalonFXConfiguration;
@@ -169,13 +170,29 @@ public class SwerveModule implements Sendable {
                 m_turningEncoder.configSensorInitializationStrategy(
                                 SensorInitializationStrategy.BootToAbsolutePosition);
                 m_turningEncoder.setPositionToAbsolute();
-                m_turningEncoder.setStatusFramePeriod(CANCoderStatusFrame.SensorData, 20, 50);
+                m_turningEncoder.setStatusFramePeriod(CANCoderStatusFrame.SensorData, 10, 50);
 
                 // Limit the PID Controller's input range between -pi and pi and set the input
                 // to be continuous.
                 m_turningPIDController.enableContinuousInput(-Math.PI, Math.PI);
 
                 m_turningEncoderOffset = turningEncoderOffset;
+
+                m_driveMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_3_Quadrature, 255);
+                m_driveMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_4_AinTempVbat, 255);
+                m_driveMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_10_MotionMagic, 255);
+                m_driveMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_12_Feedback1, 255);
+                m_driveMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_13_Base_PIDF0, 255);
+                m_driveMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_14_Turn_PIDF1, 255);
+                m_driveMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_Brushless_Current, 100);
+
+                m_turningMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_3_Quadrature, 255);
+                m_turningMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_4_AinTempVbat, 255);
+                m_turningMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_10_MotionMagic, 255);
+                m_turningMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_12_Feedback1, 255);
+                m_turningMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_13_Base_PIDF0, 255);
+                m_turningMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_14_Turn_PIDF1, 255);
+                m_turningMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_Brushless_Current, 100);
         }
 
         /**
@@ -199,9 +216,9 @@ public class SwerveModule implements Sendable {
                 double angle = m_turningEncoder.getPosition() - Units.radiansToDegrees(m_turningEncoderOffset);
                 angle = Math.IEEEremainder(angle, 360);
                 // if (angle > 180) {
-                //         angle -= (360);
+                // angle -= (360);
                 // } else if (angle < -180) {
-                //         angle += (360);
+                // angle += (360);
                 // }
                 return Units.degreesToRadians(angle);
         }
@@ -287,19 +304,15 @@ public class SwerveModule implements Sendable {
         @Override
         public void initSendable(SendableBuilder builder) {
                 builder.setSmartDashboardType("Swerve Module");
-                builder.addDoubleProperty("Actual Drive m-s", () ->
-                this.getDriveRatePerSecond(), null);
+                builder.addDoubleProperty("Actual Drive m-s", () -> this.getDriveRatePerSecond(), null);
                 builder.addDoubleProperty("Drive Position Meters",
-                () -> (kDriveMetersPerIntegratedTick *
-                m_driveMotor.getSelectedSensorPosition()),
-                null);
-                builder.addDoubleProperty("Actual Angle deg", () ->
-                m_turningEncoder.getPosition(), null);
+                                () -> (kDriveMetersPerIntegratedTick *
+                                                m_driveMotor.getSelectedSensorPosition()),
+                                null);
+                builder.addDoubleProperty("Actual Angle deg", () -> m_turningEncoder.getPosition(), null);
                 builder.addDoubleProperty("Actual Angle with offset deg",
-                () -> Units.radiansToDegrees(getTurningPositionRadians()), null);
-                builder.addDoubleProperty("Desired Drive m-s", () ->
-                m_desiredState.speedMetersPerSecond, null);
-                builder.addDoubleProperty("Desired Angle deg", () ->
-                m_desiredState.angle.getDegrees(), null);
+                                () -> Units.radiansToDegrees(getTurningPositionRadians()), null);
+                builder.addDoubleProperty("Desired Drive m-s", () -> m_desiredState.speedMetersPerSecond, null);
+                builder.addDoubleProperty("Desired Angle deg", () -> m_desiredState.angle.getDegrees(), null);
         }
 }

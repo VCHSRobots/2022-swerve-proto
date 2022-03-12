@@ -3,8 +3,6 @@
 // the WPILib BSD license file in the root directory of this project.
 package frc.robot.subsystems;
 
-import java.util.ResourceBundle.Control;
-
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.InvertType;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
@@ -12,14 +10,11 @@ import com.ctre.phoenix.motorcontrol.StatusFrameEnhanced;
 import com.ctre.phoenix.motorcontrol.can.TalonFXConfiguration;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 
-import edu.wpi.first.networktables.NetworkTableEntry;
-import edu.wpi.first.wpilibj.DigitalGlitchFilter;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
-import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import frc.robot.RobotMap;
 
 /** Add your docs here. */
@@ -83,10 +78,34 @@ public class Climber extends Base {
         m_follower_1.follow(m_master);
         m_follower_2.follow(m_master);
 
+        m_master.setStatusFramePeriod(StatusFrameEnhanced.Status_3_Quadrature, 255);
+        m_master.setStatusFramePeriod(StatusFrameEnhanced.Status_4_AinTempVbat, 255);
+        m_master.setStatusFramePeriod(StatusFrameEnhanced.Status_10_MotionMagic, 255);
+        m_master.setStatusFramePeriod(StatusFrameEnhanced.Status_12_Feedback1, 255);
+        m_master.setStatusFramePeriod(StatusFrameEnhanced.Status_13_Base_PIDF0, 255);
+        m_master.setStatusFramePeriod(StatusFrameEnhanced.Status_14_Turn_PIDF1, 255);
+        m_master.setStatusFramePeriod(StatusFrameEnhanced.Status_Brushless_Current, 255);
+
         m_follower_1.setStatusFramePeriod(StatusFrameEnhanced.Status_1_General, 255, 50);
         m_follower_1.setStatusFramePeriod(StatusFrameEnhanced.Status_2_Feedback0, 255, 50);
+        m_follower_1.setStatusFramePeriod(StatusFrameEnhanced.Status_3_Quadrature, 255);
+        m_follower_1.setStatusFramePeriod(StatusFrameEnhanced.Status_4_AinTempVbat, 255);
+        m_follower_1.setStatusFramePeriod(StatusFrameEnhanced.Status_10_MotionMagic, 255);
+        m_follower_1.setStatusFramePeriod(StatusFrameEnhanced.Status_12_Feedback1, 255);
+        m_follower_1.setStatusFramePeriod(StatusFrameEnhanced.Status_13_Base_PIDF0, 255);
+        m_follower_1.setStatusFramePeriod(StatusFrameEnhanced.Status_14_Turn_PIDF1, 255);
+        m_follower_1.setStatusFramePeriod(StatusFrameEnhanced.Status_Brushless_Current, 255);
+
         m_follower_2.setStatusFramePeriod(StatusFrameEnhanced.Status_1_General, 255, 50);
         m_follower_2.setStatusFramePeriod(StatusFrameEnhanced.Status_2_Feedback0, 255, 50);
+        m_follower_2.setStatusFramePeriod(StatusFrameEnhanced.Status_3_Quadrature, 255);
+        m_follower_2.setStatusFramePeriod(StatusFrameEnhanced.Status_4_AinTempVbat, 255);
+        m_follower_2.setStatusFramePeriod(StatusFrameEnhanced.Status_10_MotionMagic, 255);
+        m_follower_2.setStatusFramePeriod(StatusFrameEnhanced.Status_12_Feedback1, 255);
+        m_follower_2.setStatusFramePeriod(StatusFrameEnhanced.Status_13_Base_PIDF0, 255);
+        m_follower_2.setStatusFramePeriod(StatusFrameEnhanced.Status_14_Turn_PIDF1, 255);
+        m_follower_2.setStatusFramePeriod(StatusFrameEnhanced.Status_Brushless_Current, 255);
+
 
         // motor configs
         m_master.configFactoryDefault(100);
