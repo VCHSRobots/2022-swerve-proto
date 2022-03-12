@@ -236,7 +236,7 @@ public class Intake extends Base {
                 // stops when no more shooter buttons are pressed
 
                 if (startIntake) {
-                    // don't care
+                    m_state = STATE.B;
                 }
                 if (stopIntake) {
                     m_state = STATE.A;
