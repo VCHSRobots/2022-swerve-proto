@@ -4,11 +4,12 @@
 
 package frc.robot.subsystems;
 
+import java.lang.Thread.State;
+
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 
-import edu.wpi.first.math.trajectory.Trajectory.State;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.wpilibj.AnalogInput;
 import edu.wpi.first.wpilibj.AnalogTrigger;
@@ -239,6 +240,13 @@ public class Intake extends Base {
                 // start loading balls into shooter (loadShooter)
                 // stops when no more shooter buttons are pressed
 
+                if (startIntake) {
+                    m_state = STATE.B;
+                }
+                if (stopIntake) {
+                    m_state = STATE.A;
+                }
+                
                 break;
         }
 
