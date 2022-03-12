@@ -41,7 +41,8 @@ public class Shooter extends Base {
     private final double kMaxAngle = 300;
     private final double kMaxAngularVelocity = 600.0; // keep within 560, started at 135
     private final double kMaxAngularAcceleration = 9000.0; // keep within 5700, started at 455
-
+    private double m_targetAngle = 0;
+    private boolean m_isTurningAround = false;
     // Shuffleboard Tabs and NetworkTableEntries.
     ShuffleboardTab ShootMotorTab = Shuffleboard.getTab("Shooter");
     NetworkTableEntry ntVoltage = Shuffleboard.getTab("Shooter").add("voltage", 0.0).getEntry();
@@ -403,7 +404,15 @@ public class Shooter extends Base {
             m_turnTableTalon.setVoltage(0);
             return;
         }
+
         double targetAngle = getTurretAngleDegrees() + angleYawDegreesOffset;
+        // if (m_isTurningAround) {
+        //     if (Math.abs(targetAngle - m_targetAngle) < 17) {
+        //         m_isTurningAround = false;
+        //     } else {
+        //         targetAngle = m_targetAngle;
+        //     }
+        // }
         setTurretAngle(targetAngle);
     }
 
@@ -411,10 +420,14 @@ public class Shooter extends Base {
         double newAngle = angleTargetDegrees % 360;
         if (newAngle < kMinAngle) {
             newAngle += 360;
+            // m_targetAngle = newAngle;
+            // m_isTurningAround = true;
         } else if (newAngle > kMaxAngle) {
             newAngle -= 360;
+            // m_targetAngle = newAngle;
+            // m_isTurningAround = true;
         }
-        double targetAngleTicks = angleDegreesToEncoderTicks(angleTargetDegrees);
+        double targetAngleTicks = angleDegreesToEncoderTicks(newAngle);
         // kS to overcome friction
         double kS = Math.copySign(0.020, targetAngleTicks -
                 m_turnTableTalon.getSelectedSensorPosition());
@@ -424,19 +437,21 @@ public class Shooter extends Base {
         // Calculate the turning motor output from the turning PID controller.
         // double newAngle = angleTargetDegrees % 360;
         // if (newAngle < kMinAngle) {
-        //     newAngle += 360;
+        // newAngle += 360;
         // } else if (newAngle > kMaxAngle) {
-        //     newAngle -= 360;
+        // newAngle -= 360;
         // }
         // SmartDashboard.putNumber("newangle", newAngle);
 
         // final double turnOutput = m_turretPIDController
-        //         .calculate(getTurretAngleDegrees(), newAngle);
+        // .calculate(getTurretAngleDegrees(), newAngle);
         // final double turnFeedforward = m_turretFeedForward
-        //         .calculate(m_turretPIDController.getSetpoint().velocity);
-        // SmartDashboard.putNumber("turret PID vel", m_turretPIDController.getSetpoint().velocity);
+        // .calculate(m_turretPIDController.getSetpoint().velocity);
+        // SmartDashboard.putNumber("turret PID vel",
+        // m_turretPIDController.getSetpoint().velocity);
         // SmartDashboard.putNumber("turret ff", turnFeedforward);
-        // SmartDashboard.putNumber("turret PID pos err", m_turretPIDController.getPositionError());
+        // SmartDashboard.putNumber("turret PID pos err",
+        // m_turretPIDController.getPositionError());
         // // m_turnTableTalon.setVoltage(turnOutput + turnFeedforward);
         // m_turnTableTalon.setVoltage(turnFeedforward + turnOutput);
     }

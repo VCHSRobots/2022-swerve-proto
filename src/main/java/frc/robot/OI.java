@@ -53,6 +53,10 @@ public class OI {
         return Math.copySign(Math.pow(xboxDrive.getRightX(), 2), xboxDrive.getRightX());
     }
 
+    static public boolean aimWithPose() {
+        return xboxDrive.getPOV() == 0;
+    }
+
     static public boolean shouldSetFieldRelative() {
         return xboxDrive.getPOV() == 270;
     }

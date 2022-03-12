@@ -256,6 +256,8 @@ public class SuperStructure extends Base {
         if (OI.getAimTurret()) {
             // m_Shooter.aimTurret(m_VisionShooter.getYaw());
             m_Shooter.aimTurret(m_VisionShooter.getYaw());
+        } else if (OI.aimWithPose()) {
+            m_Shooter.aimTurret(m_state.getTurretAimingAngle().getDegrees());
         } else {
             m_Shooter.TurnTable(OI.getRightTurntable(),
                     OI.getLeftTurntable());
@@ -592,17 +594,14 @@ public class SuperStructure extends Base {
                 m_Intake.loadShooter();
             }
             m_SwerveDrive.stopModules();
-
         } else if (m_autoStep == 5) {
             m_Shooter.turnOff();
             m_Intake.turnOffLoadShooter();
             m_SwerveDrive.stopModules();
-
         } else {
             m_Shooter.turnOff();
             m_Intake.turnOffLoadShooter();
             m_SwerveDrive.stopModules();
-
         }
 
         // always update intake state

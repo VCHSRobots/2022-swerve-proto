@@ -244,7 +244,7 @@ public class SwerveDrive extends Base {
         }
         if (resetOdometry) {
             zeroHeading();
-            m_odometry.resetPosition(new Pose2d(), getGyroRotation2d());
+            m_odometry.resetPosition(new Pose2d(new Translation2d(6, 4.75), new Rotation2d()), getGyroRotation2d());
         }
         updateOdometry();
     }
