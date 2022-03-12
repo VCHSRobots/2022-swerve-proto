@@ -24,9 +24,7 @@ public class VisionShooter extends Base {
     private double m_lastTx = 0;
     private double m_lastTy = 0;
     private boolean hasLastTarget = false;
-    // private PhotonCamera camera = new PhotonCamera("mmal_service_16.1");
     private int m_lostCount = 0;
-    private int m_icount = 0;
     private int m_MAXLOSTCOUNT = 7;
     private double m_max_angle_change_in_20ms=10.0;
 
@@ -39,14 +37,12 @@ public class VisionShooter extends Base {
         /*
          * vision filter:
          * 1. prevent jumping between two different objects
-         * check the difference between the current target and last target.
-         * if too different, consider it as losing the original target. (see next filter
-         * case)
-         * 2. work through losing target for 1 or 2 times.
-         * if there is no targets for 3 consecutive times, stop;
-         * if there is no target less than 3 times, keep going toward the orginal target
+         *    check the difference between the current target and last target.
+         *    if too different, consider it as losing the original target. (see next filter case)
+         * 2. work through losing target for a few times.
+         *    if there is no targets for N consecutive times, stop;
+         *    if there is no target less than N times, keep going toward the orginal target
          */
-        // PhotonTrackedTarget target;
         double newTx;
         double newTy;
         var hasTarget = false;
