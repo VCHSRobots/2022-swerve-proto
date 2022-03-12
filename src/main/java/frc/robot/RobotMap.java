@@ -46,6 +46,7 @@ public class RobotMap {
     public static final int kDrive_FrontRightEncoder        = 11;
     public static final int kDrive_BackLeftEncoder          = 13;
     public static final int kDrive_BackRightEncoder         = 14;
+    public static final int kShooter_TurretEncoder         = 16;
     // END CANCODER //
 
     // SOLENOID //
@@ -65,6 +66,5 @@ public class RobotMap {
     public static final int kClimber_RightBottomLimit = 1;
     public static final int kIntake_LoadDIO = 3;
     public static final int kIntake_MiddleDIO = 2;
-    public static final int kShooter_TurretZeroDIO = 4;
     // END DIO //
 }

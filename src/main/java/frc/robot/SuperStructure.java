@@ -94,6 +94,7 @@ public class SuperStructure extends Base {
         Shuffleboard.getTab("super").add("swervedrive", m_SwerveDrive).withPosition(8, 1).withSize(2, 2);
         Shuffleboard.getTab("super").add("compressor", m_phCompressor).withPosition(8, 3).withSize(2, 2);
         Shuffleboard.getTab("super").addNumber("compressor/pressure", () -> m_phCompressor.getPressure());
+
         Shuffleboard.getTab("super").addBoolean("IsOkToShoot", () -> m_Shooter.IsOkToShoot()).withPosition(4, 1);
         // Shuffleboard.getTab("super").addNumber("Closed Loop Error Top", () ->
         // m_Shooter.closedLoopErrorTop());
@@ -102,7 +103,8 @@ public class SuperStructure extends Base {
         Shuffleboard.getTab("super").addNumber("Camera Based Distance", () -> m_VisionShooter.getDistance())
                 .withPosition(6, 2).withSize(2, 1);
         Shuffleboard.getTab("shooter debug").addNumber("Camera to Target Yaw", () -> m_VisionShooter.getYaw());
-        Shuffleboard.getTab("shooter debug").addNumber("Turret Angle", () -> m_Shooter.getTurretAngleDegrees());
+        Shuffleboard.getTab("shooter debug").addNumber("Turret", () -> m_Shooter.getTurretAngleDegrees());
+        Shuffleboard.getTab("shooter debug").addNumber("Turret CANcoder", () -> m_Shooter.getTurretAngleCANcoder());
         Shuffleboard.getTab("super").addNumber("current top RPM", () -> m_Shooter.getTopMotorRPM());
         Shuffleboard.getTab("super").addNumber("Current bot RPM", () -> m_Shooter.getBotMotorRPM());
         Shuffleboard.getTab("super").addBoolean("Is Ball in Loader", () -> m_Intake.isBallAtLoad());
@@ -129,7 +131,6 @@ public class SuperStructure extends Base {
         m_VisionShooter.calculateAngleError();
 
         m_Climber.checkZero();
-        m_Shooter.checkZero();
 
         m_state.update(m_SwerveDrive.getPose2d(), Rotation2d.fromDegrees(m_Shooter.getTurretAngleDegrees()));
     }
@@ -140,7 +141,6 @@ public class SuperStructure extends Base {
         m_Intake.turnOffLoadShooter();
         m_Climber.hooksReverse();
     }
-
 
     @Override
     public void teleopPeriodic() {
@@ -230,7 +230,7 @@ public class SuperStructure extends Base {
                 m_Intake.turnOffLoadShooter();
             }
         } else if (OI.getAimTurret()) {
-            m_Shooter.warmUp();
+            // m_Shooter.warmUp();
         } else {
             m_Shooter.turnOff();
         }
@@ -253,15 +253,9 @@ public class SuperStructure extends Base {
         }
 
         // // TURNTABLE
-        // // if not zeroed, zero the turntable
-        if (!m_Shooter.m_hasBeenCalibrated) {
-            m_Shooter.setTurnTableZero();
-        }
-        // // manual control of turntable
-        else if (OI.getAimTurret()) {
+        if (OI.getAimTurret()) {
             // m_Shooter.aimTurret(m_VisionShooter.getYaw());
-            m_Shooter.aimTurretTalonOnboard(m_VisionShooter.getYaw());
-
+            m_Shooter.aimTurret(m_VisionShooter.getYaw());
         } else {
             m_Shooter.TurnTable(OI.getRightTurntable(),
                     OI.getLeftTurntable());
@@ -475,7 +469,7 @@ public class SuperStructure extends Base {
                 angle = angle - 360;
             }
             // if (angle < 0) {
-            //     angle += 360;
+            // angle += 360;
             // }
             // shoot ball holding
             m_Shooter.shootingRPM(2650, 2590);
@@ -681,21 +675,22 @@ public class SuperStructure extends Base {
         } else {
             m_SwerveDrive.drive(0, 0, 0, false);
         }
-        if (OI.fortFiveTurnTable()) {// A
-            m_Shooter.setTurnTableAngleFortFive();
-        }
-        if (OI.hundredTurnTable()) {// X
-            m_Shooter.setTurnTableAngleHundred();
-        }
-        if (OI.negFortFiveTurnTable()) {// Y
-            m_Shooter.setTurnTableAngleNegFortFive();
-        }
-        if (OI.negHundredTurnTable()) {// B
-            m_Shooter.setTurnTableAngleNegFortFive();
-        }
 
-        m_Shooter.TurnTable(OI.getRightTurntable(),
-                OI.getLeftTurntable());
+        if (OI.fortFiveTurnTable()) {// A
+            m_Shooter.setTurretAngle(0);
+        } else if (OI.hundredTurnTable()) {// X
+            m_Shooter.setTurretAngle(-90);
+        } else if (OI.negFortFiveTurnTable()) {// Y
+            m_Shooter.setTurretAngle(180);
+        } else if (OI.negHundredTurnTable()) {// B
+            m_Shooter.setTurretAngle(90);
+        } else if (OI.turntableVoltage()) {
+            m_Shooter.setTurntableToNTValue();
+        } else {
+
+            m_Shooter.TurnTable(OI.getRightTurntable(),
+                    OI.getLeftTurntable());
+        }
 
     }
 
