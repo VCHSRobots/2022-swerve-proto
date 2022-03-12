@@ -11,8 +11,6 @@ import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 
 import edu.wpi.first.networktables.NetworkTableEntry;
-import edu.wpi.first.wpilibj.AnalogInput;
-import edu.wpi.first.wpilibj.AnalogTrigger;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -21,7 +19,6 @@ import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import frc.robot.RobotMap;
-import frc.robot.subsystems.ColorSensor;
 import edu.wpi.first.wpilibj.Timer;
 
 /** Add your docs here. */
@@ -377,6 +374,14 @@ public class Intake extends Base {
         ntShooterLoaderSpeed.setDouble(m_shooterLoader.getMotorOutputPercent());
     }
 
+    public boolean getBothBallsLoaded() {
+        if(isBallAtLoad() && isBallAtMiddle()) {
+            return true;
+        }
+
+        return false;
+    }
+
     // helper functions so don't have to remember to invert DIO
     public boolean isBallAtLoad() {
         return !m_loadDIO.get();
@@ -384,10 +389,6 @@ public class Intake extends Base {
 
     public boolean isBallAtMiddle() {
         return !m_middleDIO.get();
-    }
-
-    public boolean getHasDetectedMiddle() {
-        return hasDetectedMiddle;
     }
 
     private void colorPlaceholder() {

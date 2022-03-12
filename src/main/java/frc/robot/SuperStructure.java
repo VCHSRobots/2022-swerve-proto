@@ -168,6 +168,7 @@ public class SuperStructure extends Base {
         m_Intake.changeState(OI.startIntake(), OI.stopIntake());
 
         // INTAKE / SHOOTING
+
         if (OI.getUnjam()) {
             // m_Shooter.shootingRPM(2700, 2700);
             // if (m_Intake.getNumberOfBallsHolding() == 0) {
@@ -231,6 +232,9 @@ public class SuperStructure extends Base {
             }
         } else if (OI.getAimTurret()) {
             // m_Shooter.warmUp();
+        } else if(m_Intake.getBothBallsLoaded()) {
+            // speed up shooter automatically
+            m_Shooter.shootingRPM(ntTopRPM.getDouble(0), ntBotRPM.getDouble(0));
         } else {
             m_Shooter.turnOff();
         }
