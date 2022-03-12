@@ -373,7 +373,7 @@ public class Intake extends Base {
     }
 
     public boolean getBothBallsLoaded() {
-        if(isBallAtLoad() && isBallAtMiddle() && m_state == STATE.A) {
+        if(isBallAtLoad() && isBallAtMiddle()) {
             return true;
         }
 
