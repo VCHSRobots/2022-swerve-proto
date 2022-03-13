@@ -50,6 +50,9 @@ public class SuperStructure extends Base {
 
     private Auto m_auto = new Auto();
 
+    double m_shootingDistance = 0;
+    boolean m_shootingDistanceFirstRun = true;
+
     private final Compressor m_phCompressor = new Compressor(PneumaticsModuleType.REVPH);
     private final PneumaticHub m_ph = new PneumaticHub();
 
@@ -195,7 +198,13 @@ public class SuperStructure extends Base {
             }
         } else if (OI.getRightTriggerForShooting()) {
             // camera center shot
-            m_Shooter.shootingRPM(3000, 2400);
+            // m_Shooter.shootingRPM(3000, 2400);
+            // m_Shooter.shootingRPM(ntTopRPM.getDouble(0), ntBotRPM.getDouble(0));
+            if (m_shootingDistanceFirstRun) {
+                m_shootingDistance = m_VisionShooter.getDistance();
+                m_shootingDistanceFirstRun = false;
+            }
+            m_Shooter.shootingDist(m_shootingDistance);
             if (m_Shooter.IsOkToShoot()) {
                 // Load shooter
                 m_Intake.loadShooter();
@@ -206,6 +215,7 @@ public class SuperStructure extends Base {
         } else if (OI.getRightBumperForShootingClose()) {
             // turn shooter on in rpm mode
             m_Shooter.shootingRPM(2500, 2650);
+            
             if (m_Shooter.IsOkToShoot()) {
                 // Load shooter
                 m_Intake.loadShooter();
@@ -231,10 +241,10 @@ public class SuperStructure extends Base {
                 m_Intake.turnOffLoadShooter();
             }
         } else if (OI.getAimTurret()) {
-            // m_Shooter.warmUp();
-        } else if(m_Intake.getBothBallsLoaded()) {
+            m_Shooter.shootingRPM(3000, 2400);
+        } else if (m_Intake.getBothBallsLoaded()) {
             // speed up shooter automatically
-            m_Shooter.shootingRPM(ntTopRPM.getDouble(0), ntBotRPM.getDouble(0));
+            m_Shooter.shootingRPM(3000, 2400);
         } else {
             m_Shooter.turnOff();
         }
@@ -242,6 +252,7 @@ public class SuperStructure extends Base {
         // when shooting released, stop loading
         if (OI.getShootingReleased()) {
             m_Intake.turnOffLoadShooter();
+            m_shootingDistanceFirstRun = true;
         }
 
         // climberControl(OI.getSolenoidReverse(), OI.getSolenoidForward(),
@@ -373,8 +384,9 @@ public class SuperStructure extends Base {
                 m_Intake.loadShooter();
             }
 
-//INCREASE TIME THAT SHOOTER IS RUNNING BEFORE BEGINNING NEXT STEP IN AUTO (+1 to 2 sec)
-//SHOOTER NOT SHOOTING ALL BALLS BEFORE MOVING ON
+            // INCREASE TIME THAT SHOOTER IS RUNNING BEFORE BEGINNING NEXT STEP IN AUTO (+1
+            // to 2 sec)
+            // SHOOTER NOT SHOOTING ALL BALLS BEFORE MOVING ON
         } else if (m_autoStep == 2) {
             // follow first trajectory to pick up 2 balls
             // move to next step when traj complete
@@ -398,7 +410,7 @@ public class SuperStructure extends Base {
         } else if (m_autoStep == 3) {
             // should have picked up 2 balls, or wait 1 second
             if (m_Intake.getNumberOfBallsHolding() > 1 || m_Timer.advanceIfElapsed(0.05)) {
-                m_autoStep = 4; 
+                m_autoStep = 4;
             }
             m_Shooter.warmUp();
             m_Intake.turnOn();
@@ -409,7 +421,7 @@ public class SuperStructure extends Base {
             m_Shooter.setTurretAngle(targetAngle);
             // shoot ball holding
 
-//INCREASE SHOOTING RPM BY ABOUT 20
+            // INCREASE SHOOTING RPM BY ABOUT 20
             m_Shooter.shootingRPM(3080, 2800);
 
             if (m_Shooter.IsOkToShoot() && Math.abs(targetAngle - m_Shooter.getTurretAngleDegrees()) < 5) {
@@ -679,7 +691,7 @@ public class SuperStructure extends Base {
             m_SwerveDrive.drive(0, 0, 0, false);
         }
 
-                // // TURNTABLE
+        // // TURNTABLE
 
         if (OI.fortFiveTurnTable()) {// A
             m_Shooter.setTurretAngle(0);

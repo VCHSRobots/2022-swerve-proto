@@ -92,8 +92,8 @@ public class VisionShooter extends Base {
     public double getDistance() {
         double visionTargetOffsetFromCenter = 2;
         double distanceFeet = 0;
-        double cameraAngle = 60.0; // angle from horizontal to axis of camera view, in degress
-        double cameraHeight = 2; // height of camera on robot
+        double cameraAngle = 20.0; // angle from horizontal to axis of camera view, in degress
+        double cameraHeight = 2.6667; // height of camera on robot
         double targetHeight = 8.46833; // height of retroreflective tape in feet
 
         double pitch=getPitch();

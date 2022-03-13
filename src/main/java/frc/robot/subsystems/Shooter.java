@@ -40,7 +40,7 @@ public class Shooter extends Base {
     private final double kMinAngle = -135;
     private final double kMaxAngle = 300;
     private final double kMaxAngularVelocity = 600.0; // keep within 560, started at 135
-    private final double kMaxAngularAcceleration = 9000.0; // keep within 5700, started at 455
+    private final double kMaxAngularAcceleration = 12000.0; // keep within 5700, started at 455
     private double m_targetAngle = 0;
     private boolean m_isTurningAround = false;
     // Shuffleboard Tabs and NetworkTableEntries.
@@ -67,23 +67,12 @@ public class Shooter extends Base {
 
     public Shooter() {
         distanceRPMPoint[] distanceRPMlist = {
-                new distanceRPMPoint(8, 2050, 2200),
-                new distanceRPMPoint(9, 2100, 2250),
-                new distanceRPMPoint(10, 2300, 2400),
-                new distanceRPMPoint(11, 2350, 2450),
-                new distanceRPMPoint(12, 2550, 2550),
-                new distanceRPMPoint(13, 2600, 2650),
-                new distanceRPMPoint(14, 2670, 2720),
-                new distanceRPMPoint(15, 3300, 2300),
-                new distanceRPMPoint(16, 3400, 2400),
-                new distanceRPMPoint(17, 3480, 2480),
-                new distanceRPMPoint(18, 3565, 2565),
-                new distanceRPMPoint(19, 3900, 2550),
-                new distanceRPMPoint(20, 4100, 2350),
-                new distanceRPMPoint(21, 4300, 2400),
-                new distanceRPMPoint(22, 5200, 2200),
-                new distanceRPMPoint(23, 5500, 2400),
-
+                new distanceRPMPoint(8, 2650, 2350),
+                new distanceRPMPoint(9, 2800, 2400),
+                new distanceRPMPoint(10, 3000, 2400),
+                new distanceRPMPoint(11, 3100, 2500),
+                new distanceRPMPoint(12.5, 3200, 2550),
+                new distanceRPMPoint(14.2, 3600, 2550)
         };
 
         for (distanceRPMPoint point : distanceRPMlist) {
@@ -132,29 +121,30 @@ public class Shooter extends Base {
         baseConfig.velocityMeasurementPeriod = SensorVelocityMeasPeriod.Period_100Ms;
         baseConfig.voltageCompSaturation = 10;
         baseConfig.initializationStrategy = SensorInitializationStrategy.BootToAbsolutePosition;
-        baseConfig.slot0.allowableClosedloopError = 50;
+        baseConfig.slot0.allowableClosedloopError = 20;
         baseConfig.slot0.closedLoopPeakOutput = 1.0;
         baseConfig.slot0.closedLoopPeriod = 20;
         baseConfig.slot0.integralZone = 100;
-
-        TalonFXConfiguration topConfig = baseConfig;
-        topConfig.slot0.kI = 0.0;
-        topConfig.slot0.kD = 0.0;
-        topConfig.slot0.kF = 0.158;
-        topConfig.slot0.kP = 0.042; // 0.03
-
-        TalonFXConfiguration botConfig = baseConfig;
-        botConfig.slot0.kI = 0.0;
-        botConfig.slot0.kD = 0.0;
-        botConfig.slot0.kF = 0.054;
-        botConfig.slot0.kP = 0.045; // 0.03
 
         m_shootTalonBot.configFactoryDefault(100);
         m_shootTalonTop.configFactoryDefault(100);
         m_turnTableTalon.configFactoryDefault(100);
 
-        m_shootTalonBot.configAllSettings(botConfig, 100);
-        m_shootTalonTop.configAllSettings(topConfig, 100);
+        // TalonFXConfiguration topConfig = baseConfig;
+        // top settings
+        baseConfig.slot0.kI = 0.0;
+        baseConfig.slot0.kD = 0.0;
+        baseConfig.slot0.kF = 0.049;
+        baseConfig.slot0.kP = 0.04; // 0.03
+        m_shootTalonTop.configAllSettings(baseConfig, 100);
+
+        // TalonFXConfiguration botConfig = baseConfig;
+        // bot settings
+        baseConfig.slot0.kI = 0.0;
+        baseConfig.slot0.kD = 0.0;
+        baseConfig.slot0.kF = 0.0515; // after distance tuning, was 0.051
+        baseConfig.slot0.kP = 0.033; // after distance tuning, was 0.03
+        m_shootTalonBot.configAllSettings(baseConfig, 100);
 
         m_shootTalonBot.setNeutralMode(NeutralMode.Coast);
         m_shootTalonTop.setNeutralMode(NeutralMode.Coast);
@@ -172,7 +162,7 @@ public class Shooter extends Base {
         turnTableConfig.peakOutputReverse = -.33;
         // 0.1 @ 10 degree error
         // (0.1 * 1023) / (deg error * ticks / degree)
-        turnTableConfig.slot0.kP = (1 * 1023) / (240 * kEncoderTicksPerDegree);
+        turnTableConfig.slot0.kP = (1 * 1023) / (230 * kEncoderTicksPerDegree);
         turnTableConfig.slot0.kI = 0;
         turnTableConfig.slot0.kD = 0;
         turnTableConfig.slot0.kF = 0;
@@ -216,8 +206,7 @@ public class Shooter extends Base {
         m_shootTalonBot.setStatusFramePeriod(StatusFrameEnhanced.Status_4_AinTempVbat, 255);
         m_shootTalonBot.setStatusFramePeriod(StatusFrameEnhanced.Status_10_MotionMagic, 255);
         m_shootTalonBot.setStatusFramePeriod(StatusFrameEnhanced.Status_12_Feedback1, 255);
-        // m_shootTalonBot.setStatusFramePeriod(StatusFrameEnhanced.Status_13_Base_PIDF0,
-        // 255);
+        m_shootTalonBot.setStatusFramePeriod(StatusFrameEnhanced.Status_13_Base_PIDF0, 40);
         m_shootTalonBot.setStatusFramePeriod(StatusFrameEnhanced.Status_14_Turn_PIDF1, 255);
         m_shootTalonBot.setStatusFramePeriod(StatusFrameEnhanced.Status_Brushless_Current, 100);
 
@@ -225,8 +214,7 @@ public class Shooter extends Base {
         m_shootTalonTop.setStatusFramePeriod(StatusFrameEnhanced.Status_4_AinTempVbat, 255);
         m_shootTalonTop.setStatusFramePeriod(StatusFrameEnhanced.Status_10_MotionMagic, 255);
         m_shootTalonTop.setStatusFramePeriod(StatusFrameEnhanced.Status_12_Feedback1, 255);
-        // m_shootTalonTop.setStatusFramePeriod(StatusFrameEnhanced.Status_13_Base_PIDF0,
-        // 255);
+        m_shootTalonTop.setStatusFramePeriod(StatusFrameEnhanced.Status_13_Base_PIDF0, 40);
         m_shootTalonTop.setStatusFramePeriod(StatusFrameEnhanced.Status_14_Turn_PIDF1, 255);
         m_shootTalonTop.setStatusFramePeriod(StatusFrameEnhanced.Status_Brushless_Current, 100);
 
@@ -279,8 +267,8 @@ public class Shooter extends Base {
     }
 
     // Shooting function with Distance. (NOT READY!!)
-    public void shootingDist(double distanceMeters) {
-        setSpeedsDist(distanceMeters);
+    public void shootingDist(double distanceFeet) {
+        setSpeedsDist(distanceFeet);
     }
 
     // Shooting function with RPM.
@@ -303,7 +291,6 @@ public class Shooter extends Base {
     public void setSpeedsDist(double distanceFeet) {
         setShootSpeeds(rpmToTicksPer100ms(topFeetToRPM(distanceFeet)),
                 rpmToTicksPer100ms(botFeetToRPM(distanceFeet)));
-
     }
 
     // Sets doubles to Talons.
@@ -354,12 +341,12 @@ public class Shooter extends Base {
                 - m_shootTalonBot.getSelectedSensorVelocity());
         boolean isBotFast = ticksPer100msToRPM(m_shootTalonBot.getSelectedSensorVelocity()) > 1300;
 
-        if (errorBotRPM < 80 && errorTopRPM < 80 && isBotFast) {
+        if (Math.abs(errorBotRPM) < 80 && Math.abs(errorTopRPM) < 80 && isBotFast) {
             m_isOKtoShootCounter++;
         } else {
             m_isOKtoShootCounter = 0;
         }
-        return m_isOKtoShootCounter > 7;
+        return m_isOKtoShootCounter > 3;
     }
 
     public boolean isSpinningFastEnoughForBarf() {
