@@ -36,6 +36,26 @@ public class OI {
     static public double getDriveY() {
         return xboxDrive.getLeftY();
     }
+    
+    static public double getDriveX() {
+        return xboxDrive.getLeftX();
+    }
+
+    // static public boolean getAforFaceTowards() {
+    //     return xboxDrive.getAButton();
+    // }
+
+    // static public boolean getBforFaceRight() {
+    //     return xboxDrive.getBButton();
+    // }
+
+    // static public boolean getYforFaceAway() {
+    //     return xboxDrive.getAButton();
+    // }
+
+    // static public boolean getXforFaceLeft() {
+    //     return xboxDrive.getAButton();
+    // }
 
     static public boolean getUnjam() {
         return xboxDrive.getRightBumper() && xboxDrive.getRightTriggerAxis() > 0.4;
@@ -43,10 +63,6 @@ public class OI {
 
     static public boolean getBarf() {
         return xboxDrive.getRightBumper() && xboxDrive.getLeftBumper();
-    }
-
-    static public double getDriveX() {
-        return xboxDrive.getLeftX();
     }
 
     static public double getDriveRot() {
@@ -70,11 +86,11 @@ public class OI {
     }
 
     static public boolean startIntake() {
-        return xboxDrive.getAButton();
+        return xboxDrive.getRightStickButtonPressed() || xboxDrive.getAButtonPressed();
     }
 
     static public boolean stopIntake() {
-        return xboxDrive.getBButton();
+        return xboxDrive.getLeftStickButton() || xboxDrive.getBButton();
     }
 
     static public boolean getLeftTurntable() {
@@ -88,27 +104,11 @@ public class OI {
 
     }
 
-    static public boolean getSolenoidReverse() {
-        return xboxClimb.getAButtonPressed();
-    }
-
-    static public boolean getSolenoidForward() {
-        return xboxClimb.getBButtonPressed();
-    }
-
-    static public boolean getArmsUp() {
-        return xboxClimb.getRightBumper();
-    }
-
-    static public boolean getArmsDown() {
-        return xboxClimb.getLeftBumper();
-    }
-
-    static public boolean getLeftBumperForShootingFar() {
+    static public boolean getLeftBumperForTapeShot() {
         return xboxDrive.getLeftBumper();
     }
 
-    static public boolean getRightBumperForShootingClose() {
+    static public boolean getRightBumperForWallShot() {
         return xboxDrive.getRightBumper();
     }
 
@@ -119,7 +119,7 @@ public class OI {
 
     static public boolean getShootingReleased() {
         boolean currentTrigger = xboxDrive.getRightTriggerAxis() > 0.4;
-        return xboxDrive.getRightBumperReleased() || xboxDrive.getLeftBumperReleased() || xboxDrive.getYButtonReleased()
+        return xboxDrive.getRightBumperReleased() || xboxDrive.getLeftBumperReleased()
         || (m_prevTrigger && (m_prevTrigger != currentTrigger));
     }
 
@@ -139,6 +139,22 @@ public class OI {
     static public boolean reverseIntake() {
         // return xboxIntakeTesting.getBButton();
         return false;
+    }
+    
+    static public boolean getSolenoidReverse() {
+        return xboxClimb.getAButtonPressed();
+    }
+
+    static public boolean getSolenoidForward() {
+        return xboxClimb.getBButtonPressed();
+    }
+
+    static public boolean getArmsUp() {
+        return xboxClimb.getRightBumper();
+    }
+
+    static public boolean getArmsDown() {
+        return xboxClimb.getLeftBumper();
     }
 
     static public boolean fortFiveTurnTable() {

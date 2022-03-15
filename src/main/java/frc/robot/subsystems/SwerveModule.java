@@ -44,7 +44,7 @@ public class SwerveModule implements Sendable {
         private static final double kTurningRotPerMotorRot = 1 / 10.0;
 
         private static final double kModuleMaxAngularVelocity = 2 * SwerveDrive.kMaxAngularSpeed;
-        private static final double kModuleMaxAngularAcceleration = 10 * Math.PI; // radians per second squared
+        private static final double kModuleMaxAngularAcceleration = 8 * Math.PI; // radians per second squared
 
         public final WPI_TalonFX m_driveMotor;
         public final WPI_TalonFX m_turningMotor;

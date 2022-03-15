@@ -4,12 +4,11 @@
 
 package frc.robot.subsystems;
 
-import java.nio.file.Path;
-
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.kauailabs.navx.frc.AHRS;
 
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -18,6 +17,7 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.SPI;
@@ -27,14 +27,17 @@ import frc.robot.RobotMap;
 
 /** Add your docs here. */
 public class SwerveDrive extends Base {
-    public static final double kMaxSpeed = 4.8; // 3 meters per second
+    public static final double kMaxSpeed = 4.3; // 3 meters per second
     public static final double kMaxAngularSpeed = 3 * Math.PI; // 1 rotation per second
 
-    private final SlewRateLimiter m_xSpeedLimiter = new SlewRateLimiter(8);
-    private final SlewRateLimiter m_ySpeedLimiter = new SlewRateLimiter(8);
-    private final SlewRateLimiter m_rotLimiter = new SlewRateLimiter(8);
+    private final SlewRateLimiter m_xSpeedLimiter = new SlewRateLimiter(7);
+    private final SlewRateLimiter m_ySpeedLimiter = new SlewRateLimiter(7);
+    private final SlewRateLimiter m_rotLimiter = new SlewRateLimiter(7);
+    
+    static ProfiledPIDController thetaController = new ProfiledPIDController(2.0, 0, 0,
+            new Constraints(SwerveDrive.kMaxAngularSpeed, 8 * SwerveDrive.kMaxAngularSpeed));
 
-    private final double inches15toMeters = Units.inchesToMeters(11);
+    private final double inches15toMeters = Units.inchesToMeters(10);
     private final Translation2d m_frontLeftLocation = new Translation2d(inches15toMeters, inches15toMeters);
     private final Translation2d m_frontRightLocation = new Translation2d(inches15toMeters, -inches15toMeters);
     private final Translation2d m_backLeftLocation = new Translation2d(-inches15toMeters, inches15toMeters);

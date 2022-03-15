@@ -16,8 +16,11 @@ import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
+import edu.wpi.first.wpilibj.shuffleboard.WidgetType;
 import frc.robot.RobotMap;
 import edu.wpi.first.wpilibj.Timer;
 
@@ -41,6 +44,10 @@ public class Intake extends Base {
     private final DigitalInput m_middleDIO = new DigitalInput(RobotMap.kIntake_MiddleDIO);
 
     ShuffleboardTab intakeMotortab = Shuffleboard.getTab("Intake Motors");
+
+    NetworkTableEntry ntColorFilterEnable = intakeMotortab.add("Color Filter Enable", true)
+            .withWidget(BuiltInWidgets.kToggleButton).getEntry();
+
     NetworkTableEntry ntIntakeSpeed = intakeMotortab.add("intake actual", 0.15).getEntry();
     NetworkTableEntry ntMoverSpeed = intakeMotortab.add("mover actual", 0.15).getEntry();
     NetworkTableEntry ntShooterLoaderSpeed = intakeMotortab.add("loader actual", 0.15).getEntry();
@@ -123,7 +130,7 @@ public class Intake extends Base {
                         m_state = STATE.B;
                     }
                 }
-        
+
                 if (stopIntake) {
                     // don't care
                 }
@@ -149,30 +156,30 @@ public class Intake extends Base {
                     m_state = STATE.C;
                 }
 
-                // switch (DriverStation.getAlliance()) {
-                //     case Blue:
-                //         if (m_colorSensor.isRedBallDetected()) {
+                switch (ntColorFilterEnable.getBoolean(true) ? DriverStation.getAlliance() : Alliance.Invalid) {
+                    case Blue:
+                        if (m_colorSensor.isRedBallDetected()) {
 
-                //             isChanging = true;
+                            isChanging = true;
 
-                //             m_timer.reset();
-                //             m_timer.start();
-                //             // turns back to normal (isChanging = False) after 1 seconds
-                //         }
-                //         break;
-                //     case Red:
-                //         if (m_colorSensor.isBlueBallDetected()) {
+                            m_timer.reset();
+                            m_timer.start();
+                            // turns back to normal (isChanging = False) after 1 seconds
+                        }
+                        break;
+                    case Red:
+                        if (m_colorSensor.isBlueBallDetected()) {
 
-                //             isChanging = true;
+                            isChanging = true;
 
-                //             m_timer.reset();
-                //             m_timer.start();
-                //             // turns back to normal (isChanging = False) after 1 seconds
-                //         }
-                //         break;
-                //     case Invalid:
-                //         break;
-                // }
+                            m_timer.reset();
+                            m_timer.start();
+                            // turns back to normal (isChanging = False) after 1 seconds
+                        }
+                        break;
+                    case Invalid:
+                        break;
+                }
 
                 break;
             case C:
@@ -198,29 +205,28 @@ public class Intake extends Base {
                     hasDetectedMiddle = true;
                 }
                 // SPIT BALL OUT IF BAD (WRONG COLOR) :))))))
-                // add spit out ball logic somewhere else
-                // switch (DriverStation.getAlliance()) {
-                //     case Blue:
-                //         if (m_colorSensor.isRedBallDetected()) {
-                //             isChanging = true;
-                //             m_timer.reset();
-                //             m_timer.start();
-                //             // turns back to normal (isChanging = False) after 1 seconds
-                //         }
-                //         break;
-                //     case Red:
-                //         if (m_colorSensor.isBlueBallDetected()) {
+                switch (ntColorFilterEnable.getBoolean(true) ? DriverStation.getAlliance() : Alliance.Invalid) {
+                    case Blue:
+                        if (m_colorSensor.isRedBallDetected()) {
+                            isChanging = true;
+                            m_timer.reset();
+                            m_timer.start();
+                            // turns back to normal (isChanging = False) after 1 seconds
+                        }
+                        break;
+                    case Red:
+                        if (m_colorSensor.isBlueBallDetected()) {
 
-                //             isChanging = true;
+                            isChanging = true;
 
-                //             m_timer.reset();
-                //             m_timer.start();
-                //             // turns back to normal (isChanging = False) after 1 seconds
-                //         }
-                //         break;
-                //     case Invalid:
-                //         break;
-                // }
+                            m_timer.reset();
+                            m_timer.start();
+                            // turns back to normal (isChanging = False) after 1 seconds
+                        }
+                        break;
+                    case Invalid:
+                        break;
+                }
                 break;
             case D:
                 // state changes to E after timer (inbetween state)
@@ -243,7 +249,7 @@ public class Intake extends Base {
                 if (stopIntake) {
                     m_state = STATE.A;
                 }
-                
+
                 break;
         }
 
@@ -375,7 +381,7 @@ public class Intake extends Base {
     }
 
     public boolean getBothBallsLoaded() {
-        if(isBallAtLoad() && isBallAtMiddle()) {
+        if (isBallAtLoad() && isBallAtMiddle()) {
             return true;
         }
 
