@@ -1,7 +1,5 @@
 package frc.robot.state;
 
-import org.photonvision.PhotonUtils;
-
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
@@ -65,15 +63,6 @@ public class RobotState {
         Translation2d tr = robotToCenter.getTranslation();
         Rotation2d rot = new Rotation2d(tr.getX(), tr.getY());
         return rot;
-    }
-
-
-    // not tested
-    public Translation2d getCameraToTargetPhoton(Rotation2d yaw, Rotation2d pitch) {
-        double distance = getCameraToTargetDistance(yaw, pitch);
-        double visionTargetOffsetFromCenter = Units.feetToMeters(2);
-        double cameraToCenterHub = distance + visionTargetOffsetFromCenter;
-        return PhotonUtils.estimateCameraToTargetTranslation(distance, yaw);
     }
 
     public double getCameraToTargetDistance(Rotation2d yaw, Rotation2d pitch) {
