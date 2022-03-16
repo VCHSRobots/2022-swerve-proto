@@ -35,10 +35,10 @@ public class Auto {
 
     Timer timer = new Timer();
     
-    NetworkTableEntry ntGoalX = Shuffleboard.getTab("super").add("Goal/X", 0).getEntry(); 
-    NetworkTableEntry ntGoalY = Shuffleboard.getTab("super").add("Goal/Y", 0).getEntry();
-    NetworkTableEntry ntGoalRot = Shuffleboard.getTab("super").add("Goal/Rot", 0).getEntry();
-    NetworkTableEntry ntGoalHolRot = Shuffleboard.getTab("super").add("Goal/Hol Rot", 0).getEntry();
+    // NetworkTableEntry ntGoalX = Shuffleboard.getTab("super").add("Goal/X", 0).getEntry(); 
+    // NetworkTableEntry ntGoalY = Shuffleboard.getTab("super").add("Goal/Y", 0).getEntry();
+    // NetworkTableEntry ntGoalRot = Shuffleboard.getTab("super").add("Goal/Rot", 0).getEntry();
+    // NetworkTableEntry ntGoalHolRot = Shuffleboard.getTab("super").add("Goal/Hol Rot", 0).getEntry();
 
     public Auto() {
         thetaController.enableContinuousInput(-Math.PI, Math.PI);
@@ -50,15 +50,15 @@ public class Auto {
         trajectory3 = PathPlanner.loadPath("auto3", 1, 1);
         
 
-        Shuffleboard.getTab("super").addNumber("timer", ()->timer.get());
+        // Shuffleboard.getTab("super").addNumber("timer", ()->timer.get());
 
     }
 
     public void robotInit() {
 
-        Shuffleboard.getTab("main").add("xController", xController);
-        Shuffleboard.getTab("main").add("yController", yController);
-        Shuffleboard.getTab("main").add("theta controller", thetaController);
+        // Shuffleboard.getTab("auto").add("xController", xController);
+        // Shuffleboard.getTab("auto").add("yController", yController);
+        // Shuffleboard.getTab("auto").add("theta controller", thetaController);
 
     }
 
@@ -108,10 +108,10 @@ public class Auto {
             goal = (PathPlannerState) m_chosenTrajectory.sample(timer.get());
             adjustedSpeeds = controller.calculate(currentPose, goal, goal.holonomicRotation);
         }
-        ntGoalX.setNumber(goal.poseMeters.getX());
-        ntGoalY.setNumber(goal.poseMeters.getY());
-        ntGoalRot.setNumber(goal.poseMeters.getRotation().getDegrees());
-        ntGoalHolRot.setNumber(goal.holonomicRotation.getDegrees());
+        // ntGoalX.setNumber(goal.poseMeters.getX());
+        // ntGoalY.setNumber(goal.poseMeters.getY());
+        // ntGoalRot.setNumber(goal.poseMeters.getRotation().getDegrees());
+        // ntGoalHolRot.setNumber(goal.holonomicRotation.getDegrees());
         return adjustedSpeeds;
     }
 

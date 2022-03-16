@@ -44,11 +44,11 @@ public class Robot extends TimedRobot {
   public void robotInit() {
     LiveWindow.disableAllTelemetry();
 
-    Shuffleboard.getTab("main").add("xbox", OI.xboxDrive);
+    Shuffleboard.getTab("computil").add("xbox", OI.xboxDrive);
 
-    Shuffleboard.getTab("main").addNumber("pose/x", ()->swerveDrive.getPose2d().getX());
-    Shuffleboard.getTab("main").addNumber("pose/y", ()->swerveDrive.getPose2d().getY());
-    Shuffleboard.getTab("main").addNumber("pose/theta", ()->swerveDrive.getPose2d().getRotation().getDegrees());
+    Shuffleboard.getTab("computil").addNumber("pose/x", ()->swerveDrive.getPose2d().getX());
+    Shuffleboard.getTab("computil").addNumber("pose/y", ()->swerveDrive.getPose2d().getY());
+    Shuffleboard.getTab("computil").addNumber("pose/theta", ()->swerveDrive.getPose2d().getRotation().getDegrees());
 
     // CameraServer.startAutomaticCapture();
 

@@ -9,11 +9,8 @@ import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
-import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 
 public class VisionShooter extends Base {
-
-    ShuffleboardTab visionBalltab = Shuffleboard.getTab("VisionShooter");
 
     NetworkTable table = NetworkTableInstance.getDefault().getTable("limelight");
     NetworkTableEntry ntTargetYaw = table.getEntry("tx");
@@ -30,7 +27,7 @@ public class VisionShooter extends Base {
 
     @Override
     public void robotInit() {
-        Shuffleboard.getTab("shooter debug").addNumber("Vision Yaw", () -> getYaw());
+        Shuffleboard.getTab("debug").addNumber("Vision Yaw", () -> getYaw());
     }
 
     public double calculateAngleError() {

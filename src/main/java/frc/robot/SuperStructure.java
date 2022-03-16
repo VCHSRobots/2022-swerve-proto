@@ -19,6 +19,7 @@ import frc.robot.subsystems.*;
 import com.pathplanner.lib.PathPlannerTrajectory.PathPlannerState;
 
 import edu.wpi.first.cameraserver.CameraServer;
+import edu.wpi.first.cscore.CvSource;
 import edu.wpi.first.cscore.UsbCamera;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -58,13 +59,14 @@ public class SuperStructure extends Base {
     private final PneumaticHub m_ph = new PneumaticHub();
 
     ShuffleboardTab ShootMotorTab = Shuffleboard.getTab("super");
+    ShuffleboardTab CompTab = Shuffleboard.getTab("computil");
     // shuffleboard: camera, is aimed, is ok to shoot, how many balls are in intake
 
-    NetworkTableEntry ntBotRPM = ShootMotorTab.add("Bot RPM", 1900).withPosition(3, 5).withSize(1, 1).getEntry();
-    NetworkTableEntry ntTopRPM = ShootMotorTab.add("Top RPM", 1900).withPosition(3, 4).withSize(1, 1).getEntry();
-    NetworkTableEntry ntFeetToRPM = ShootMotorTab.add("Feet To Top RPM", 17).withPosition(0, 0).withSize(1, 1)
+    NetworkTableEntry ntBotRPM = CompTab.add("Bot RPM", 1900).withPosition(3, 5).withSize(1, 1).getEntry();
+    NetworkTableEntry ntTopRPM = CompTab.add("Top RPM", 1900).withPosition(3, 4).withSize(1, 1).getEntry();
+    NetworkTableEntry ntFeetToRPM = CompTab.add("Feet To Top RPM", 17).withPosition(0, 0).withSize(1, 1)
             .getEntry();
-    NetworkTableEntry ntLEDOn = Shuffleboard.getTab("super").add("Limelight LED On", false)
+    NetworkTableEntry ntLEDOn = CompTab.add("Limelight LED On", false)
             .withWidget(BuiltInWidgets.kToggleButton).getEntry();
 
     public SuperStructure(SwerveDrive swerveDrive, Intake intake, Shooter shooter, Climber climber) {
@@ -95,35 +97,34 @@ public class SuperStructure extends Base {
         m_cameraThread.setDaemon(true);
         m_cameraThread.start();
 
-        Shuffleboard.getTab("super").add("swervedrive", m_SwerveDrive).withPosition(8, 1).withSize(2, 2);
-        Shuffleboard.getTab("super").add("compressor", m_phCompressor).withPosition(8, 3).withSize(2, 2);
-        Shuffleboard.getTab("super").addNumber("compressor/pressure", () -> m_phCompressor.getPressure());
+        Shuffleboard.getTab("super").add("compressor", m_phCompressor).withPosition(12, 0).withSize(1, 1);
+        Shuffleboard.getTab("super").addBoolean("IsOkToShoot", () -> m_Shooter.IsOkToShoot()).withPosition(0, 5);
 
-        Shuffleboard.getTab("super").addBoolean("IsOkToShoot", () -> m_Shooter.IsOkToShoot()).withPosition(4, 1);
-        // Shuffleboard.getTab("super").addNumber("Closed Loop Error Top", () ->
-        // m_Shooter.closedLoopErrorTop());
-        // Shuffleboard.getTab("super").addNumber("Closed Loop Error Bot", () ->
-        // m_Shooter.closedLoopErrorBot());
-        Shuffleboard.getTab("super").addNumber("Camera Based Distance", () -> m_VisionShooter.getDistance())
+        Shuffleboard.getTab("computil").addNumber("Camera Based Distance", () -> m_VisionShooter.getDistance())
                 .withPosition(6, 2).withSize(2, 1);
-        Shuffleboard.getTab("shooter debug").addNumber("Camera to Target Yaw", () -> m_VisionShooter.getYaw());
-        Shuffleboard.getTab("shooter debug").addNumber("Turret", () -> m_Shooter.getTurretAngleDegrees());
-        Shuffleboard.getTab("shooter debug").addNumber("Turret CANcoder", () -> m_Shooter.getTurretAngleCANcoder());
-        Shuffleboard.getTab("super").addNumber("current top RPM", () -> m_Shooter.getTopMotorRPM());
-        Shuffleboard.getTab("super").addNumber("Current bot RPM", () -> m_Shooter.getBotMotorRPM());
-        Shuffleboard.getTab("super").addBoolean("Is Ball in Loader", () -> m_Intake.isBallAtLoad());
-        Shuffleboard.getTab("super").addBoolean("Is Ball in Middle", () -> m_Intake.isBallAtMiddle());
+                Shuffleboard.getTab("computil").add("swervedrive", m_SwerveDrive).withPosition(8, 1).withSize(2, 2);
+
+        Shuffleboard.getTab("debug").addNumber("Camera to Target Yaw", () -> m_VisionShooter.getYaw());
+        Shuffleboard.getTab("debug").addNumber("Turret Angle", () -> m_Shooter.getTurretAngleDegrees());
+        Shuffleboard.getTab("debug").addNumber("Turret CANcoder", () -> m_Shooter.getTurretAngleCANcoder());
+        Shuffleboard.getTab("debug").addNumber("autoStep", () -> m_autoStep);
+
+        Shuffleboard.getTab("super").addNumber("current top RPM", () -> m_Shooter.getTopMotorRPM()).withPosition(0, 0);
+        Shuffleboard.getTab("super").addNumber("Current bot RPM", () -> m_Shooter.getBotMotorRPM()).withPosition(0, 1);
+        Shuffleboard.getTab("super").addBoolean("Is Ball in Loader", () -> m_Intake.isBallAtLoad()).withPosition(0, 2);
+        Shuffleboard.getTab("super").addBoolean("Is Ball in Middle", () -> m_Intake.isBallAtMiddle()).withPosition(0, 3);
         Shuffleboard.getTab("super").addBoolean("Both balls loaded",
-                () -> m_Intake.isBallAtMiddle() && m_Intake.isBallAtLoad());
-        Shuffleboard.getTab("super").add(CameraServer.putVideo("mmal_service_16.1-output", 2000, 3000));
-        Shuffleboard.getTab("super").addNumber("pressure", () -> m_phCompressor.getPressure());
-        Shuffleboard.getTab("super").addNumber("autoStep", () -> m_autoStep);
+                () -> m_Intake.isBallAtMiddle() && m_Intake.isBallAtLoad()).withPosition(0, 4);
+        Shuffleboard.getTab("super").add(CameraServer.putVideo("limelight", 320, 240)).withPosition(6, 1).withSize(5, 6);
+
+        Shuffleboard.getTab("super").add(CameraServer.putVideo("Usb Camera 0", 320, 240)).withPosition(1, 1).withSize(5, 6);
+        Shuffleboard.getTab("super").addNumber("pressure", () -> m_phCompressor.getPressure()).withPosition(12, 2);
 
         // auto chooser
         m_chooser.setDefaultOption(kDefaultAuto, kDefaultAuto);
         m_chooser.addOption(kCustomAuto, kCustomAuto);
         m_chooser.addOption(kCustomAuto1, kCustomAuto1);
-        Shuffleboard.getTab("Auto").add("Auto Choose", m_chooser);
+        Shuffleboard.getTab("super").add("Auto Choose", m_chooser).withSize(1, 1).withPosition(0, 6);
 
         m_state = new RobotState(m_SwerveDrive.getPose2d(), Rotation2d.fromDegrees(m_Shooter.getTurretAngleDegrees()));
     }
