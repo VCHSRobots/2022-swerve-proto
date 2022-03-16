@@ -18,6 +18,7 @@ import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.networktables.NetworkTableEntry;
+import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -67,13 +68,17 @@ public class Shooter extends Base {
 
     public Shooter() {
         distanceRPMPoint[] distanceRPMlist = {
-                new distanceRPMPoint(8, 2600, 2350),
-                new distanceRPMPoint(9, 2800, 2400),
-                new distanceRPMPoint(10, 3000, 2400),
-                new distanceRPMPoint(11, 3125, 2500),
-                new distanceRPMPoint(12, 3200, 2500), 
-                new distanceRPMPoint(13, 3400, 2550),
-                new distanceRPMPoint(14.2, 3600, 2600)
+                new distanceRPMPoint(8, 2500, 2350),
+                new distanceRPMPoint(8.5, 2550, 2370),
+                new distanceRPMPoint(9, 2650, 2400),
+                new distanceRPMPoint(10, 2680, 2400),
+                new distanceRPMPoint(11, 2800, 2500),
+                new distanceRPMPoint(11.5, 2850, 2590),
+                new distanceRPMPoint(12, 2900, 2630),
+                new distanceRPMPoint(12.5, 2960, 2680),
+                new distanceRPMPoint(13, 3050, 2750),
+                new distanceRPMPoint(14, 3130, 2830),
+                new distanceRPMPoint(17, 3800, 2960)
         };
 
         for (distanceRPMPoint point : distanceRPMlist) {
@@ -96,12 +101,14 @@ public class Shooter extends Base {
     // END SHUFFLEBOARD HELPERS
 
     public void robotInit() {
-        ShootMotorTab.addNumber("Actual Top RPM", () -> getTopMotorRPM()).withPosition(5, 2);
-        ShootMotorTab.addNumber("Actual Bot RPM", () -> getBotMotorRPM()).withPosition(5, 3);
-        // ShootMotorTab.addBoolean("Is Ok to Shoot", () ->
-        // IsOkToShoot()).withPosition(4, 1);
-        ShootMotorTab.addNumber("Turn Table Position", () -> m_turnTableTalon.getSelectedSensorPosition());
-        // ShootMotorTab.addBoolean("Has Been Zero'ed", () -> m_hasBeenCalibrated);
+        ShootMotorTab.addNumber("Actual Top RPM", () -> getTopMotorRPM()).withPosition(4, 1).withSize(4, 3)
+                .withWidget(BuiltInWidgets.kGraph);
+        ShootMotorTab.addNumber("Actual Bot RPM", () -> getBotMotorRPM()).withPosition(4, 4).withSize(4, 3)
+                .withWidget(BuiltInWidgets.kGraph);
+        ShootMotorTab.addNumber("Top Setpoint", () -> ticksPer100msToRPM(m_shootTalonTop.getClosedLoopTarget()))
+                .withWidget(BuiltInWidgets.kGraph);
+        ShootMotorTab.addNumber("Bot Setpoint", () -> ticksPer100msToRPM(m_shootTalonBot.getClosedLoopTarget()))
+                .withWidget(BuiltInWidgets.kGraph);
 
         TalonFXConfiguration baseConfig = new TalonFXConfiguration();
         baseConfig.closedloopRamp = 0.0;
@@ -135,16 +142,16 @@ public class Shooter extends Base {
         // top settings
         baseConfig.slot0.kI = 0.0;
         baseConfig.slot0.kD = 0.0;
-        baseConfig.slot0.kF = 0.0495;
-        baseConfig.slot0.kP = 0.038; // 0.03
+        baseConfig.slot0.kF = 0.050;
+        baseConfig.slot0.kP = 0.025; // 0.03
         m_shootTalonTop.configAllSettings(baseConfig, 100);
 
         // TalonFXConfiguration botConfig = baseConfig;
         // bot settings
         baseConfig.slot0.kI = 0.0;
         baseConfig.slot0.kD = 0.0;
-        baseConfig.slot0.kF = 0.0515; // after distance tuning, was 0.051
-        baseConfig.slot0.kP = 0.031; // after distance tuning, was 0.03
+        baseConfig.slot0.kF = 0.053; // after distance tuning, was 0.051
+        baseConfig.slot0.kP = 0.025; // after distance tuning, was 0.03
         m_shootTalonBot.configAllSettings(baseConfig, 100);
 
         m_shootTalonBot.setNeutralMode(NeutralMode.Coast);
@@ -344,7 +351,7 @@ public class Shooter extends Base {
                 - m_shootTalonBot.getSelectedSensorVelocity());
         boolean isBotFast = ticksPer100msToRPM(m_shootTalonBot.getSelectedSensorVelocity()) > 1300;
 
-        if (Math.abs(errorBotRPM) < 125 && Math.abs(errorTopRPM) < 125 && isBotFast) {
+        if (Math.abs(errorBotRPM) < 110 && Math.abs(errorTopRPM) < 125 && isBotFast) {
             m_isOKtoShootCounter++;
         } else {
             m_isOKtoShootCounter = 0;
@@ -397,11 +404,11 @@ public class Shooter extends Base {
 
         double targetAngle = getTurretAngleDegrees() + angleYawDegreesOffset;
         // if (m_isTurningAround) {
-        //     if (Math.abs(targetAngle - m_targetAngle) < 17) {
-        //         m_isTurningAround = false;
-        //     } else {
-        //         targetAngle = m_targetAngle;
-        //     }
+        // if (Math.abs(targetAngle - m_targetAngle) < 17) {
+        // m_isTurningAround = false;
+        // } else {
+        // targetAngle = m_targetAngle;
+        // }
         // }
         setTurretAngle(targetAngle);
     }

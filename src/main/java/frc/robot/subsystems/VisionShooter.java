@@ -26,22 +26,23 @@ public class VisionShooter extends Base {
     private boolean hasLastTarget = false;
     private int m_lostCount = 0;
     private int m_MAXLOSTCOUNT = 7;
-    private double m_max_angle_change_in_20ms=10.0;
+    private double m_max_angle_change_in_20ms = 10.0;
 
     @Override
     public void robotInit() {
-        Shuffleboard.getTab("shooter debug").addNumber("Vision Yaw", ()-> getYaw());
+        Shuffleboard.getTab("shooter debug").addNumber("Vision Yaw", () -> getYaw());
     }
 
     public double calculateAngleError() {
         /*
          * vision filter:
          * 1. prevent jumping between two different objects
-         *    check the difference between the current target and last target.
-         *    if too different, consider it as losing the original target. (see next filter case)
+         * check the difference between the current target and last target.
+         * if too different, consider it as losing the original target. (see next filter
+         * case)
          * 2. work through losing target for a few times.
-         *    if there is no targets for N consecutive times, stop;
-         *    if there is no target less than N times, keep going toward the orginal target
+         * if there is no targets for N consecutive times, stop;
+         * if there is no target less than N times, keep going toward the orginal target
          */
         double newTx;
         double newTy;
@@ -96,7 +97,7 @@ public class VisionShooter extends Base {
         double cameraHeight = 2.6667; // height of camera on robot
         double targetHeight = 8.46833; // height of retroreflective tape in feet
 
-        double pitch=getPitch();
+        double pitch = getPitch();
         /*
          * from internet
          * distance = delta_height / (tan(cameraAngle + Pitch) * cos(Yaw))
@@ -106,6 +107,18 @@ public class VisionShooter extends Base {
         distanceFeet = visionTargetOffsetFromCenter + (targetHeight - cameraHeight)
                 / Math.tan(Units.degreesToRadians(cameraAngle + pitch));
         return distanceFeet;
+    }
+
+    public void LEDoff() {
+        NetworkTableInstance.getDefault().getTable("limelight").getEntry("ledMode").setNumber(1);
+    }
+
+    public void LEDon() {
+        NetworkTableInstance.getDefault().getTable("limelight").getEntry("ledMode").setNumber(3);
+    }
+
+    public void LEDBlink() {
+        NetworkTableInstance.getDefault().getTable("limelight").getEntry("ledMode").setNumber(2);
     }
 
 }

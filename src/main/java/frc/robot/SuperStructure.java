@@ -8,6 +8,7 @@ import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.PneumaticHub;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -36,7 +37,7 @@ public class SuperStructure extends Base {
     private Intake m_Intake;
     private Shooter m_Shooter;
     private Climber m_Climber;
-    private final VisionBall m_VisionBall;
+    // private final VisionBall m_VisionBall;
     private final VisionShooter m_VisionShooter = new VisionShooter();
 
     private int m_zeroBallCounter = 0;
@@ -63,6 +64,8 @@ public class SuperStructure extends Base {
     NetworkTableEntry ntTopRPM = ShootMotorTab.add("Top RPM", 1900).withPosition(3, 4).withSize(1, 1).getEntry();
     NetworkTableEntry ntFeetToRPM = ShootMotorTab.add("Feet To Top RPM", 17).withPosition(0, 0).withSize(1, 1)
             .getEntry();
+    NetworkTableEntry ntLEDOn = Shuffleboard.getTab("super").add("Limelight LED On", false)
+            .withWidget(BuiltInWidgets.kToggleButton).getEntry();
 
     public SuperStructure(SwerveDrive swerveDrive, Intake intake, Shooter shooter, Climber climber) {
 
@@ -70,11 +73,9 @@ public class SuperStructure extends Base {
         m_Intake = intake;
         m_Shooter = shooter;
         m_Climber = climber;
-        m_VisionBall = new VisionBall();
+        // m_VisionBall = new VisionBall();
 
     }
-
-    private int pastAngle;
 
     @Override
     public void robotInit() {
@@ -84,7 +85,7 @@ public class SuperStructure extends Base {
         m_Shooter.robotInit();
         m_Climber.robotInit();
         m_auto.robotInit();
-        m_VisionBall.robotInit();
+        // m_VisionBall.robotInit();
         m_VisionShooter.robotInit();
 
         m_cameraThread = new Thread(
@@ -116,7 +117,7 @@ public class SuperStructure extends Base {
                 () -> m_Intake.isBallAtMiddle() && m_Intake.isBallAtLoad());
         Shuffleboard.getTab("super").add(CameraServer.putVideo("mmal_service_16.1-output", 2000, 3000));
         Shuffleboard.getTab("super").addNumber("pressure", () -> m_phCompressor.getPressure());
-        Shuffleboard.getTab("super").addNumber("autoStep", ()-> m_autoStep);
+        Shuffleboard.getTab("super").addNumber("autoStep", () -> m_autoStep);
 
         // auto chooser
         m_chooser.setDefaultOption(kDefaultAuto, kDefaultAuto);
@@ -145,6 +146,8 @@ public class SuperStructure extends Base {
         m_Intake.turnOffLoadShooter();
         m_Climber.hooksReverse();
         m_shootingDistanceFirstRun = true;
+        m_VisionShooter.LEDon();
+
     }
 
     @Override
@@ -161,7 +164,8 @@ public class SuperStructure extends Base {
         // DRIVING //
         // VISION GET BALL
         if (OI.getVisionBallEngaged()) {
-            ChassisSpeeds speeds = m_VisionBall.followBall();
+            // ChassisSpeeds speeds = m_VisionBall.followBall();
+            ChassisSpeeds speeds = new ChassisSpeeds();
             m_SwerveDrive.driveFromChassisSpeeds(speeds);
         } else {
             // XBOX DRIVING CODE
@@ -317,6 +321,7 @@ public class SuperStructure extends Base {
         m_auto.autonomousInit();
         m_Intake.autonomousInit();
         m_Climber.hooksReverse();
+        m_VisionShooter.LEDon();
 
         m_timestamp = Timer.getFPGATimestamp();
 
@@ -387,14 +392,13 @@ public class SuperStructure extends Base {
         } else if (m_autoStep == 1) {
             // wait until all balls thru shooter
             // if (m_Timer.advanceIfElapsed(0.1)) {
-            //     m_autoStep = 2;
-            //     m_auto.setupAuto1p1();
+            // m_autoStep = 2;
+            // m_auto.setupAuto1p1();
             // }
             // m_Shooter.shootingDist(m_VisionShooter.getDistance());
             // if (m_Shooter.IsOkToShoot()) {
-            //     m_Intake.loadShooter();
+            // m_Intake.loadShooter();
             // }
-    
 
             // INCREASE TIME THAT SHOOTER IS RUNNING BEFORE BEGINNING NEXT STEP IN AUTO (+1
             // to 2 sec)
@@ -421,8 +425,9 @@ public class SuperStructure extends Base {
 
         } else if (m_autoStep == 3) {
             // should have picked up 2 balls, or wait 1 second
-            // if (m_Intake.getNumberOfBallsHolding() > 1 || m_Timer.advanceIfElapsed(0.05)) {
-            //     m_autoStep = 4;
+            // if (m_Intake.getNumberOfBallsHolding() > 1 || m_Timer.advanceIfElapsed(0.05))
+            // {
+            // m_autoStep = 4;
             // }
             // m_Shooter.warmUp();
             // m_Intake.turnOn();
@@ -445,7 +450,7 @@ public class SuperStructure extends Base {
 
             // if (m_Shooter.IsOkToShoot() && Math.abs(targetAngle -
             // m_Shooter.getTurretAngleDegrees()) < 5) {
-            if (m_Shooter.IsOkToShoot() && Math.abs(m_VisionShooter.getYaw()) < 5) {
+            if (m_Shooter.IsOkToShoot() && Math.abs(m_VisionShooter.getYaw()) < 3) {
                 m_Intake.loadShooter();
             } else {
                 m_Intake.turnOffLoadShooter();
@@ -496,8 +501,9 @@ public class SuperStructure extends Base {
 
         } else if (m_autoStep == 7) {
             // picked up balls and stopped traj
-            // if (m_Intake.getNumberOfBallsHolding() > 1 || m_Timer.advanceIfElapsed(0.05)) {
-            //     m_autoStep = 8;
+            // if (m_Intake.getNumberOfBallsHolding() > 1 || m_Timer.advanceIfElapsed(0.05))
+            // {
+            // m_autoStep = 8;
             // }
             // m_Intake.turnOn();
             // m_Shooter.warmUp();
@@ -507,7 +513,7 @@ public class SuperStructure extends Base {
             // double targetAngle = 185;
             // m_Shooter.setTurretAngle(targetAngle);
             m_Shooter.aimTurret(m_VisionShooter.getYaw());
-            if (m_shootingDistanceFirstRun) {
+            if (m_shootingDistanceFirstRun && m_VisionShooter.getYaw() < 3) {
                 m_shootingDistance = m_VisionShooter.getDistance();
                 m_shootingDistanceFirstRun = false;
             }
@@ -515,7 +521,7 @@ public class SuperStructure extends Base {
 
             // double angle = m_Shooter.getTurretAngleDegrees();
             // if (angle > 0) {
-            //     angle = angle - 360;
+            // angle = angle - 360;
             // }
             // if (angle < 0) {
             // angle += 360;
@@ -524,7 +530,7 @@ public class SuperStructure extends Base {
             // m_Shooter.shootingRPM(2650, 2590);
 
             // if (m_Shooter.IsOkToShoot() && Math.abs(targetAngle - angle) < 8) {
-            if (m_Shooter.IsOkToShoot() && Math.abs(m_VisionShooter.getYaw()) < 4) {
+            if (m_Shooter.IsOkToShoot() && Math.abs(m_VisionShooter.getYaw()) < 3) {
                 m_Intake.loadShooter();
             } else {
                 m_Intake.turnOffLoadShooter();
@@ -700,12 +706,23 @@ public class SuperStructure extends Base {
     @Override
     public void disabledInit() {
         m_phCompressor.disable();
+        // m_VisionShooter.LEDoff();
+    }
+
+    @Override
+    public void disabledPeriodic() {
+        if (ntLEDOn.getBoolean(true)) {
+            m_VisionShooter.LEDon();
+        } else {
+            m_VisionShooter.LEDoff();
+        }
     }
 
     @Override
     public void testInit() {
         m_phCompressor.enableAnalog(90, 110);
         m_Shooter.TurnTable(false, false);
+        m_VisionShooter.LEDon();
     }
 
     @Override

@@ -35,7 +35,7 @@ public class SwerveDrive extends Base {
     private final SlewRateLimiter m_rotLimiter = new SlewRateLimiter(7);
     
     static ProfiledPIDController thetaController = new ProfiledPIDController(2.0, 0, 0,
-            new Constraints(SwerveDrive.kMaxAngularSpeed, 8 * SwerveDrive.kMaxAngularSpeed));
+            new Constraints(SwerveDrive.kMaxAngularSpeed, 12 * SwerveDrive.kMaxAngularSpeed));
 
     private final double inches15toMeters = Units.inchesToMeters(10);
     private final Translation2d m_frontLeftLocation = new Translation2d(inches15toMeters, inches15toMeters);
@@ -106,6 +106,8 @@ public class SwerveDrive extends Base {
             RobotMap.kDrive_BackRightTurn_TalonFX, RobotMap.kDrive_BackRightEncoder,
             backRightoffset, 0);
 
+        thetaController.enableContinuousInput(-Math.PI, Math.PI);
+
     }
 
     // Robot Init
@@ -142,6 +144,11 @@ public class SwerveDrive extends Base {
         m_frontRight.stop();
         m_backLeft.stop();
         m_backRight.stop();
+    }
+
+    public void driveAndTurnToAngle(double xSpeed, double ySpeed, double angle) {
+        double rot = thetaController.calculate(getPose2d().getRotation().getRadians(), angle);
+        drive(xSpeed, ySpeed, rot, true);
     }
 
     /**
@@ -229,7 +236,7 @@ public class SwerveDrive extends Base {
         // positive value when we pull to the left (remember, CCW is positive in
         // mathematics). Xbox controllers return positive values when you pull to
         // the right by default.
-        final var rot = -m_rotLimiter.calculate(MathUtil.applyDeadband(xboxRot, Constants.xboxDeadband))
+        final var rot = -m_rotLimiter.calculate(MathUtil.applyDeadband(xboxRot, 0.05))
                 * SwerveDrive.kMaxAngularSpeed;
 
         final var centerOfRotationMeters = frontLeftCOR ? m_frontLeftLocation
@@ -247,7 +254,9 @@ public class SwerveDrive extends Base {
         }
         if (resetOdometry) {
             zeroHeading();
-            m_odometry.resetPosition(new Pose2d(new Translation2d(6, 4.75), new Rotation2d()), getGyroRotation2d());
+            Translation2d againstRightWall =  new Translation2d(7.75, 0.5);
+            Translation2d insideTopParallelEdge = new Translation2d(6, 4.75);
+            m_odometry.resetPosition(new Pose2d(againstRightWall, new Rotation2d()), getGyroRotation2d());
         }
         updateOdometry();
     }
