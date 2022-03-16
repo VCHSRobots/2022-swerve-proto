@@ -4,13 +4,11 @@
 
 package frc.robot.subsystems;
 
-import java.nio.file.Path;
-
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.kauailabs.navx.frc.AHRS;
-import com.pathplanner.lib.PathPlannerTrajectory.PathPlannerState;
 
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -19,25 +17,27 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
-import frc.robot.OI;
 import frc.robot.RobotMap;
 
 /** Add your docs here. */
 public class SwerveDrive extends Base {
-    public static final double kMaxSpeed = 3.5; // 3 meters per second
+    public static final double kMaxSpeed = 4.3; // 3 meters per second
     public static final double kMaxAngularSpeed = 3 * Math.PI; // 1 rotation per second
 
     private final SlewRateLimiter m_xSpeedLimiter = new SlewRateLimiter(7);
     private final SlewRateLimiter m_ySpeedLimiter = new SlewRateLimiter(7);
     private final SlewRateLimiter m_rotLimiter = new SlewRateLimiter(7);
+    
+    static ProfiledPIDController thetaController = new ProfiledPIDController(2.0, 0, 0,
+            new Constraints(SwerveDrive.kMaxAngularSpeed, 12 * SwerveDrive.kMaxAngularSpeed));
 
-    private final double inches15toMeters = Units.inchesToMeters(11);
+    private final double inches15toMeters = Units.inchesToMeters(10);
     private final Translation2d m_frontLeftLocation = new Translation2d(inches15toMeters, inches15toMeters);
     private final Translation2d m_frontRightLocation = new Translation2d(inches15toMeters, -inches15toMeters);
     private final Translation2d m_backLeftLocation = new Translation2d(-inches15toMeters, inches15toMeters);
@@ -106,6 +106,8 @@ public class SwerveDrive extends Base {
             RobotMap.kDrive_BackRightTurn_TalonFX, RobotMap.kDrive_BackRightEncoder,
             backRightoffset, 0);
 
+        thetaController.enableContinuousInput(-Math.PI, Math.PI);
+
     }
 
     // Robot Init
@@ -142,6 +144,11 @@ public class SwerveDrive extends Base {
         m_frontRight.stop();
         m_backLeft.stop();
         m_backRight.stop();
+    }
+
+    public void driveAndTurnToAngle(double xSpeed, double ySpeed, double angle) {
+        double rot = thetaController.calculate(getPose2d().getRotation().getRadians(), angle);
+        drive(xSpeed, ySpeed, rot, true);
     }
 
     /**
@@ -229,7 +236,7 @@ public class SwerveDrive extends Base {
         // positive value when we pull to the left (remember, CCW is positive in
         // mathematics). Xbox controllers return positive values when you pull to
         // the right by default.
-        final var rot = -m_rotLimiter.calculate(MathUtil.applyDeadband(xboxRot, Constants.xboxDeadband))
+        final var rot = -m_rotLimiter.calculate(MathUtil.applyDeadband(xboxRot, 0.05))
                 * SwerveDrive.kMaxAngularSpeed;
 
         final var centerOfRotationMeters = frontLeftCOR ? m_frontLeftLocation
@@ -247,7 +254,9 @@ public class SwerveDrive extends Base {
         }
         if (resetOdometry) {
             zeroHeading();
-            m_odometry.resetPosition(new Pose2d(), getGyroRotation2d());
+            Translation2d againstRightWall =  new Translation2d(7.75, 0.5);
+            Translation2d insideTopParallelEdge = new Translation2d(6, 4.75);
+            m_odometry.resetPosition(new Pose2d(againstRightWall, new Rotation2d()), getGyroRotation2d());
         }
         updateOdometry();
     }

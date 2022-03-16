@@ -8,7 +8,7 @@ package frc.robot;
 public class OI {
     static xbox4415 xboxDrive = new xbox4415(0);
     static xbox4415 xboxClimb = new xbox4415(1);
-    // static xbox4415 xboxShooterTesting = new xbox4415(2);
+    static xbox4415 xboxShooterTesting = new xbox4415(2);
     // static xbox4415 xboxIntakeTesting = new xbox4415(3);
     // static xbox4415 xbox_drive_test = new xbox4415(4);
     static boolean m_prevTrigger = false;
@@ -36,6 +36,26 @@ public class OI {
     static public double getDriveY() {
         return xboxDrive.getLeftY();
     }
+    
+    static public double getDriveX() {
+        return xboxDrive.getLeftX();
+    }
+
+    // static public boolean getAforFaceTowards() {
+    //     return xboxDrive.getAButton();
+    // }
+
+    // static public boolean getBforFaceRight() {
+    //     return xboxDrive.getBButton();
+    // }
+
+    // static public boolean getYforFaceAway() {
+    //     return xboxDrive.getAButton();
+    // }
+
+    // static public boolean getXforFaceLeft() {
+    //     return xboxDrive.getAButton();
+    // }
 
     static public boolean getUnjam() {
         return xboxDrive.getRightBumper() && xboxDrive.getRightTriggerAxis() > 0.4;
@@ -45,12 +65,12 @@ public class OI {
         return xboxDrive.getRightBumper() && xboxDrive.getLeftBumper();
     }
 
-    static public double getDriveX() {
-        return xboxDrive.getLeftX();
-    }
-
     static public double getDriveRot() {
         return Math.copySign(Math.pow(xboxDrive.getRightX(), 2), xboxDrive.getRightX());
+    }
+
+    static public boolean aimWithPose() {
+        return xboxDrive.getPOV() == 0;
     }
 
     static public boolean shouldSetFieldRelative() {
@@ -66,11 +86,11 @@ public class OI {
     }
 
     static public boolean startIntake() {
-        return xboxDrive.getAButton();
+        return xboxDrive.getRightStickButtonPressed() || xboxDrive.getAButtonPressed();
     }
 
     static public boolean stopIntake() {
-        return xboxDrive.getBButton();
+        return xboxDrive.getLeftStickButton() || xboxDrive.getBButton();
     }
 
     static public boolean getLeftTurntable() {
@@ -84,27 +104,11 @@ public class OI {
 
     }
 
-    static public boolean getSolenoidReverse() {
-        return xboxClimb.getAButtonPressed();
-    }
-
-    static public boolean getSolenoidForward() {
-        return xboxClimb.getBButtonPressed();
-    }
-
-    static public boolean getArmsUp() {
-        return xboxClimb.getRightBumper();
-    }
-
-    static public boolean getArmsDown() {
-        return xboxClimb.getLeftBumper();
-    }
-
-    static public boolean getLeftBumperForShootingFar() {
+    static public boolean getLeftBumperForTapeShot() {
         return xboxDrive.getLeftBumper();
     }
 
-    static public boolean getRightBumperForShootingClose() {
+    static public boolean getRightBumperForWallShot() {
         return xboxDrive.getRightBumper();
     }
 
@@ -115,7 +119,7 @@ public class OI {
 
     static public boolean getShootingReleased() {
         boolean currentTrigger = xboxDrive.getRightTriggerAxis() > 0.4;
-        return xboxDrive.getRightBumperReleased() || xboxDrive.getLeftBumperReleased() || xboxDrive.getYButtonReleased()
+        return xboxDrive.getRightBumperReleased() || xboxDrive.getLeftBumperReleased()
         || (m_prevTrigger && (m_prevTrigger != currentTrigger));
     }
 
@@ -136,25 +140,50 @@ public class OI {
         // return xboxIntakeTesting.getBButton();
         return false;
     }
+    
+    static public boolean getSolenoidReverse() {
+        return xboxClimb.getAButtonPressed();
+    }
+
+    static public boolean getSolenoidForward() {
+        return xboxClimb.getBButtonPressed();
+    }
+
+    static public boolean getArmsUp() {
+        return xboxClimb.getRightBumper();
+    }
+
+    static public boolean getArmsDown() {
+        return xboxClimb.getLeftBumper();
+    }
 
     static public boolean fortFiveTurnTable() {
-        // return xboxShooterTesting.getAButton();
-        return false;
+        return xboxShooterTesting.getAButton();
+        // return false;
     }
 
     static public boolean hundredTurnTable() {
-        // return xboxShooterTesting.getXButton();
-        return false;
+        return xboxShooterTesting.getXButton();
+        // return false;
     }
 
     static public boolean negFortFiveTurnTable() {
-        // return xboxShooterTesting.getYButton();
-        return false;
+        return xboxShooterTesting.getYButton();
+        // return false;
     }
 
     static public boolean negHundredTurnTable() {
-        // return xboxShooterTesting.getBButton();
-        return false;
+        return xboxShooterTesting.getBButton();
+        // return false;
+    }
+
+    static public boolean turntableVoltage() {
+        return xboxShooterTesting.getRightBumper();
+    }
+
+    static public boolean aimTurretTest() {
+        return xboxShooterTesting.getLeftTriggerAxis() > 0.3;
+        // return false;
     }
 }
 
