@@ -43,18 +43,18 @@ public class Intake extends Base {
     private final DigitalInput m_loadDIO = new DigitalInput(RobotMap.kIntake_LoadDIO);
     private final DigitalInput m_middleDIO = new DigitalInput(RobotMap.kIntake_MiddleDIO);
 
-    ShuffleboardTab intakeMotortab = Shuffleboard.getTab("Intake Motors");
+    ShuffleboardTab debugTab = Shuffleboard.getTab("computil");
 
-    NetworkTableEntry ntColorFilterEnable = intakeMotortab.add("Color Filter Enable", true)
-            .withWidget(BuiltInWidgets.kToggleButton).getEntry();
+    NetworkTableEntry ntColorFilterEnable = debugTab.add("Color Filter Enable", true)
+            .withWidget(BuiltInWidgets.kToggleButton).withPosition(0, 1).getEntry();
 
-    NetworkTableEntry ntIntakeSpeed = intakeMotortab.add("intake actual", 0.15).getEntry();
-    NetworkTableEntry ntMoverSpeed = intakeMotortab.add("mover actual", 0.15).getEntry();
-    NetworkTableEntry ntShooterLoaderSpeed = intakeMotortab.add("loader actual", 0.15).getEntry();
+    // NetworkTableEntry ntIntakeSpeed = debugTab.add("intake actual", 0.15).getEntry();
+    // NetworkTableEntry ntMoverSpeed = debugTab.add("mover actual", 0.15).getEntry();
+    // NetworkTableEntry ntShooterLoaderSpeed = debugTab.add("loader actual", 0.15).getEntry();
 
-    NetworkTableEntry ntMotorSpeed = intakeMotortab.add("Intake percent out", 0.3).getEntry();
-    NetworkTableEntry ntBTPercentOut = intakeMotortab.add("BT percent out", 0.5).getEntry();
-    NetworkTableEntry ntLoaderPercentOut = intakeMotortab.add("loader percent out", 0.5).getEntry();
+    // NetworkTableEntry ntMotorSpeed = debugTab.add("Intake percent out", 0.3).getEntry();
+    // NetworkTableEntry ntBTPercentOut = debugTab.add("BT percent out", 0.5).getEntry();
+    // NetworkTableEntry ntLoaderPercentOut = debugTab.add("loader percent out", 0.5).getEntry();
     private final double kIntakeOut = 0.9;
     private final double kBTOut = 0.8;
     private final double kLoaderOut = 0.5;
@@ -84,14 +84,14 @@ public class Intake extends Base {
         m_shooterLoader.setNeutralMode(NeutralMode.Brake);
 
         // add to shuffleboard
-        intakeMotortab.addBoolean("Ball at Middle", () -> !m_middleDIO.get());
-        intakeMotortab.addBoolean("Ball at Load", () -> !m_loadDIO.get());
-        intakeMotortab.addNumber("Intake Vel", () -> m_intake.getSelectedSensorVelocity());
-        intakeMotortab.addNumber("Middle Vel", () -> m_mover.getSelectedSensorVelocity());
-        intakeMotortab.addNumber("Loader Vel", () -> m_shooterLoader.getSelectedSensorVelocity());
-        intakeMotortab.addNumber("Intake Cur", () -> m_intake.getSupplyCurrent());
-        intakeMotortab.addNumber("Middle Cur", () -> m_mover.getSupplyCurrent());
-        intakeMotortab.addNumber("Loader Cur", () -> m_shooterLoader.getSupplyCurrent());
+        // debugTab.addBoolean("Ball at Middle", () -> !m_middleDIO.get());
+        // debugTab.addBoolean("Ball at Load", () -> !m_loadDIO.get());
+        // debugTab.addNumber("Intake Vel", () -> m_intake.getSelectedSensorVelocity());
+        // debugTab.addNumber("Middle Vel", () -> m_mover.getSelectedSensorVelocity());
+        // debugTab.addNumber("Loader Vel", () -> m_shooterLoader.getSelectedSensorVelocity());
+        // debugTab.addNumber("Intake Cur", () -> m_intake.getSupplyCurrent());
+        // debugTab.addNumber("Middle Cur", () -> m_mover.getSupplyCurrent());
+        // debugTab.addNumber("Loader Cur", () -> m_shooterLoader.getSupplyCurrent());
     }
 
     // Robot Init
@@ -108,7 +108,7 @@ public class Intake extends Base {
     @Override
     public void robotPeriodic() {
         m_colorSensor.checkColor();
-        m_colorSensor.updateNT();
+        // m_colorSensor.updateNT();
     }
 
     public void autonomousInit() {
@@ -328,7 +328,7 @@ public class Intake extends Base {
         }
 
         // sets nt values for motors
-        setNTValues();
+        // setNTValues();
 
     }
 
@@ -375,9 +375,9 @@ public class Intake extends Base {
 
     // sends motor values to shuffleboard
     public void setNTValues() {
-        ntIntakeSpeed.setDouble(m_intake.getMotorOutputPercent());
-        ntMoverSpeed.setDouble(m_mover.getMotorOutputPercent());
-        ntShooterLoaderSpeed.setDouble(m_shooterLoader.getMotorOutputPercent());
+        // ntIntakeSpeed.setDouble(m_intake.getMotorOutputPercent());
+        // ntMoverSpeed.setDouble(m_mover.getMotorOutputPercent());
+        // ntShooterLoaderSpeed.setDouble(m_shooterLoader.getMotorOutputPercent());
     }
 
     public boolean getBothBallsLoaded() {

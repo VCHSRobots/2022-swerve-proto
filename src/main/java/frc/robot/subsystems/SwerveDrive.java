@@ -112,10 +112,10 @@ public class SwerveDrive extends Base {
 
     // Robot Init
     public void robotInit() {
-        Shuffleboard.getTab("main").add("front left", m_frontLeft);
-        Shuffleboard.getTab("main").add("front right", m_frontRight);
-        Shuffleboard.getTab("main").add("back left", m_backLeft);
-        Shuffleboard.getTab("main").add("back right", m_backRight);
+        Shuffleboard.getTab("debug").add("front left", m_frontLeft);
+        Shuffleboard.getTab("debug").add("front right", m_frontRight);
+        Shuffleboard.getTab("debug").add("back left", m_backLeft);
+        Shuffleboard.getTab("debug").add("back right", m_backRight);
     }
 
     @Override
