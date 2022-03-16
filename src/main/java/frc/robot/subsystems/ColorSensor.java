@@ -49,16 +49,16 @@ public class ColorSensor extends Base {
   ColorMatchResult m_match = new ColorMatchResult(new Color(1,1,1), 0.3);
   Color m_detectedColor = new Color(0.1, 0.1, 0.1);
 
-  ShuffleboardTab colorSensorTab = Shuffleboard.getTab("ColorSensor");
-  NetworkTableEntry ntRedColor = colorSensorTab.add("Red", 0).getEntry();
-  NetworkTableEntry ntBlueColor = colorSensorTab.add("Blue", 0).getEntry();
-  NetworkTableEntry ntConfidence = colorSensorTab.add("Confidence", 0).getEntry();
-  NetworkTableEntry ntDetected = colorSensorTab.add("Detected Color", 0).getEntry();
-  NetworkTableEntry ntBlueCount = colorSensorTab.add("blue count", 0).getEntry();
-  NetworkTableEntry ntRedCount = colorSensorTab.add("red count", 0).getEntry();
-  NetworkTableEntry ntGreenCount = colorSensorTab.add("green count", 0).getEntry();
-  NetworkTableEntry ntProximity = colorSensorTab.add("prox", 0).getEntry();
-  NetworkTableEntry ntGreenColor = colorSensorTab.add("green", 0).getEntry();
+  // ShuffleboardTab colorSensorTab = Shuffleboard.getTab("ColorSensor");
+  // NetworkTableEntry ntRedColor = colorSensorTab.add("Red", 0).getEntry();
+  // NetworkTableEntry ntBlueColor = colorSensorTab.add("Blue", 0).getEntry();
+  // NetworkTableEntry ntConfidence = colorSensorTab.add("Confidence", 0).getEntry();
+  // NetworkTableEntry ntDetected = colorSensorTab.add("Detected Color", 0).getEntry();
+  // NetworkTableEntry ntBlueCount = colorSensorTab.add("blue count", 0).getEntry();
+  // NetworkTableEntry ntRedCount = colorSensorTab.add("red count", 0).getEntry();
+  // NetworkTableEntry ntGreenCount = colorSensorTab.add("green count", 0).getEntry();
+  // NetworkTableEntry ntProximity = colorSensorTab.add("prox", 0).getEntry();
+  // NetworkTableEntry ntGreenColor = colorSensorTab.add("green", 0).getEntry();
   
   public static boolean ballDetected = false;
 
@@ -69,8 +69,8 @@ public class ColorSensor extends Base {
 
   // Robot Init
   public void init() {
-    colorSensorTab.addBoolean("isRed",()-> isRedBallDetected());
-    colorSensorTab.addBoolean("isBlue",()-> isBlueBallDetected());
+    // colorSensorTab.addBoolean("isRed",()-> isRedBallDetected());
+    // colorSensorTab.addBoolean("isBlue",()-> isBlueBallDetected());
     m_colorMatcher.addColorMatch(kBlueBallColor);
     m_colorMatcher.addColorMatch(kRedBallColor);
   }
@@ -131,15 +131,15 @@ public class ColorSensor extends Base {
      * sensor.
      */
     
-    ntRedColor.setDouble(m_detectedColor.red);
-    ntBlueColor.setDouble(m_detectedColor.blue);
-    ntGreenColor.setDouble(m_detectedColor.green);
-    ntConfidence.setDouble(m_match.confidence);
-    ntDetected.setString(colorString);
-    ntBlueCount.setDouble(blueCount);
-    ntRedCount.setDouble(redCount);
-    ntGreenCount.setDouble(greenCount);
-    ntProximity.setNumber(m_colorSensor.getProximity());
+    // ntRedColor.setDouble(m_detectedColor.red);
+    // ntBlueColor.setDouble(m_detectedColor.blue);
+    // ntGreenColor.setDouble(m_detectedColor.green);
+    // ntConfidence.setDouble(m_match.confidence);
+    // ntDetected.setString(colorString);
+    // ntBlueCount.setDouble(blueCount);
+    // ntRedCount.setDouble(redCount);
+    // ntGreenCount.setDouble(greenCount);
+    // ntProximity.setNumber(m_colorSensor.getProximity());
   }
 
 }

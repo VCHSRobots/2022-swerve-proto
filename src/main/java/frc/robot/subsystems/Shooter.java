@@ -17,7 +17,6 @@ import com.ctre.phoenix.sensors.SensorVelocityMeasPeriod;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
-import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
@@ -45,8 +44,8 @@ public class Shooter extends Base {
     private double m_targetAngle = 0;
     private boolean m_isTurningAround = false;
     // Shuffleboard Tabs and NetworkTableEntries.
-    ShuffleboardTab ShootMotorTab = Shuffleboard.getTab("Shooter");
-    NetworkTableEntry ntVoltage = Shuffleboard.getTab("Shooter").add("voltage", 0.0).getEntry();
+    ShuffleboardTab debugTab = Shuffleboard.getTab("debug");
+    // NetworkTableEntry ntVoltage = Shuffleboard.getTab("Shooter").add("voltage", 0.0).getEntry();
 
     WPI_TalonFX m_shootTalonTop = new WPI_TalonFX(RobotMap.kShoot_TopMotor_TalonFX, RobotMap.kCANivore_name);
     WPI_TalonFX m_shootTalonBot = new WPI_TalonFX(RobotMap.kShoot_BottomMotor_TalonFX, RobotMap.kCANivore_name);
@@ -58,7 +57,7 @@ public class Shooter extends Base {
 
     private ProfiledPIDController m_turretPIDController = new ProfiledPIDController(0.08, 0, 0,
             new Constraints(kMaxAngularVelocity, kMaxAngularAcceleration));
-    private SimpleMotorFeedforward m_turretFeedForward = new SimpleMotorFeedforward(0.29, 0.007); // 0.007
+    // private SimpleMotorFeedforward m_turretFeedForward = new SimpleMotorFeedforward(0.29, 0.007); // 0.007
 
     // SimpleMotorFeedforward m_ShootFeedForward = new SimpleMotorFeedforward(0.00,
     // 0.00045);
@@ -101,14 +100,14 @@ public class Shooter extends Base {
     // END SHUFFLEBOARD HELPERS
 
     public void robotInit() {
-        ShootMotorTab.addNumber("Actual Top RPM", () -> getTopMotorRPM()).withPosition(4, 1).withSize(4, 3)
-                .withWidget(BuiltInWidgets.kGraph);
-        ShootMotorTab.addNumber("Actual Bot RPM", () -> getBotMotorRPM()).withPosition(4, 4).withSize(4, 3)
-                .withWidget(BuiltInWidgets.kGraph);
-        ShootMotorTab.addNumber("Top Setpoint", () -> ticksPer100msToRPM(m_shootTalonTop.getClosedLoopTarget()))
-                .withWidget(BuiltInWidgets.kGraph);
-        ShootMotorTab.addNumber("Bot Setpoint", () -> ticksPer100msToRPM(m_shootTalonBot.getClosedLoopTarget()))
-                .withWidget(BuiltInWidgets.kGraph);
+        debugTab.addNumber("Actual Top RPM", () -> getTopMotorRPM()).withPosition(4, 1).withSize(4, 3);
+                // .withWidget(BuiltInWidgets.kGraph);
+        debugTab.addNumber("Actual Bot RPM", () -> getBotMotorRPM()).withPosition(4, 4).withSize(4, 3);
+                // .withWidget(BuiltInWidgets.kGraph);
+        debugTab.addNumber("Top Setpoint", () -> ticksPer100msToRPM(m_shootTalonTop.getClosedLoopTarget()));
+                // .withWidget(BuiltInWidgets.kGraph);
+        debugTab.addNumber("Bot Setpoint", () -> ticksPer100msToRPM(m_shootTalonBot.getClosedLoopTarget()));
+                // .withWidget(BuiltInWidgets.kGraph);
 
         TalonFXConfiguration baseConfig = new TalonFXConfiguration();
         baseConfig.closedloopRamp = 0.0;
@@ -487,7 +486,7 @@ public class Shooter extends Base {
 
     public void setTurntableToNTValue() {
         // m_turnTableTalon.setVoltage(ntVoltage.getDouble(0.0));
-        setTurretAngle(ntVoltage.getDouble(0.0));
+        // setTurretAngle(ntVoltage.getDouble(0.0));
         System.out.println("*** SETTING POSITION ***");
         SmartDashboard.putBoolean("Enter New Code", true);
     }
