@@ -226,7 +226,7 @@ public class SuperStructure extends Base {
         } else if (OI.getRightBumperForWallShot()) {
             // turn shooter on in rpm mode
             // m_Shooter.shootingRPM(2500, 2650);
-            m_Shooter.shootingRPM(3000, 2400);
+            m_Shooter.shootingRPM(3000, 2420);
 
             if (m_Shooter.IsOkToShoot()) {
                 // Load shooter
