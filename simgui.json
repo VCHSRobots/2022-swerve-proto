@@ -22,6 +22,7 @@
       "/Shuffleboard/Auto/Auto Choose": "String Chooser",
       "/Shuffleboard/main/xController": "PIDController",
       "/Shuffleboard/main/yController": "PIDController",
+      "/Shuffleboard/super/Auto Choose": "String Chooser",
       "/SmartDashboard/Auto choices": "String Chooser"
     }
   },

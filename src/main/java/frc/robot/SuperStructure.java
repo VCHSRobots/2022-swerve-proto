@@ -98,7 +98,7 @@ public class SuperStructure extends Base {
         m_cameraThread.start();
 
         Shuffleboard.getTab("super").add("compressor", m_phCompressor).withPosition(12, 0).withSize(1, 1);
-        Shuffleboard.getTab("super").addBoolean("IsOkToShoot", () -> m_Shooter.IsOkToShoot()).withPosition(0, 5);
+        Shuffleboard.getTab("super").addBoolean("IsOkToShoot", () -> m_Shooter.IsOkToShoot()).withPosition(0, 4);
 
         Shuffleboard.getTab("computil").addNumber("Camera Based Distance", () -> m_VisionShooter.getDistance())
                 .withPosition(6, 2).withSize(2, 1);
@@ -110,13 +110,12 @@ public class SuperStructure extends Base {
         Shuffleboard.getTab("debug").addNumber("autoStep", () -> m_autoStep);
 
         Shuffleboard.getTab("super").addNumber("current top RPM", () -> m_Shooter.getTopMotorRPM()).withPosition(0, 0);
-        Shuffleboard.getTab("super").addNumber("Current bot RPM", () -> m_Shooter.getBotMotorRPM()).withPosition(0, 1);
-        Shuffleboard.getTab("super").addBoolean("Is Ball in Loader", () -> m_Intake.isBallAtLoad()).withPosition(0, 2);
-        Shuffleboard.getTab("super").addBoolean("Is Ball in Middle", () -> m_Intake.isBallAtMiddle()).withPosition(0, 3);
+        Shuffleboard.getTab("super").addNumber("Current bot RPM", () -> m_Shooter.getBotMotorRPM()).withPosition(1, 0);
+        Shuffleboard.getTab("super").addBoolean("Is Ball in Loader", () -> m_Intake.isBallAtLoad()).withPosition(0, 1);
+        Shuffleboard.getTab("super").addBoolean("Is Ball in Middle", () -> m_Intake.isBallAtMiddle()).withPosition(0, 2);
         Shuffleboard.getTab("super").addBoolean("Both balls loaded",
-                () -> m_Intake.isBallAtMiddle() && m_Intake.isBallAtLoad()).withPosition(0, 4);
+                () -> m_Intake.isBallAtMiddle() && m_Intake.isBallAtLoad()).withPosition(0, 3);
         Shuffleboard.getTab("super").add(CameraServer.putVideo("limelight", 320, 240)).withPosition(6, 1).withSize(5, 6);
-
         Shuffleboard.getTab("super").add(CameraServer.putVideo("Usb Camera 0", 320, 240)).withPosition(1, 1).withSize(5, 6);
         Shuffleboard.getTab("super").addNumber("pressure", () -> m_phCompressor.getPressure()).withPosition(12, 2);
 
@@ -124,7 +123,7 @@ public class SuperStructure extends Base {
         m_chooser.setDefaultOption(kDefaultAuto, kDefaultAuto);
         m_chooser.addOption(kCustomAuto, kCustomAuto);
         m_chooser.addOption(kCustomAuto1, kCustomAuto1);
-        Shuffleboard.getTab("super").add("Auto Choose", m_chooser).withSize(1, 1).withPosition(0, 6);
+        Shuffleboard.getTab("super").add("Auto Choose", m_chooser).withSize(1, 1).withPosition(0, 5);
 
         m_state = new RobotState(m_SwerveDrive.getPose2d(), Rotation2d.fromDegrees(m_Shooter.getTurretAngleDegrees()));
     }
