@@ -27,8 +27,8 @@ public class Auto {
     PathPlannerTrajectory m_chosenTrajectory;
 
     int m_currentAutoStep = 0;
-    PIDController xController = new PIDController(1.4, 0, 0);
-    PIDController yController = new PIDController(1.4, 0, 0);
+    PIDController xController = new PIDController(1.5, 0, 0);
+    PIDController yController = new PIDController(1.5, 0, 0);
     static ProfiledPIDController thetaController = new ProfiledPIDController(2.1, 0, 0,
             new Constraints(SwerveDrive.kMaxAngularSpeed, 2 * SwerveDrive.kMaxAngularSpeed));
     HolonomicDriveController controller;

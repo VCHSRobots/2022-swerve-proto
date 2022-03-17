@@ -38,7 +38,7 @@ public class Climber extends Base {
         // sensors send
         Shuffleboard.getTab("computil").addBoolean("Left Limit", () -> !m_bottomLeftLimit.get());
         Shuffleboard.getTab("computil").addBoolean("Right Limit", () -> !m_bottomRightLimit.get());
-        Shuffleboard.getTab("super").addNumber("climbenc", () -> m_master.getSelectedSensorPosition()).withPosition(12, 3);
+        Shuffleboard.getTab("super").addNumber("climbenc", () -> m_master.getSelectedSensorPosition()).withPosition(3, 0);
         // init motors
         m_master = new WPI_TalonFX(RobotMap.kClimb_master_TalonFX, RobotMap.kCANivore_name);
         m_follower_1 = new WPI_TalonFX(RobotMap.kClimb_follower_TalonFX, RobotMap.kCANivore_name);
@@ -152,7 +152,7 @@ public class Climber extends Base {
     }
 
     public void armsUp() {
-        m_master.set(ControlMode.PercentOutput, 0.9);
+        m_master.set(ControlMode.PercentOutput,0.9); // was 0.9
 
         m_follower_1.follow(m_master);
         m_follower_2.follow(m_master);
@@ -166,7 +166,7 @@ public class Climber extends Base {
         } else if (m_master.getSelectedSensorPosition() < 50000) {
             m_master.set(ControlMode.PercentOutput, -0.3);
         } else {
-            m_master.set(ControlMode.PercentOutput, -0.75);
+            m_master.set(ControlMode.PercentOutput, -0.85); // was -0.85
         }
         m_follower_1.follow(m_master);
         m_follower_2.follow(m_master);
