@@ -93,6 +93,7 @@ public class SuperStructure extends Base {
         m_cameraThread = new Thread(
                 () -> {
                     UsbCamera camera = CameraServer.startAutomaticCapture();
+                    camera.setResolution(320, 240);
                 });
         m_cameraThread.setDaemon(true);
         m_cameraThread.start();
@@ -101,8 +102,8 @@ public class SuperStructure extends Base {
         // m_phCompressor).withPosition(12, 0).withSize(1, 1);
         Shuffleboard.getTab("super").addBoolean("IsOkToShoot", () -> m_Shooter.IsOkToShoot()).withPosition(0, 4);
 
-        Shuffleboard.getTab("computil").addNumber("Camera Based Distance", () -> m_VisionShooter.getDistance())
-                .withPosition(6, 2).withSize(2, 1);
+        Shuffleboard.getTab("super").addNumber("Camera Based Distance", () -> m_VisionShooter.getDistance())
+                .withPosition(5,0).withSize(2, 1);
         Shuffleboard.getTab("computil").add("swervedrive", m_SwerveDrive).withPosition(8, 1).withSize(2, 2);
 
         Shuffleboard.getTab("debug").addNumber("Camera to Target Yaw", () -> m_VisionShooter.getYaw());
@@ -117,10 +118,10 @@ public class SuperStructure extends Base {
                 2);
         Shuffleboard.getTab("super").addBoolean("Both balls loaded",
                 () -> m_Intake.isBallAtMiddle() && m_Intake.isBallAtLoad()).withPosition(0, 3);
-        Shuffleboard.getTab("super").add(CameraServer.putVideo("limelight", 320, 240)).withPosition(6, 1).withSize(5,
-                6);
-        Shuffleboard.getTab("super").add(CameraServer.putVideo("USB Camera 0", 320, 240)).withPosition(1, 1).withSize(6,
-                5);
+        // Shuffleboard.getTab("super").add(CameraServer.putVideo("limelight", 320, 240)).withPosition(6, 1).withSize(5,
+        //         6);
+        // Shuffleboard.getTab("super").add(CameraServer.putVideo("USB Camera 0", 320, 240)).withPosition(1, 1).withSize(6,
+        //         5);
         Shuffleboard.getTab("super").addNumber("pressure", () -> m_phCompressor.getPressure()).withPosition(4, 0);
 
         // auto chooser
