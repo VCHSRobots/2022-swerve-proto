@@ -1,0 +1,81 @@
+Climber Notes
+DLB, 3/23/22
+
+New Auto Assisted CLimber
+=========================
+
+Climbing Steps for Fast, Swing Free Climb:
+
+1. Driver pilot drives to position to engage first bar.
+
+2. Climber pilot Rasise TE arms with TE-UP Button.
+   (This can be down while robot gets into position)
+
+3. Pilots work together to engage bar with TE.  Use
+   TE-UP and TE-DOWN buttons to engage TE hooks.  
+   This is all manual. 
+
+4. Climber pilot manually uses TE-DOWN to get
+   the robot to raise off the floor and be suppended
+   by the first bar.
+
+5. Once the robot is off the floor, the Climber
+   pilot presses FIN-CLIMB (Y) to finish the
+   climb to the first bar.  (This runs C-Auto-1)
+   This part of the climb is finished when:
+     a. The SW hooks are completely engaged
+        on the bar. The TE hooks will be
+        either engaged or slightly raised off
+        the bar.
+     b. A green light on the Shuffle board
+        is displayed.
+
+6. Upon seeing a finished climb to the first
+   bar, the climber pilot presses NXT-CLIMB (X)
+   (C-Auto-2 Runs).
+   THis causes the robot to:
+        a. Swing out 
+        b. Extend the TE Hooks.
+        c. Swing in.
+        d. Retract the TE Hooks.
+        e. Swing out while the TE and the
+           SW Hooks are engaged.  THis is
+           the most percise move the auto 
+           routine needs to make.
+        f. Continue to Retract the TE hooks
+        for a few inches after "e".
+
+7.  Upon seeing the sequence in 6 stop with
+a green light. And if the robot is either engaged 
+or not, and if not, not swinging, then the climber
+pilot presses FIN-CLIMB (Y) to complete the climb
+to the bar.
+
+8. Steps 6 and 7 are repeated to climb to the
+highest bar.
+
+9. At any point during the auto sequences,
+the climber pilot can press either bumper
+switch to e-stop the squence, and then
+take over manually.
+
+
+
+
+   extend, then the robot swings in, then
+   the TE hooks retrack. As the TE hooks
+   retrack, the swings out to keep tension
+   on the lower bar.  
+   This sequence stops before the SW arms
+   can engage the upper bar.  However, the
+   robot may still be engaged on both bars
+   or be completely hanging on the upper bar.
+
+
+
+7. Upon seeing the robot connected to
+both bars, and a green light to see
+   
+
+
+   bar.  
