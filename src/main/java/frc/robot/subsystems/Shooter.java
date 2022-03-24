@@ -370,6 +370,11 @@ public class Shooter extends Base {
 
     }
 
+    public void setVoltage(double voltagetop, double voltagebot) {
+        m_shootTalonBot.setVoltage(voltagebot);
+        m_shootTalonTop.setVoltage(voltagetop);
+    }
+
     public void turnMotorsOff() {
         setShootSpeeds(0, 0);
     }

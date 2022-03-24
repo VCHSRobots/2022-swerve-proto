@@ -62,8 +62,8 @@ public class SuperStructure extends Base {
     ShuffleboardTab CompTab = Shuffleboard.getTab("computil");
     // shuffleboard: camera, is aimed, is ok to shoot, how many balls are in intake
 
-    NetworkTableEntry ntBotRPM = CompTab.add("Bot RPM", 1900).withPosition(3, 5).withSize(1, 1).getEntry();
-    NetworkTableEntry ntTopRPM = CompTab.add("Top RPM", 1900).withPosition(3, 4).withSize(1, 1).getEntry();
+    NetworkTableEntry ntBotRPM = CompTab.add("Bot Voltage", 5).withPosition(3, 5).withSize(1, 1).getEntry();
+    NetworkTableEntry ntTopRPM = CompTab.add("Top Voltage", 2.5).withPosition(3, 4).withSize(1, 1).getEntry();
     NetworkTableEntry ntFeetToRPM = CompTab.add("Feet To RPM", 17).withPosition(0, 0).withSize(1, 1)
             .getEntry();
     NetworkTableEntry ntLEDOn = CompTab.add("Limelight LED On", false)
@@ -103,7 +103,7 @@ public class SuperStructure extends Base {
         Shuffleboard.getTab("super").addBoolean("IsOkToShoot", () -> m_Shooter.IsOkToShoot()).withPosition(0, 4);
 
         Shuffleboard.getTab("super").addNumber("Camera Based Distance", () -> m_VisionShooter.getDistance())
-                .withPosition(5,0).withSize(2, 1);
+                .withPosition(5, 0).withSize(2, 1);
         Shuffleboard.getTab("computil").add("swervedrive", m_SwerveDrive).withPosition(8, 1).withSize(2, 2);
 
         Shuffleboard.getTab("debug").addNumber("Camera to Target Yaw", () -> m_VisionShooter.getYaw());
@@ -118,10 +118,12 @@ public class SuperStructure extends Base {
                 2);
         Shuffleboard.getTab("super").addBoolean("Both balls loaded",
                 () -> m_Intake.isBallAtMiddle() && m_Intake.isBallAtLoad()).withPosition(0, 3);
-        // Shuffleboard.getTab("super").add(CameraServer.putVideo("limelight", 320, 240)).withPosition(6, 1).withSize(5,
-        //         6);
-        // Shuffleboard.getTab("super").add(CameraServer.putVideo("USB Camera 0", 320, 240)).withPosition(1, 1).withSize(6,
-        //         5);
+        // Shuffleboard.getTab("super").add(CameraServer.putVideo("limelight", 320,
+        // 240)).withPosition(6, 1).withSize(5,
+        // 6);
+        // Shuffleboard.getTab("super").add(CameraServer.putVideo("USB Camera 0", 320,
+        // 240)).withPosition(1, 1).withSize(6,
+        // 5);
         Shuffleboard.getTab("super").addNumber("pressure", () -> m_phCompressor.getPressure()).withPosition(4, 0);
 
         // auto chooser
@@ -247,8 +249,11 @@ public class SuperStructure extends Base {
                 m_Intake.turnOffLoadShooter();
             }
         } else if (OI.xboxDrive.getYButton()) {
-            m_Shooter.shootingDist(ntFeetToRPM.getDouble(0));
-            if (m_Shooter.IsOkToShoot()) {
+            // m_Shooter.shootingDist(ntFeetToRPM.getDouble(0));
+            m_Shooter.setVoltage(ntTopRPM.getDouble(0), ntBotRPM.getDouble(0));
+            // if (m_Shooter.IsOkToShoot()) {
+            if (OI.getAimTurret()) {
+
                 // load shooter
                 m_Intake.loadShooter();
             } else {
