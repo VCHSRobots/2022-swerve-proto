@@ -64,7 +64,7 @@ public class SuperStructure extends Base {
 
     NetworkTableEntry ntBotRPM = CompTab.add("Bot RPM", 1900).withPosition(3, 5).withSize(1, 1).getEntry();
     NetworkTableEntry ntTopRPM = CompTab.add("Top RPM", 1900).withPosition(3, 4).withSize(1, 1).getEntry();
-    NetworkTableEntry ntFeetToRPM = CompTab.add("Feet To Top RPM", 17).withPosition(0, 0).withSize(1, 1)
+    NetworkTableEntry ntFeetToRPM = CompTab.add("Feet To RPM", 17).withPosition(0, 0).withSize(1, 1)
             .getEntry();
     NetworkTableEntry ntLEDOn = CompTab.add("Limelight LED On", false)
             .withWidget(BuiltInWidgets.kToggleButton).getEntry();
@@ -247,7 +247,7 @@ public class SuperStructure extends Base {
                 m_Intake.turnOffLoadShooter();
             }
         } else if (OI.xboxDrive.getYButton()) {
-            m_Shooter.shootingRPM(ntTopRPM.getDouble(0), ntBotRPM.getDouble(0));
+            m_Shooter.shootingDist(ntFeetToRPM.getDouble(0));
             if (m_Shooter.IsOkToShoot()) {
                 // load shooter
                 m_Intake.loadShooter();
