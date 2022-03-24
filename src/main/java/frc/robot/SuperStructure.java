@@ -19,12 +19,14 @@ import frc.robot.subsystems.*;
 import com.pathplanner.lib.PathPlannerTrajectory.PathPlannerState;
 
 import edu.wpi.first.cameraserver.CameraServer;
-import edu.wpi.first.cscore.CvSource;
 import edu.wpi.first.cscore.UsbCamera;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.networktables.NetworkTableEntry;
+
+import frc.robot.state.RobotState;
 
 /** Add your docs here. */
 public class SuperStructure extends Base {
@@ -260,7 +262,7 @@ public class SuperStructure extends Base {
                 m_Intake.turnOffLoadShooter();
             }
         } else if (OI.getAimTurret()) {
-            m_Shooter.shootingRPM(3000, 2400);
+            // m_Shooter.shootingRPM(3000, 2400);
         } else if (m_Intake.getBothBallsLoaded()) {
             // speed up shooter automatically
             m_Shooter.shootingRPM(3000, 2400);
@@ -289,9 +291,18 @@ public class SuperStructure extends Base {
         // // TURNTABLE
         if (OI.getAimTurret()) {
             // m_Shooter.aimTurret(m_VisionShooter.getYaw());
-            m_Shooter.aimTurret(m_VisionShooter.getYaw());
+            if (m_VisionShooter.getTargetValid()) {
+                m_Shooter.aimTurret(m_VisionShooter.getYaw());
+            } else {
+                m_Shooter.setTurretAngle(m_state.getTurretAimingAngle().getDegrees());
+            }
         } else if (OI.aimWithPose()) {
-            m_Shooter.aimTurret(m_state.getTurretAimingAngle().getDegrees());
+            m_Shooter.setTurretAngle(m_state.getTurretAimingAngle().getDegrees());
+            // Pose2d robotToHub =
+            // (m_state.kFieldToCenterHub).relativeTo(m_SwerveDrive.getPose2d());
+            // Translation2d tr = robotToHub.getTranslation();
+            // Rotation2d rot = new Rotation2d(tr.getX(), tr.getY());
+            // m_Shooter.setTurretAngle(rot.getDegrees());
         } else {
             m_Shooter.TurnTable(OI.getRightTurntable(),
                     OI.getLeftTurntable());

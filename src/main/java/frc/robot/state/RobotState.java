@@ -18,7 +18,7 @@ public class RobotState {
     Rotation2d m_turretAngle;
     double m_lastTimestamp;
 
-    final Pose2d kFieldToCenterHub = new Pose2d(new Translation2d(Units.inchesToMeters(324), Units.inchesToMeters(162)),
+    final public Pose2d kFieldToCenterHub = new Pose2d(new Translation2d(Units.inchesToMeters(324), Units.inchesToMeters(162)),
             new Rotation2d());
     final Translation2d kRobotToTurretTranslation = new Translation2d(); // estimate turret in center for now
     final Transform2d kTurretToCamera = new Transform2d(new Translation2d(Units.inchesToMeters(12), new Rotation2d()),
@@ -53,10 +53,10 @@ public class RobotState {
         return kFieldToCenterHub.relativeTo(robot);
     }
 
-    public Pose2d getTurretToCenterHub(double sampleTimeSeconds) {
-        Pose2d robotToCenter = getRobotToCenterHub(sampleTimeSeconds);
-        return robotToCenter.relativeTo(m_robotToTurret.getSample(sampleTimeSeconds));            
-    }
+    // public Pose2d getTurretToCenterHub(double sampleTimeSeconds) {
+    //     Pose2d robotToCenter = getRobotToCenterHub(sampleTimeSeconds);
+    //     return robotToCenter.relativeTo(m_robotToTurret.getSample(sampleTimeSeconds));            
+    // }
 
     public Rotation2d getTurretAimingAngle() {
         Pose2d robotToCenter = getRobotToCenterHub(Timer.getFPGATimestamp());

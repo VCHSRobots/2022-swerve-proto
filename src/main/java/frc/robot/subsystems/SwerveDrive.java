@@ -64,14 +64,16 @@ public class SwerveDrive extends Base {
     private ChassisSpeeds m_lastChassisSpeedsDesired = new ChassisSpeeds();
 
     public SwerveDrive() {
-        new Thread(() -> {
+        Thread zeroGyroThread = new Thread(() -> {
             try {
                 Thread.sleep(1000);
                 zeroHeading();
             } catch (Exception e) {
 
             }
-        }).start();
+        });
+        zeroGyroThread.setDaemon(true);
+        zeroGyroThread.start();
 
         double frontLeftOffset = 0;
         double frontRightoffset = 0;
@@ -130,6 +132,10 @@ public class SwerveDrive extends Base {
         double angle = Math.IEEEremainder(-m_gyro.getAngle(), 360);
         return Rotation2d.fromDegrees(angle);
     }
+
+    // public double getAngularVelocity() {
+    //     return m_gyro.
+    // }
 
     public void resetOdometry(Pose2d pose) {
         m_odometry.resetPosition(pose, getGyroRotation2d());
@@ -256,7 +262,7 @@ public class SwerveDrive extends Base {
             zeroHeading();
             Translation2d againstRightWall =  new Translation2d(7.75, 0.5);
             Translation2d insideTopParallelEdge = new Translation2d(6, 4.75);
-            m_odometry.resetPosition(new Pose2d(againstRightWall, new Rotation2d()), getGyroRotation2d());
+            m_odometry.resetPosition(new Pose2d(insideTopParallelEdge, new Rotation2d()), getGyroRotation2d());
         }
         updateOdometry();
     }

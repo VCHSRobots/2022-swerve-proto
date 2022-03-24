@@ -30,6 +30,11 @@ public class VisionShooter extends Base {
         Shuffleboard.getTab("debug").addNumber("Vision Yaw", () -> getYaw());
     }
 
+    public boolean getTargetValid() {
+        return ntTargetValid.getDouble(0) == 1.0;
+        // return ntTargetValid.getBoolean(false);
+    }
+
     public double calculateAngleError() {
         /*
          * vision filter:
@@ -80,7 +85,7 @@ public class VisionShooter extends Base {
     }
 
     public double getYaw() {
-        return -ntTargetYaw.getDouble(0) + 1.0;
+        return -ntTargetYaw.getDouble(0) + 0.0;
     }
 
     public double getPitch() {
