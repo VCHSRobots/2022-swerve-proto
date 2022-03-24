@@ -80,7 +80,7 @@ public class VisionShooter extends Base {
     }
 
     public double getYaw() {
-        return -ntTargetYaw.getDouble(0);
+        return -ntTargetYaw.getDouble(0) + 1.0;
     }
 
     public double getPitch() {

@@ -1,11 +1,13 @@
 package frc.robot.util;
 // Based on FRC254 2017/2019 code
+
+import edu.wpi.first.math.interpolation.Interpolatable;
 /**
  * A Double that can be interpolated using the InterpolatingTreeMap.
  * 
  * @see InterpolatingTreeMap
  */
-public class InterpolatingDouble implements Interpolable<InterpolatingDouble>, InverseInterpolable<InterpolatingDouble>,
+public class InterpolatingDouble implements Interpolatable<InterpolatingDouble>, InverseInterpolable<InterpolatingDouble>,
         Comparable<InterpolatingDouble> {
     public Double value = 0.0;
 

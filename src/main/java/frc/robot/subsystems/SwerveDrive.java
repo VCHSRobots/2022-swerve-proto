@@ -58,7 +58,7 @@ public class SwerveDrive extends Base {
             m_frontLeftLocation, m_frontRightLocation, m_backLeftLocation, m_backRightLocation);
     private final SwerveDriveOdometry m_odometry = new SwerveDriveOdometry(m_kinematics, new Rotation2d(0));
 
-    private boolean m_fieldRelative = false;
+    private boolean m_fieldRelative = true;
 
     // tracking vars to output to dashboard
     private ChassisSpeeds m_lastChassisSpeedsDesired = new ChassisSpeeds();

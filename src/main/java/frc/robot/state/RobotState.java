@@ -14,8 +14,8 @@ import frc.robot.util.InterpolatingTreeMap;
 
 public class RobotState {
     // SwerveDriveOdometry m_odometry;
-    Pose2d_4415 m_pose;
-    Rotation2d_4415 m_turretAngle;
+    Pose2d m_pose;
+    Rotation2d m_turretAngle;
     double m_lastTimestamp;
 
     final Pose2d kFieldToCenterHub = new Pose2d(new Translation2d(Units.inchesToMeters(324), Units.inchesToMeters(162)),

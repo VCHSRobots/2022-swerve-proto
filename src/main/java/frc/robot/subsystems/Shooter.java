@@ -38,7 +38,7 @@ public class Shooter extends Base {
     private final double kZeroOffsetDegrees = -165;
     private final double kAngleOffset = 180;
     private final double kMinAngle = -135;
-    private final double kMaxAngle = 300;
+    private final double kMaxAngle = 275;
     private final double kMaxAngularVelocity = 600.0; // keep within 560, started at 135
     private final double kMaxAngularAcceleration = 12000.0; // keep within 5700, started at 455
     private double m_targetAngle = 0;
@@ -67,14 +67,14 @@ public class Shooter extends Base {
 
     public Shooter() {
         distanceRPMPoint[] distanceRPMlist = {
-                new distanceRPMPoint(8, 2480, 2350),
-                new distanceRPMPoint(8.5, 2550, 2370),
+                new distanceRPMPoint(8, 2480, 2340),
+                new distanceRPMPoint(8.5, 2550, 2360),
                 new distanceRPMPoint(9, 2650, 2400),
                 new distanceRPMPoint(10, 2770, 2400), 
                 new distanceRPMPoint(11, 2850, 2500),
-                new distanceRPMPoint(11.5, 2850, 2590),
-                new distanceRPMPoint(12, 2900, 2640),
-                new distanceRPMPoint(12.5, 2960, 2680),
+                new distanceRPMPoint(11.5, 2880, 2580),
+                new distanceRPMPoint(12, 2920, 2640),
+                new distanceRPMPoint(12.5, 2950, 2670),
                 new distanceRPMPoint(13, 3050, 2750),
                 new distanceRPMPoint(14, 3230, 2920),
                 new distanceRPMPoint(17, 3800, 2960)
@@ -141,16 +141,16 @@ public class Shooter extends Base {
         // top settings
         baseConfig.slot0.kI = 0.0;
         baseConfig.slot0.kD = 0.0;
-        baseConfig.slot0.kF = 0.050;
-        baseConfig.slot0.kP = 0.02; // 0.03
+        baseConfig.slot0.kF = 0.0505;
+        baseConfig.slot0.kP = 0.0205; // 0.03
         m_shootTalonTop.configAllSettings(baseConfig, 100);
 
         // TalonFXConfiguration botConfig = baseConfig;
         // bot settings
         baseConfig.slot0.kI = 0.0;
         baseConfig.slot0.kD = 0.0;
-        baseConfig.slot0.kF = 0.053; // after distance tuning, was 0.051
-        baseConfig.slot0.kP = 0.2; // after distance tuning, was 0.03
+        baseConfig.slot0.kF = 0.0535; // after distance tuning, was 0.051
+        baseConfig.slot0.kP = 0.205; // after distance tuning, was 0.03
         m_shootTalonBot.configAllSettings(baseConfig, 100);
 
         m_shootTalonBot.setNeutralMode(NeutralMode.Coast);
@@ -350,7 +350,7 @@ public class Shooter extends Base {
                 - m_shootTalonBot.getSelectedSensorVelocity());
         boolean isBotFast = ticksPer100msToRPM(m_shootTalonBot.getSelectedSensorVelocity()) > 1300;
 
-        if (Math.abs(errorBotRPM) < 110 && Math.abs(errorTopRPM) < 125 && isBotFast) {
+        if (Math.abs(errorBotRPM) < 80 && Math.abs(errorTopRPM) < 80 && isBotFast) {
             m_isOKtoShootCounter++;
         } else {
             m_isOKtoShootCounter = 0;
@@ -368,6 +368,11 @@ public class Shooter extends Base {
         m_shootTalonBot.setVoltage(2.75);
         m_shootTalonTop.setVoltage(2.75);
 
+    }
+
+    public void setVoltage(double voltagetop, double voltagebot) {
+        m_shootTalonBot.setVoltage(voltagebot);
+        m_shootTalonTop.setVoltage(voltagetop);
     }
 
     public void turnMotorsOff() {
