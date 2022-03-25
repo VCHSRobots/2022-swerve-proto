@@ -13,15 +13,15 @@ public class Constants {
     public static final boolean isPracticeBot = true;
 
     public static final class SwerveModuleOffsetRadiansPractice {
-        public static final double FRONT_LEFT = Units.degreesToRadians(-42.5);
-        public static final double FRONT_RIGHT = Units.degreesToRadians(29.5);
-        public static final double BACK_LEFT = Units.degreesToRadians(-16.5);
-        public static final double BACK_RIGHT = Units.degreesToRadians(172.0);
+        // public static final double FRONT_LEFT = Units.degreesToRadians(-8.3);
+        // public static final double FRONT_RIGHT = Units.degreesToRadians(209.0);
+        // public static final double BACK_LEFT = Units.degreesToRadians(196.8);
+        // public static final double BACK_RIGHT = Units.degreesToRadians(165.1);
 
-        public static final double kBACK_RIGHT  = Units.degreesToRadians(-42.5) + Math.PI;
-        public static final double kBACK_LEFT   = Units.degreesToRadians(29.5) - Math.PI;
-        public static final double kFRONT_RIGHT = Units.degreesToRadians(-16.5) + Math.PI;
-        public static final double kFRONT_LEFT = Units.degreesToRadians(172.0) - Math.PI;
+        public static final double kBACK_RIGHT  = Units.degreesToRadians(2.5) - Math.PI;
+        public static final double kBACK_LEFT   = Units.degreesToRadians(167.5) - Math.PI;
+        public static final double kFRONT_RIGHT = Units.degreesToRadians(22.9);
+        public static final double kFRONT_LEFT = Units.degreesToRadians(145.6) - Math.PI;
     }
     public static final class SwerveModuleOffsetRadiansComp {
         public static final double FRONT_LEFT = Units.degreesToRadians(-40.00);
