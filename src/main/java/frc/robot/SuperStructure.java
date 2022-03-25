@@ -19,12 +19,14 @@ import frc.robot.subsystems.*;
 import com.pathplanner.lib.PathPlannerTrajectory.PathPlannerState;
 
 import edu.wpi.first.cameraserver.CameraServer;
-import edu.wpi.first.cscore.CvSource;
 import edu.wpi.first.cscore.UsbCamera;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.networktables.NetworkTableEntry;
+
+import frc.robot.state.RobotState;
 
 /** Add your docs here. */
 public class SuperStructure extends Base {
@@ -62,9 +64,9 @@ public class SuperStructure extends Base {
     ShuffleboardTab CompTab = Shuffleboard.getTab("computil");
     // shuffleboard: camera, is aimed, is ok to shoot, how many balls are in intake
 
-    NetworkTableEntry ntBotRPM = CompTab.add("Bot RPM", 1900).withPosition(3, 5).withSize(1, 1).getEntry();
-    NetworkTableEntry ntTopRPM = CompTab.add("Top RPM", 1900).withPosition(3, 4).withSize(1, 1).getEntry();
-    NetworkTableEntry ntFeetToRPM = CompTab.add("Feet To Top RPM", 17).withPosition(0, 0).withSize(1, 1)
+    NetworkTableEntry ntBotRPM = CompTab.add("Bot RPM", 5).withPosition(3, 5).withSize(1, 1).getEntry();
+    NetworkTableEntry ntTopRPM = CompTab.add("Top RPM", 2.5).withPosition(3, 4).withSize(1, 1).getEntry();
+    NetworkTableEntry ntFeetToRPM = CompTab.add("Feet To RPM", 17).withPosition(0, 0).withSize(1, 1)
             .getEntry();
     NetworkTableEntry ntLEDOn = CompTab.add("Limelight LED On", false)
             .withWidget(BuiltInWidgets.kToggleButton).getEntry();
@@ -93,6 +95,7 @@ public class SuperStructure extends Base {
         m_cameraThread = new Thread(
                 () -> {
                     UsbCamera camera = CameraServer.startAutomaticCapture();
+                    camera.setResolution(320, 240);
                 });
         m_cameraThread.setDaemon(true);
         m_cameraThread.start();
@@ -101,8 +104,8 @@ public class SuperStructure extends Base {
         // m_phCompressor).withPosition(12, 0).withSize(1, 1);
         Shuffleboard.getTab("super").addBoolean("IsOkToShoot", () -> m_Shooter.IsOkToShoot()).withPosition(0, 4);
 
-        Shuffleboard.getTab("computil").addNumber("Camera Based Distance", () -> m_VisionShooter.getDistance())
-                .withPosition(6, 2).withSize(2, 1);
+        Shuffleboard.getTab("super").addNumber("Camera Based Distance", () -> m_VisionShooter.getDistance())
+                .withPosition(5, 0).withSize(2, 1);
         Shuffleboard.getTab("computil").add("swervedrive", m_SwerveDrive).withPosition(8, 1).withSize(2, 2);
 
         Shuffleboard.getTab("debug").addNumber("Camera to Target Yaw", () -> m_VisionShooter.getYaw());
@@ -117,10 +120,12 @@ public class SuperStructure extends Base {
                 2);
         Shuffleboard.getTab("super").addBoolean("Both balls loaded",
                 () -> m_Intake.isBallAtMiddle() && m_Intake.isBallAtLoad()).withPosition(0, 3);
-        Shuffleboard.getTab("super").add(CameraServer.putVideo("limelight", 320, 240)).withPosition(6, 1).withSize(5,
-                6);
-        Shuffleboard.getTab("super").add(CameraServer.putVideo("USB Camera 0", 320, 240)).withPosition(1, 1).withSize(6,
-                5);
+        // Shuffleboard.getTab("super").add(CameraServer.putVideo("limelight", 320,
+        // 240)).withPosition(6, 1).withSize(5,
+        // 6);
+        // Shuffleboard.getTab("super").add(CameraServer.putVideo("USB Camera 0", 320,
+        // 240)).withPosition(1, 1).withSize(6,
+        // 5);
         Shuffleboard.getTab("super").addNumber("pressure", () -> m_phCompressor.getPressure()).withPosition(4, 0);
 
         // auto chooser
@@ -250,20 +255,25 @@ public class SuperStructure extends Base {
                 m_Intake.turnOffLoadShooter();
             }
         } else if (OI.xboxDrive.getYButton()) {
-            m_Shooter.shootingRPM(ntTopRPM.getDouble(0), ntBotRPM.getDouble(0));
+            // m_Shooter.shootingDist(ntFeetToRPM.getDouble(0));
+            // m_Shooter.setVoltage(ntTopRPM.getDouble(0), ntBotRPM.getDouble(0));
+            m_Shooter.shootingRPM(ntTopRPM.getDouble(0.0), ntBotRPM.getDouble(0.0));
             if (m_Shooter.IsOkToShoot()) {
+                // if (OI.getAimTurret()) {
+
                 // load shooter
                 m_Intake.loadShooter();
             } else {
                 m_Intake.turnOffLoadShooter();
             }
         } else if (OI.getAimTurret()) {
-            m_Shooter.shootingRPM(3000, 2400);
+            // m_Shooter.shootingRPM(3000, 2400);
         } else if (m_Intake.getBothBallsLoaded()) {
             // speed up shooter automatically
-            m_Shooter.shootingRPM(3000, 2400);
+            // m_Shooter.shootingRPM(3000, 2400);
         } else {
-            m_Shooter.turnOff();
+            // m_Shooter.turnOff(); // TODO uncomment this
+            m_Shooter.shootingRPM(2300, 2500);
         }
 
         // when shooting released, stop loading
@@ -275,9 +285,21 @@ public class SuperStructure extends Base {
         // // TURNTABLE
         if (OI.getAimTurret()) {
             // m_Shooter.aimTurret(m_VisionShooter.getYaw());
-            m_Shooter.aimTurret(m_VisionShooter.getYaw());
+            if (m_VisionShooter.getTargetValid()) {
+                m_Shooter.aimTurret(m_VisionShooter.getYaw());
+            } else {
+                m_Shooter.setTurretAngle(m_state.getTurretAimingAngle().getDegrees());
+            }
         } else if (OI.aimWithPose()) {
-            m_Shooter.aimTurret(m_state.getTurretAimingAngle().getDegrees());
+            m_Shooter.setTurretAngle(m_state.getTurretAimingAngle().getDegrees());
+            // Pose2d robotToHub =
+            // (m_state.kFieldToCenterHub).relativeTo(m_SwerveDrive.getPose2d());
+            // Translation2d tr = robotToHub.getTranslation();
+            // Rotation2d rot = new Rotation2d(tr.getX(), tr.getY());
+            // m_Shooter.setTurretAngle(rot.getDegrees());
+        } else if (m_Intake.getNumberOfBallsHolding() > 0 && !(OI.getRightTurntable() ||
+                OI.getLeftTurntable())) {
+            m_Shooter.setTurretAngle(m_state.getTurretAimingAngle().getDegrees());
         } else {
             m_Shooter.TurnTable(OI.getRightTurntable(),
                     OI.getLeftTurntable());
@@ -732,22 +754,22 @@ public class SuperStructure extends Base {
 
         // // TURNTABLE
 
-        if (OI.fortFiveTurnTable()) {// A
-            m_Shooter.setTurretAngle(0);
-        } else if (OI.hundredTurnTable()) {// X
-            m_Shooter.setTurretAngle(-90);
-        } else if (OI.negFortFiveTurnTable()) {// Y
-            m_Shooter.setTurretAngle(180);
-        } else if (OI.negHundredTurnTable()) {// B
-            m_Shooter.setTurretAngle(90);
-        } else if (OI.turntableVoltage()) {
-            m_Shooter.setTurntableToNTValue();
-        } else if (OI.aimTurretTest()) {
-            // m_Shooter.aimTurret(m_VisionShooter.getYaw());
-            m_Shooter.aimTurret(m_VisionShooter.getYaw());
-        } else {
-            m_Shooter.TurnTable(OI.getRightTurntable(),
-                    OI.getLeftTurntable());
-        }
+        // if (OI.fortFiveTurnTable()) {// A
+        // m_Shooter.setTurretAngle(0);
+        // } else if (OI.hundredTurnTable()) {// X
+        // m_Shooter.setTurretAngle(-90);
+        // } else if (OI.negFortFiveTurnTable()) {// Y
+        // m_Shooter.setTurretAngle(180);
+        // } else if (OI.negHundredTurnTable()) {// B
+        // m_Shooter.setTurretAngle(90);
+        // } else if (OI.turntableVoltage()) {
+        // m_Shooter.setTurntableToNTValue();
+        // } else if (OI.aimTurretTest()) {
+        // // m_Shooter.aimTurret(m_VisionShooter.getYaw());
+        // m_Shooter.aimTurret(m_VisionShooter.getYaw());
+        // } else {
+        // m_Shooter.TurnTable(OI.getRightTurntable(),
+        // OI.getLeftTurntable());
+        // }
     }
 }

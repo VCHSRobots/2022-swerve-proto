@@ -1,11 +1,14 @@
 package frc.robot.util;
 // Based on FRC254 2017/2019 code
+
+import edu.wpi.first.math.interpolation.Interpolatable;
+
 /**
  * A Long that can be interpolated using the InterpolatingTreeMap.
  * 
  * @see InterpolatingTreeMap
  */
-public class InterpolatingLong implements Interpolable<InterpolatingLong>, InverseInterpolable<InterpolatingLong>,
+public class InterpolatingLong implements Interpolatable<InterpolatingLong>, InverseInterpolable<InterpolatingLong>,
         Comparable<InterpolatingLong> {
     public Long value = 0L;
 

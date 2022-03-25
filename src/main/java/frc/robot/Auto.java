@@ -48,6 +48,8 @@ public class Auto {
         trajectory_auto1_part1 = PathPlanner.loadPath("auto1_part1", 4, 2.4);
         trajectory_auto1_part2 = PathPlanner.loadPath("auto1_part2", 4, 2.4);
         trajectory3 = PathPlanner.loadPath("auto3", 1, 1);
+        // trajectory_auto4_part1 = PathPlanner.loadPath("auto4_part1", 4, 2.4);
+        // trajectory_auto4_part2 = PathPlanner.loadPath("auto4_part2", 4, 2.4);
         
 
         // Shuffleboard.getTab("super").addNumber("timer", ()->timer.get());
