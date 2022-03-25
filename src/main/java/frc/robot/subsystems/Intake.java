@@ -198,8 +198,10 @@ public class Intake extends Base {
                 }
                 if (isBallAtLoad()) {
                     // don't care, ball already there
+                } else {
+                    m_state = STATE.B;
                 }
-                if (isBallAtMiddle()) {
+                if (isBallAtMiddle() && isBallAtLoad()) {
                     // 2nd ball loaded, stop intaking
                     m_state = STATE.A;
                     hasDetectedMiddle = true;
@@ -264,7 +266,7 @@ public class Intake extends Base {
 
                 // add later
                 // m_doublePCM.set(Value.kReverse);
-                setIntakePnuematic(false);
+                setIntakePnuematic(false); // TODO: uncomment this
 
                 break;
             case B:
@@ -346,6 +348,7 @@ public class Intake extends Base {
     // Goes back to the first state
     public void turnOffLoadShooter() {
         m_state = STATE.A;
+        // TODO: put this back to STATE.A
     }
 
     public void stopMotors() {

@@ -64,8 +64,8 @@ public class SuperStructure extends Base {
     ShuffleboardTab CompTab = Shuffleboard.getTab("computil");
     // shuffleboard: camera, is aimed, is ok to shoot, how many balls are in intake
 
-    NetworkTableEntry ntBotRPM = CompTab.add("Bot Voltage", 5).withPosition(3, 5).withSize(1, 1).getEntry();
-    NetworkTableEntry ntTopRPM = CompTab.add("Top Voltage", 2.5).withPosition(3, 4).withSize(1, 1).getEntry();
+    NetworkTableEntry ntBotRPM = CompTab.add("Bot RPM", 5).withPosition(3, 5).withSize(1, 1).getEntry();
+    NetworkTableEntry ntTopRPM = CompTab.add("Top RPM", 2.5).withPosition(3, 4).withSize(1, 1).getEntry();
     NetworkTableEntry ntFeetToRPM = CompTab.add("Feet To RPM", 17).withPosition(0, 0).withSize(1, 1)
             .getEntry();
     NetworkTableEntry ntLEDOn = CompTab.add("Limelight LED On", false)
@@ -252,9 +252,10 @@ public class SuperStructure extends Base {
             }
         } else if (OI.xboxDrive.getYButton()) {
             // m_Shooter.shootingDist(ntFeetToRPM.getDouble(0));
-            m_Shooter.setVoltage(ntTopRPM.getDouble(0), ntBotRPM.getDouble(0));
-            // if (m_Shooter.IsOkToShoot()) {
-            if (OI.getAimTurret()) {
+            // m_Shooter.setVoltage(ntTopRPM.getDouble(0), ntBotRPM.getDouble(0));
+            m_Shooter.shootingRPM(ntTopRPM.getDouble(0.0), ntBotRPM.getDouble(0.0));
+            if (m_Shooter.IsOkToShoot()) {
+                // if (OI.getAimTurret()) {
 
                 // load shooter
                 m_Intake.loadShooter();
@@ -265,9 +266,10 @@ public class SuperStructure extends Base {
             // m_Shooter.shootingRPM(3000, 2400);
         } else if (m_Intake.getBothBallsLoaded()) {
             // speed up shooter automatically
-            m_Shooter.shootingRPM(3000, 2400);
+            // m_Shooter.shootingRPM(3000, 2400);
         } else {
-            m_Shooter.turnOff();
+            // m_Shooter.turnOff(); // TODO uncomment this
+            m_Shooter.shootingRPM(2300, 2500);
         }
 
         // when shooting released, stop loading
@@ -303,6 +305,9 @@ public class SuperStructure extends Base {
             // Translation2d tr = robotToHub.getTranslation();
             // Rotation2d rot = new Rotation2d(tr.getX(), tr.getY());
             // m_Shooter.setTurretAngle(rot.getDegrees());
+        } else if (m_Intake.getNumberOfBallsHolding() > 0 && !(OI.getRightTurntable() ||
+                OI.getLeftTurntable())) {
+            m_Shooter.setTurretAngle(m_state.getTurretAimingAngle().getDegrees());
         } else {
             m_Shooter.TurnTable(OI.getRightTurntable(),
                     OI.getLeftTurntable());
@@ -749,39 +754,40 @@ public class SuperStructure extends Base {
 
     @Override
     public void testPeriodic() {
-        climberControl(OI.getSolenoidReverse(), OI.getSolenoidForward(), OI.getArmsUp(), OI.getArmsDown());
+        // climberControl(OI.getSolenoidReverse(), OI.getSolenoidForward(),
+        // OI.getArmsUp(), OI.getArmsDown());
 
-        if (OI.getDriveForward()) {
-            m_SwerveDrive.drive(0.01, 0.00, 0, false);
-        } else if (OI.getDriveLeft()) {
-            m_SwerveDrive.drive(0.00, 0.01, 0, false);
-        } else if (OI.getDriveReverse()) {
-            m_SwerveDrive.drive(-0.01, 0.00, 0, false);
-        } else if (OI.getDriveRight()) {
-            m_SwerveDrive.drive(0.00, -0.01, 0, false);
-        } else {
-            m_SwerveDrive.drive(0, 0, 0, false);
-        }
+        // if (OI.getDriveForward()) {
+        // m_SwerveDrive.drive(0.01, 0.00, 0, false);
+        // } else if (OI.getDriveLeft()) {
+        // m_SwerveDrive.drive(0.00, 0.01, 0, false);
+        // } else if (OI.getDriveReverse()) {
+        // m_SwerveDrive.drive(-0.01, 0.00, 0, false);
+        // } else if (OI.getDriveRight()) {
+        // m_SwerveDrive.drive(0.00, -0.01, 0, false);
+        // } else {
+        // m_SwerveDrive.drive(0, 0, 0, false);
+        // }
 
         // // TURNTABLE
 
-        if (OI.fortFiveTurnTable()) {// A
-            m_Shooter.setTurretAngle(0);
-        } else if (OI.hundredTurnTable()) {// X
-            m_Shooter.setTurretAngle(-90);
-        } else if (OI.negFortFiveTurnTable()) {// Y
-            m_Shooter.setTurretAngle(180);
-        } else if (OI.negHundredTurnTable()) {// B
-            m_Shooter.setTurretAngle(90);
-        } else if (OI.turntableVoltage()) {
-            m_Shooter.setTurntableToNTValue();
-        } else if (OI.aimTurretTest()) {
-            // m_Shooter.aimTurret(m_VisionShooter.getYaw());
-            m_Shooter.aimTurret(m_VisionShooter.getYaw());
-        } else {
-            m_Shooter.TurnTable(OI.getRightTurntable(),
-                    OI.getLeftTurntable());
-        }
+        // if (OI.fortFiveTurnTable()) {// A
+        // m_Shooter.setTurretAngle(0);
+        // } else if (OI.hundredTurnTable()) {// X
+        // m_Shooter.setTurretAngle(-90);
+        // } else if (OI.negFortFiveTurnTable()) {// Y
+        // m_Shooter.setTurretAngle(180);
+        // } else if (OI.negHundredTurnTable()) {// B
+        // m_Shooter.setTurretAngle(90);
+        // } else if (OI.turntableVoltage()) {
+        // m_Shooter.setTurntableToNTValue();
+        // } else if (OI.aimTurretTest()) {
+        // // m_Shooter.aimTurret(m_VisionShooter.getYaw());
+        // m_Shooter.aimTurret(m_VisionShooter.getYaw());
+        // } else {
+        // m_Shooter.TurnTable(OI.getRightTurntable(),
+        // OI.getLeftTurntable());
+        // }
     }
 
     private void climberControl(boolean shortHookBack, boolean shortHookForward, boolean armsUp, boolean armsDown) {
