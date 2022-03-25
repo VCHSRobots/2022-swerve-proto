@@ -154,15 +154,19 @@ public class SuperStructure extends Base {
         m_Shooter.turnOff();
         m_Intake.turnOffLoadShooter();
         m_Climber.hooksReverse();
+        m_Climber.eStop();
         m_shootingDistanceFirstRun = true;
         m_VisionShooter.LEDon();
-
     }
 
     @Override
     public void teleopPeriodic() {
         m_phCompressor.enableAnalog(90, 112);
         m_VisionShooter.LEDon();
+
+        // CLIMBER
+        m_Climber.control(OI.getSolenoidReverse(), OI.getSolenoidForward(), OI.getArmsUp(),
+          OI.getArmsDown(), OI.getNxtClimb(), OI.getFinClimb(), OI.getClimbEStop());
 
         // testing purposaes, changes intake pnuematics
         if (OI.forwardIntake()) {
@@ -278,18 +282,6 @@ public class SuperStructure extends Base {
             m_shootingDistanceFirstRun = true;
         }
 
-        // climberControl(OI.getSolenoidReverse(), OI.getSolenoidForward(),
-        // OI.getArmsUp(), OI.getArmsDown());
-        // if (OI.getZeroOfTurnTableTalon()) {
-        // m_Shooter.setTurnTableToZero();
-        // }
-        if (OI.getArmsDown() && OI.getArmsUp()) {
-            m_Climber.setClimberToZero();
-        } else {
-            climberControl(OI.getSolenoidReverse(), OI.getSolenoidForward(),
-                    OI.getArmsUp(), OI.getArmsDown());
-        }
-
         // // TURNTABLE
         if (OI.getAimTurret()) {
             // m_Shooter.aimTurret(m_VisionShooter.getYaw());
@@ -325,19 +317,6 @@ public class SuperStructure extends Base {
         if (OI.negHundredTurnTable()) {// B
             m_Shooter.setTurnTableAngleHundred();
         }
-
-        // CLIMBER
-
-        // left & right bumpers hold down
-        // if (!m_Climber.isCalibrated()) {
-        // m_Climber.setClimberToZero();
-        // }
-        if (OI.getArmsDown() && OI.getArmsUp()) {
-            m_Climber.setClimberToZero();
-        } else {
-            climberControl(OI.getSolenoidReverse(), OI.getSolenoidForward(),
-                    OI.getArmsUp(), OI.getArmsDown());
-        }
     }
 
     // auto coding
@@ -348,6 +327,7 @@ public class SuperStructure extends Base {
         m_auto.autonomousInit();
         m_Intake.autonomousInit();
         m_Climber.hooksReverse();
+        m_Climber.eStop();
         m_VisionShooter.LEDon();
 
         m_timestamp = Timer.getFPGATimestamp();
@@ -750,24 +730,27 @@ public class SuperStructure extends Base {
         m_phCompressor.enableAnalog(90, 110);
         m_Shooter.TurnTable(false, false);
         m_VisionShooter.LEDon();
+        m_Climber.hooksReverse();
+        m_Climber.eStop();
     }
 
     @Override
     public void testPeriodic() {
-        // climberControl(OI.getSolenoidReverse(), OI.getSolenoidForward(),
-        // OI.getArmsUp(), OI.getArmsDown());
+        // CLIMBER
+        m_Climber.control(OI.getSolenoidReverse(), OI.getSolenoidForward(), OI.getArmsUp(), OI.getArmsDown(), 
+            OI.getNxtClimb(), OI.getFinClimb(), OI.getClimbEStop());
 
-        // if (OI.getDriveForward()) {
-        // m_SwerveDrive.drive(0.01, 0.00, 0, false);
-        // } else if (OI.getDriveLeft()) {
-        // m_SwerveDrive.drive(0.00, 0.01, 0, false);
-        // } else if (OI.getDriveReverse()) {
-        // m_SwerveDrive.drive(-0.01, 0.00, 0, false);
-        // } else if (OI.getDriveRight()) {
-        // m_SwerveDrive.drive(0.00, -0.01, 0, false);
-        // } else {
-        // m_SwerveDrive.drive(0, 0, 0, false);
-        // }
+        if (OI.getDriveForward()) {
+            m_SwerveDrive.drive(0.01, 0.00, 0, false);
+        } else if (OI.getDriveLeft()) {
+            m_SwerveDrive.drive(0.00, 0.01, 0, false);
+        } else if (OI.getDriveReverse()) {
+            m_SwerveDrive.drive(-0.01, 0.00, 0, false);
+        } else if (OI.getDriveRight()) {
+            m_SwerveDrive.drive(0.00, -0.01, 0, false);
+        } else {
+            m_SwerveDrive.drive(0, 0, 0, false);
+        }
 
         // // TURNTABLE
 
@@ -788,25 +771,5 @@ public class SuperStructure extends Base {
         // m_Shooter.TurnTable(OI.getRightTurntable(),
         // OI.getLeftTurntable());
         // }
-    }
-
-    private void climberControl(boolean shortHookBack, boolean shortHookForward, boolean armsUp, boolean armsDown) {
-
-        // solenoids
-        if (shortHookBack) {
-            m_Climber.hooksReverse();
-        } else if (shortHookForward) {
-            m_Climber.hooksForward();
-        }
-        // motors
-        if (armsUp) {
-            m_Climber.armsUp();
-        } else if (armsDown) {
-            m_Climber.armsDown();
-
-        } else {
-            m_Climber.armsStop();
-        }
-
     }
 }

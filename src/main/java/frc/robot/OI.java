@@ -157,6 +157,21 @@ public class OI {
         return xboxClimb.getLeftBumper();
     }
 
+    static public boolean getNxtClimb() {
+        return xboxClimb.getXButtonPressed();
+    }
+
+    static public boolean getFinClimb() {
+        return xboxClimb.getYButtonPressed();
+    }
+
+    static public boolean getClimbEStop() {
+        double x1 = xboxClimb.getRightTriggerAxis();
+        double x2 = xboxClimb.getLeftTriggerAxis();
+        double threshhold = 0.5;
+        return x1 > threshhold || x2 > threshhold;
+    }
+
     static public boolean fortFiveTurnTable() {
         return xboxShooterTesting.getAButton();
         // return false;
