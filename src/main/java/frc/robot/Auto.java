@@ -23,7 +23,10 @@ public class Auto {
     PathPlannerTrajectory trajectory3;
     PathPlannerTrajectory trajectory_auto1_part1;
     PathPlannerTrajectory trajectory_auto1_part2;
-
+    PathPlannerTrajectory trajectory_auto1b_part1;
+    PathPlannerTrajectory trajectory_auto1b_part2;
+    PathPlannerTrajectory trajectory_auto1b_part3;
+    PathPlannerTrajectory trajectory_auto1b_part4;
     PathPlannerTrajectory m_chosenTrajectory;
 
     int m_currentAutoStep = 0;
@@ -47,7 +50,15 @@ public class Auto {
         trajectory2 = PathPlanner.loadPath("auto2", 1, 1);
         trajectory_auto1_part1 = PathPlanner.loadPath("auto1_part1", 4, 2.4);
         trajectory_auto1_part2 = PathPlanner.loadPath("auto1_part2", 4, 2.4);
+
+        trajectory_auto1b_part1 = PathPlanner.loadPath("auto1b_part1", 3.5, 2.3);
+        trajectory_auto1b_part2 = PathPlanner.loadPath("auto1b_part2", 3.5, 2.3);
+        trajectory_auto1b_part3 = PathPlanner.loadPath("auto1b_part3", 3.5, 2.3);
+        trajectory_auto1b_part4 = PathPlanner.loadPath("auto1b_part4", 3.5, 2.3);
+
         trajectory3 = PathPlanner.loadPath("auto3", 1, 1);
+        // trajectory_auto4_part1 = PathPlanner.loadPath("auto4_part1", 4, 2.4);
+        // trajectory_auto4_part2 = PathPlanner.loadPath("auto4_part2", 4, 2.4);
         
 
         // Shuffleboard.getTab("super").addNumber("timer", ()->timer.get());
@@ -76,6 +87,30 @@ public class Auto {
 
     public void setupAuto1p2() {
         m_chosenTrajectory = trajectory_auto1_part2;
+        timer.start();
+        timer.reset();
+    }
+
+    public void setupAuto1bp1() {
+        m_chosenTrajectory = trajectory_auto1b_part1;
+        timer.start();
+        timer.reset();
+    }
+
+    public void setupAuto1bp2() {
+        m_chosenTrajectory = trajectory_auto1b_part2;
+        timer.start();
+        timer.reset();
+    }
+
+    public void setupAuto1bp3() {
+        m_chosenTrajectory = trajectory_auto1b_part3;
+        timer.start();
+        timer.reset();
+    }
+
+    public void setupAuto1bp4() {
+        m_chosenTrajectory = trajectory_auto1b_part4;
         timer.start();
         timer.reset();
     }

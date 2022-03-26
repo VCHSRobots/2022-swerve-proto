@@ -38,7 +38,7 @@ public class Shooter extends Base {
     private final double kZeroOffsetDegrees = -165;
     private final double kAngleOffset = 180;
     private final double kMinAngle = -135;
-    private final double kMaxAngle = 300;
+    private final double kMaxAngle = 275;
     private final double kMaxAngularVelocity = 600.0; // keep within 560, started at 135
     private final double kMaxAngularAcceleration = 12000.0; // keep within 5700, started at 455
     private double m_targetAngle = 0;
@@ -67,18 +67,19 @@ public class Shooter extends Base {
 
     public Shooter() {
         distanceRPMPoint[] distanceRPMlist = {
-                new distanceRPMPoint(8, 2480, 2350),
-                new distanceRPMPoint(8.5, 2550, 2370),
-                new distanceRPMPoint(9, 2650, 2400),
-                new distanceRPMPoint(10, 2770, 2400), 
-                new distanceRPMPoint(11, 2850, 2500),
-                new distanceRPMPoint(11.5, 2850, 2590),
-                new distanceRPMPoint(12, 2900, 2640),
-                new distanceRPMPoint(12.5, 2960, 2680),
-                new distanceRPMPoint(13, 3050, 2750),
-                new distanceRPMPoint(14, 3230, 2920),
-                new distanceRPMPoint(17, 3800, 2960)
-        };
+                new distanceRPMPoint(8.0, 2250, 2500),
+                new distanceRPMPoint(8.5, 2250, 2580),
+                new distanceRPMPoint(9.25, 2300, 2640),
+                new distanceRPMPoint(10, 2300, 2750), 
+                new distanceRPMPoint(10.5, 2400, 2830),
+                new distanceRPMPoint(11, 2450, 2870),
+                new distanceRPMPoint(11.5, 2500, 2900),
+                new distanceRPMPoint(12, 2600, 2990),
+                new distanceRPMPoint(12.5, 2700, 3000),
+                new distanceRPMPoint(13, 2850, 3050),
+                new distanceRPMPoint(13.5, 3000, 3100),
+                new distanceRPMPoint(14, 3100, 3250)
+        };  
 
         for (distanceRPMPoint point : distanceRPMlist) {
             m_interpolatingSpeeds_bot.put(new InterpolatingDouble(point.distance),
@@ -141,16 +142,16 @@ public class Shooter extends Base {
         // top settings
         baseConfig.slot0.kI = 0.0;
         baseConfig.slot0.kD = 0.0;
-        baseConfig.slot0.kF = 0.050;
-        baseConfig.slot0.kP = 0.02; // 0.03
+        baseConfig.slot0.kF = 0.0515;
+        baseConfig.slot0.kP = 0.05; // 0.03
         m_shootTalonTop.configAllSettings(baseConfig, 100);
 
         // TalonFXConfiguration botConfig = baseConfig;
         // bot settings
         baseConfig.slot0.kI = 0.0;
         baseConfig.slot0.kD = 0.0;
-        baseConfig.slot0.kF = 0.053; // after distance tuning, was 0.051
-        baseConfig.slot0.kP = 0.2; // after distance tuning, was 0.03
+        baseConfig.slot0.kF = 0.049; // after distance tuning, was 0.051
+        baseConfig.slot0.kP = 0.3; // after distance tuning, was 0.03
         m_shootTalonBot.configAllSettings(baseConfig, 100);
 
         m_shootTalonBot.setNeutralMode(NeutralMode.Coast);
@@ -272,7 +273,7 @@ public class Shooter extends Base {
     }
 
     public void warmUp() {
-        shootingRPM(2400, 2400);
+        shootingRPM(2400, 2700);
     }
 
     // Shooting function with Distance. (NOT READY!!)
@@ -350,7 +351,7 @@ public class Shooter extends Base {
                 - m_shootTalonBot.getSelectedSensorVelocity());
         boolean isBotFast = ticksPer100msToRPM(m_shootTalonBot.getSelectedSensorVelocity()) > 1300;
 
-        if (Math.abs(errorBotRPM) < 110 && Math.abs(errorTopRPM) < 125 && isBotFast) {
+        if (Math.abs(errorBotRPM) < 50 && Math.abs(errorTopRPM) < 70 && isBotFast) {
             m_isOKtoShootCounter++;
         } else {
             m_isOKtoShootCounter = 0;
@@ -368,6 +369,11 @@ public class Shooter extends Base {
         m_shootTalonBot.setVoltage(2.75);
         m_shootTalonTop.setVoltage(2.75);
 
+    }
+
+    public void setVoltage(double voltagetop, double voltagebot) {
+        m_shootTalonBot.setVoltage(voltagebot);
+        m_shootTalonTop.setVoltage(voltagetop);
     }
 
     public void turnMotorsOff() {

@@ -48,20 +48,26 @@ public class Intake extends Base {
     NetworkTableEntry ntColorFilterEnable = debugTab.add("Color Filter Enable", true)
             .withWidget(BuiltInWidgets.kToggleButton).withPosition(0, 1).getEntry();
 
-    // NetworkTableEntry ntIntakeSpeed = debugTab.add("intake actual", 0.15).getEntry();
-    // NetworkTableEntry ntMoverSpeed = debugTab.add("mover actual", 0.15).getEntry();
-    // NetworkTableEntry ntShooterLoaderSpeed = debugTab.add("loader actual", 0.15).getEntry();
+    // NetworkTableEntry ntIntakeSpeed = debugTab.add("intake actual",
+    // 0.15).getEntry();
+    // NetworkTableEntry ntMoverSpeed = debugTab.add("mover actual",
+    // 0.15).getEntry();
+    // NetworkTableEntry ntShooterLoaderSpeed = debugTab.add("loader actual",
+    // 0.15).getEntry();
 
-    // NetworkTableEntry ntMotorSpeed = debugTab.add("Intake percent out", 0.3).getEntry();
-    // NetworkTableEntry ntBTPercentOut = debugTab.add("BT percent out", 0.5).getEntry();
-    // NetworkTableEntry ntLoaderPercentOut = debugTab.add("loader percent out", 0.5).getEntry();
+    // NetworkTableEntry ntMotorSpeed = debugTab.add("Intake percent out",
+    // 0.3).getEntry();
+    // NetworkTableEntry ntBTPercentOut = debugTab.add("BT percent out",
+    // 0.5).getEntry();
+    // NetworkTableEntry ntLoaderPercentOut = debugTab.add("loader percent out",
+    // 0.5).getEntry();
     private final double kIntakeOut = 0.9;
     private final double kBTOut = 0.8;
     private final double kLoaderOut = 0.5;
     private final double kLoaderLoadingSpeed = 0.8;
 
     enum STATE {
-        A, B, C, D, E;
+        A, B, C, D, E, F;
     };
 
     STATE m_state = STATE.A;
@@ -88,7 +94,8 @@ public class Intake extends Base {
         // debugTab.addBoolean("Ball at Load", () -> !m_loadDIO.get());
         // debugTab.addNumber("Intake Vel", () -> m_intake.getSelectedSensorVelocity());
         // debugTab.addNumber("Middle Vel", () -> m_mover.getSelectedSensorVelocity());
-        // debugTab.addNumber("Loader Vel", () -> m_shooterLoader.getSelectedSensorVelocity());
+        // debugTab.addNumber("Loader Vel", () ->
+        // m_shooterLoader.getSelectedSensorVelocity());
         // debugTab.addNumber("Intake Cur", () -> m_intake.getSupplyCurrent());
         // debugTab.addNumber("Middle Cur", () -> m_mover.getSupplyCurrent());
         // debugTab.addNumber("Loader Cur", () -> m_shooterLoader.getSupplyCurrent());
@@ -102,7 +109,9 @@ public class Intake extends Base {
     }
 
     public void turnOn() {
-        m_state = STATE.B;
+        if (getNumberOfBallsHolding() < 2) {
+            m_state = STATE.B;
+        }
     }
 
     @Override
@@ -139,6 +148,11 @@ public class Intake extends Base {
                     // don't care
                 }
 
+                // move movers if ball not at load shooter place
+                if(isBallAtMiddle() && !isBallAtLoad()) {
+                    m_state = STATE.F;
+                }
+
                 break;
             case B:
                 // intake, bt, and load ON
@@ -156,38 +170,13 @@ public class Intake extends Base {
                     m_state = STATE.C;
                 }
 
-                switch (ntColorFilterEnable.getBoolean(true) ? DriverStation.getAlliance() : Alliance.Invalid) {
-                    case Blue:
-                        if (m_colorSensor.isRedBallDetected()) {
-
-                            isChanging = true;
-
-                            m_timer.reset();
-                            m_timer.start();
-                            // turns back to normal (isChanging = False) after 1 seconds
-                        }
-                        break;
-                    case Red:
-                        if (m_colorSensor.isBlueBallDetected()) {
-
-                            isChanging = true;
-
-                            m_timer.reset();
-                            m_timer.start();
-                            // turns back to normal (isChanging = False) after 1 seconds
-                        }
-                        break;
-                    case Invalid:
-                        break;
-                }
+                // SPIT BALL OUT IF BAD (WRONG COLOR) :)))))
+                spitWrongColorBallOut();
 
                 break;
             case C:
                 // intake, mover, ON, loader OFF
                 // intake down
-                if (stopIntake) {
-                    m_state = STATE.A;
-                }
 
                 // inputs
                 if (startIntake) {
@@ -198,35 +187,18 @@ public class Intake extends Base {
                 }
                 if (isBallAtLoad()) {
                     // don't care, ball already there
+                } else {
+                    m_state = STATE.B;
                 }
-                if (isBallAtMiddle()) {
+                if (isBallAtMiddle() && isBallAtLoad()) {
                     // 2nd ball loaded, stop intaking
                     m_state = STATE.A;
                     hasDetectedMiddle = true;
                 }
+
                 // SPIT BALL OUT IF BAD (WRONG COLOR) :))))))
-                switch (ntColorFilterEnable.getBoolean(true) ? DriverStation.getAlliance() : Alliance.Invalid) {
-                    case Blue:
-                        if (m_colorSensor.isRedBallDetected()) {
-                            isChanging = true;
-                            m_timer.reset();
-                            m_timer.start();
-                            // turns back to normal (isChanging = False) after 1 seconds
-                        }
-                        break;
-                    case Red:
-                        if (m_colorSensor.isBlueBallDetected()) {
+                spitWrongColorBallOut();
 
-                            isChanging = true;
-
-                            m_timer.reset();
-                            m_timer.start();
-                            // turns back to normal (isChanging = False) after 1 seconds
-                        }
-                        break;
-                    case Invalid:
-                        break;
-                }
                 break;
             case D:
                 // state changes to E after timer (inbetween state)
@@ -251,6 +223,25 @@ public class Intake extends Base {
                 }
 
                 break;
+            case F:
+                // move ball at color sensor location to shooter loader
+                // intake up
+
+                if (startIntake) {
+                    m_state = STATE.B;
+                }
+
+                if (stopIntake) {
+                    m_state = STATE.A;
+                }
+
+                // ball detected right before shooter, go to next state
+                if (isBallAtLoad()) {
+                    m_state = STATE.A;
+                }
+
+                break;
+
         }
 
         // actual motor states
@@ -264,7 +255,7 @@ public class Intake extends Base {
 
                 // add later
                 // m_doublePCM.set(Value.kReverse);
-                setIntakePnuematic(false);
+                setIntakePnuematic(false); // TODO: uncomment this
 
                 break;
             case B:
@@ -325,6 +316,17 @@ public class Intake extends Base {
                 m_mover.set(ControlMode.PercentOutput, kBTOut);
                 m_shooterLoader.set(ControlMode.PercentOutput, kLoaderLoadingSpeed);
                 break;
+            case F:
+                // mover, ON,intake, loader OFF
+                // intake up
+
+                m_intake.set(ControlMode.PercentOutput, 0);
+                m_mover.set(ControlMode.PercentOutput, kBTOut);
+
+                m_shooterLoader.set(ControlMode.PercentOutput, kLoaderOut);
+
+                setIntakePnuematic(false);
+                break;
         }
 
         // sets nt values for motors
@@ -346,6 +348,7 @@ public class Intake extends Base {
     // Goes back to the first state
     public void turnOffLoadShooter() {
         m_state = STATE.A;
+        // TODO: put this back to STATE.A
     }
 
     public void stopMotors() {
@@ -357,8 +360,11 @@ public class Intake extends Base {
 
     // continues spinning intake motors if ball is there while shooting
     public void countinueIntakeMotors() {
-        m_state = STATE.A;
-
+        if (isBallAtLoad()) {
+            m_state = STATE.A;
+        } else {
+            m_state = STATE.F;
+        }
     }
 
     // spit out ball
@@ -397,45 +403,36 @@ public class Intake extends Base {
         return !m_middleDIO.get();
     }
 
-    private void colorPlaceholder() {
-        switch (DriverStation.getAlliance()) {
-            case Blue:
-                if (ColorSensor.redBallDetected) {
-                    // m_motorSpeeds = -.3;
-                    isChanging = true;
-                    // turns back to normal (isChanging = False) after 2.5 seconds
-                } else if (ColorSensor.blueBallDetected && m_timer.get() == 0) {
-
-                    // m_state = STATE.D;
-                    m_timer.reset();
-                    m_timer.start();
-
-                }
-                break;
-            case Red:
-                if (ColorSensor.blueBallDetected) {
-                    // m_motorSpeeds = -.3;
-                    isChanging = true;
-                    // turns back to normal (isChanging = False) after 2.5 seconds
-                } else if (ColorSensor.redBallDetected && m_timer.get() == 0) {
-                    // m_state = STATE.D;
-                    m_timer.reset();
-                    m_timer.start();
-
-                }
-                break;
-            case Invalid:
-                // m_state = STATE.D;
-                m_timer.reset();
-                m_timer.start();
-                break;
-        }
-    }
-
     public int getNumberOfBallsHolding() {
         int count = 0;
         count += isBallAtLoad() ? 1 : 0;
         count += isBallAtMiddle() ? 1 : 0;
         return count;
+    }
+
+    private void spitWrongColorBallOut() {
+        switch (ntColorFilterEnable.getBoolean(true) ? DriverStation.getAlliance() : Alliance.Invalid) {
+            case Blue:
+                if (m_colorSensor.isRedBallDetected()) {
+                    // turns back to normal (isChanging = False) after 1 seconds
+                    startSpitOutTimer();
+                }
+                break;
+            case Red:
+                if (m_colorSensor.isBlueBallDetected()) {
+                    // turns back to normal (isChanging = False) after 1 seconds
+                    startSpitOutTimer();
+                }
+                break;
+            case Invalid:
+                break;
+        }
+    }
+
+    private void startSpitOutTimer() {
+        isChanging = true;
+
+        m_timer.reset();
+        m_timer.start();
     }
 }
