@@ -200,6 +200,12 @@ public class OI {
         return xboxShooterTesting.getLeftTriggerAxis() > 0.3;
         // return false;
     }
+
+    static public boolean driveAndShoot() {
+        return xboxDrive.getXButton();
+        // return false;
+    }
+
 }
 
 /*

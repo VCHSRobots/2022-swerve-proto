@@ -282,6 +282,16 @@ public class SuperStructure extends Base {
             m_Shooter.shootingDist(8);
         } else if (OI.getAimTurret()) {
             m_Shooter.shootingDist(8);
+        } else if (m_Intake.getBothBallsLoaded()) {
+            // speed up shooter automatically
+            m_Shooter.shootingDist(8);
+        } else if (OI.driveAndShoot()) {
+            m_Shooter.shootingDist(m_state.getVelocityTurretDegrees());
+                if (m_Shooter.canShootWithVelocity()) {
+                    m_Intake.loadShooter();
+                } else {
+                    m_Intake.turnOffLoadShooter();
+                }
         } else {
             m_Shooter.turnOff();
         }

@@ -134,4 +134,8 @@ public class VisionShooter extends Base {
         NetworkTableInstance.getDefault().getTable("limelight").getEntry("ledMode").setNumber(2);
     }
 
+    public boolean canSeeTarget() {
+        return hasLastTarget;
+    }
+
 }

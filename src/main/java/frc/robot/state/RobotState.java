@@ -4,6 +4,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.geometry.Twist2d;
 import edu.wpi.first.math.interpolation.TimeInterpolatableBuffer;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
@@ -11,12 +12,16 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Timer;
 import frc.robot.util.InterpolatingDouble;
 import frc.robot.util.InterpolatingTreeMap;
+import frc.robot.util.MovingAverage;
+import frc.robot.util.MovingAverageTwist2d;
 
 public class RobotState {
     // SwerveDriveOdometry m_odometry;
     Pose2d m_pose;
     Rotation2d m_turretAngle;
     double m_lastTimestamp;
+
+    MovingAverageTwist2d m_movingAverageTwist2d = new MovingAverageTwist2d(5);
 
     final public Pose2d kFieldToCenterHub = new Pose2d(new Translation2d(Units.inchesToMeters(324), Units.inchesToMeters(162)),
             new Rotation2d());
@@ -36,8 +41,22 @@ public class RobotState {
 
     public void update(Pose2d pose, Rotation2d turretRotation) {
         double timestamp = Timer.getFPGATimestamp();
+        Pose2d prevPose = m_fieldToRobot.getSample(timestamp);
+
         m_fieldToRobot.addSample(timestamp, pose);
         m_robotToTurret.addSample(timestamp, new Pose2d(kRobotToTurretTranslation, turretRotation));
+
+        try {
+            
+            Transform2d poseDifference = pose.minus(prevPose);
+            Twist2d currentTwist2d = new Twist2d(poseDifference.getX(), poseDifference.getY(), poseDifference.getRotation().getRadians());
+    
+            m_movingAverageTwist2d.add(currentTwist2d);
+        
+        } catch (NullPointerException e) {
+            System.out.println(e);
+        }
+        
     }
 
     public Pose2d getFieldToRobotPose(double sampleTimeSeconds) {
@@ -80,4 +99,76 @@ public class RobotState {
                 / (Math.tan(horizontalToCameraAngle + pitch.getRadians()) * Math.cos(yaw.getRadians()));
         return distance;
     }
+
+    
+    public double getRotationVelocity() {
+        return m_movingAverageTwist2d.getAverage().dtheta;
+    }
+
+    /**
+     * 
+     * Gets the degrees the turret needs to be for the shooter to shoot at the target
+     * 
+     * @return degrees the turret should be at to shoot
+     */
+    public double getVelocityTurretDegrees() {
+        
+        Twist2d predictedTwist2d = m_movingAverageTwist2d.getAverage();
+        double radiansToDegrees = 180 / Math.PI;
+
+        // don't use this, its a rough way to estimate ball time in the air based on our distance to the target
+        double predictedBallAirTime = (.6 * Math.atan(getPredictedDistanceToTarget()-10)) + 1;
+
+        double predictedY = kFieldToCenterHub.getY() + (predictedTwist2d.dy * 5.0) + (predictedTwist2d.dy * predictedBallAirTime);
+        double predictedX = kFieldToCenterHub.getX() + (predictedTwist2d.dx * 5.0) + (predictedTwist2d.dx * predictedBallAirTime);
+        // double predictedTheta = kFieldToCenterHub.getRotation().getRadians() + predictedLocation.dtheta;
+
+        double predictedRadiansOfTurret = Math.atan2(predictedY, predictedX);
+
+        return predictedRadiansOfTurret * radiansToDegrees;
+
+    }
+
+    /**
+     * 
+     * Gets the degrees offset for the turntable that the shooter needs to be to shoot at the target
+     * 
+     * @return degrees offset the shooter should be to shoot
+     */
+    public double getVelocityTurretDegreesOffset() {
+
+        return (getVelocityTurretDegrees() * 180/Math.PI) - getTurretAimingAngle().getRadians();
+
+    }
+
+    /**
+     * 
+     * Gets predicted distance from robot to target based on odometry
+     * 
+     * @return predicted distance with velocity based on odometry
+     */
+    public double getPredictedDistanceToTarget() {
+
+        Twist2d predictedTwist2d = m_movingAverageTwist2d.getAverage();
+        
+        double predictedY = kFieldToCenterHub.getY() + (predictedTwist2d.dy * 5.0);
+        double predictedX = kFieldToCenterHub.getX() + (predictedTwist2d.dx * 5.0);
+
+        return Math.sqrt(Math.pow(predictedY, 2) + Math.pow(predictedX, 2));
+    }
+
+    /**
+     * 
+     * Creates an offset for the target distance to the robot by utilizing the limelight
+     * 
+     * @param yaw limelight yaw
+     * @param pitch limelight pitch
+     * @return predicted distance offset to target with aid from limelight
+     */
+    public double getPredictedDistanceToTargetOffset(Rotation2d yaw, Rotation2d pitch) {
+        
+        return getPredictedDistanceToTarget() - getCameraToTargetDistance(yaw, pitch);
+
+    }
+
 }
