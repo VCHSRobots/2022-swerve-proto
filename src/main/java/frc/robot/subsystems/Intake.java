@@ -48,13 +48,19 @@ public class Intake extends Base {
     NetworkTableEntry ntColorFilterEnable = debugTab.add("Color Filter Enable", true)
             .withWidget(BuiltInWidgets.kToggleButton).withPosition(0, 1).getEntry();
 
-    // NetworkTableEntry ntIntakeSpeed = debugTab.add("intake actual", 0.15).getEntry();
-    // NetworkTableEntry ntMoverSpeed = debugTab.add("mover actual", 0.15).getEntry();
-    // NetworkTableEntry ntShooterLoaderSpeed = debugTab.add("loader actual", 0.15).getEntry();
+    // NetworkTableEntry ntIntakeSpeed = debugTab.add("intake actual",
+    // 0.15).getEntry();
+    // NetworkTableEntry ntMoverSpeed = debugTab.add("mover actual",
+    // 0.15).getEntry();
+    // NetworkTableEntry ntShooterLoaderSpeed = debugTab.add("loader actual",
+    // 0.15).getEntry();
 
-    // NetworkTableEntry ntMotorSpeed = debugTab.add("Intake percent out", 0.3).getEntry();
-    // NetworkTableEntry ntBTPercentOut = debugTab.add("BT percent out", 0.5).getEntry();
-    // NetworkTableEntry ntLoaderPercentOut = debugTab.add("loader percent out", 0.5).getEntry();
+    // NetworkTableEntry ntMotorSpeed = debugTab.add("Intake percent out",
+    // 0.3).getEntry();
+    // NetworkTableEntry ntBTPercentOut = debugTab.add("BT percent out",
+    // 0.5).getEntry();
+    // NetworkTableEntry ntLoaderPercentOut = debugTab.add("loader percent out",
+    // 0.5).getEntry();
     private final double kIntakeOut = 0.9;
     private final double kBTOut = 0.8;
     private final double kLoaderOut = 0.5;
@@ -88,7 +94,8 @@ public class Intake extends Base {
         // debugTab.addBoolean("Ball at Load", () -> !m_loadDIO.get());
         // debugTab.addNumber("Intake Vel", () -> m_intake.getSelectedSensorVelocity());
         // debugTab.addNumber("Middle Vel", () -> m_mover.getSelectedSensorVelocity());
-        // debugTab.addNumber("Loader Vel", () -> m_shooterLoader.getSelectedSensorVelocity());
+        // debugTab.addNumber("Loader Vel", () ->
+        // m_shooterLoader.getSelectedSensorVelocity());
         // debugTab.addNumber("Intake Cur", () -> m_intake.getSupplyCurrent());
         // debugTab.addNumber("Middle Cur", () -> m_mover.getSupplyCurrent());
         // debugTab.addNumber("Loader Cur", () -> m_shooterLoader.getSupplyCurrent());
@@ -360,8 +367,11 @@ public class Intake extends Base {
 
     // continues spinning intake motors if ball is there while shooting
     public void countinueIntakeMotors() {
-        m_state = STATE.A;
-
+        if (isBallAtLoad()) {
+            m_state = STATE.A;
+        } else {
+            m_state = STATE.B;
+        }
     }
 
     // spit out ball

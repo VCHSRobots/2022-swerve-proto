@@ -273,7 +273,7 @@ public class Shooter extends Base {
     }
 
     public void warmUp() {
-        shootingRPM(2400, 2400);
+        shootingRPM(2400, 2700);
     }
 
     // Shooting function with Distance. (NOT READY!!)
@@ -351,7 +351,7 @@ public class Shooter extends Base {
                 - m_shootTalonBot.getSelectedSensorVelocity());
         boolean isBotFast = ticksPer100msToRPM(m_shootTalonBot.getSelectedSensorVelocity()) > 1300;
 
-        if (Math.abs(errorBotRPM) < 50 && Math.abs(errorTopRPM) < 50 && isBotFast) {
+        if (Math.abs(errorBotRPM) < 50 && Math.abs(errorTopRPM) < 70 && isBotFast) {
             m_isOKtoShootCounter++;
         } else {
             m_isOKtoShootCounter = 0;

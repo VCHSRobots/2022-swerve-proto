@@ -138,6 +138,7 @@ public class SwerveDrive extends Base {
     // }
 
     public void resetOdometry(Pose2d pose) {
+        m_gyro.setAngleAdjustment(pose.getRotation().getDegrees());
         m_odometry.resetPosition(pose, getGyroRotation2d());
     }
 
@@ -259,10 +260,11 @@ public class SwerveDrive extends Base {
             m_fieldRelative = false;
         }
         if (resetOdometry) {
-            zeroHeading();
+            // zeroHeading();
             Translation2d againstRightWall =  new Translation2d(7.75, 0.5);
             Translation2d insideTopParallelEdge = new Translation2d(6, 4.75);
-            m_odometry.resetPosition(new Pose2d(insideTopParallelEdge, new Rotation2d()), getGyroRotation2d());
+            resetOdometry(new Pose2d(insideTopParallelEdge, new Rotation2d()));
+            // m_odometry.resetPosition(new Pose2d(insideTopParallelEdge, new Rotation2d()), getGyroRotation2d());
         }
         updateOdometry();
     }
