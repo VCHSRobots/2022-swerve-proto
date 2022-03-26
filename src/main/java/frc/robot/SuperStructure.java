@@ -201,123 +201,123 @@ public class SuperStructure extends Base {
 
         // INTAKE / SHOOTING
 
-        // if (OI.getUnjam()) {
-        //     // m_Shooter.shootingRPM(2700, 2700);
-        //     // if (m_Intake.getNumberOfBallsHolding() == 0) {
-        //     // m_barfTimerStarted = false;
-        //     // m_Timer.reset();
-        //     // m_Timer.stop();
-        //     // m_Intake.turnOffLoadShooter();
-        //     // }
-        //     // if (m_barfTimerStarted && m_Timer.advanceIfElapsed(0.5)) {
-        //     // m_Intake.loadShooter();
-        //     // } else if (!m_barfTimerStarted) {
-        //     // m_Timer.reset();
-        //     // m_Timer.start();
-        //     // m_barfTimerStarted = true;
-        //     // }
-        //     m_Intake.unjamShooter();
+        if (OI.getUnjam()) {
+            // m_Shooter.shootingRPM(2700, 2700);
+            // if (m_Intake.getNumberOfBallsHolding() == 0) {
+            // m_barfTimerStarted = false;
+            // m_Timer.reset();
+            // m_Timer.stop();
+            // m_Intake.turnOffLoadShooter();
+            // }
+            // if (m_barfTimerStarted && m_Timer.advanceIfElapsed(0.5)) {
+            // m_Intake.loadShooter();
+            // } else if (!m_barfTimerStarted) {
+            // m_Timer.reset();
+            // m_Timer.start();
+            // m_barfTimerStarted = true;
+            // }
+            m_Intake.unjamShooter();
 
-        // } else if (OI.getBarf()) {
-        //     m_Shooter.setBarfVoltage();
-        //     if (m_Shooter.isSpinningFastEnoughForBarf()) {
-        //         m_Intake.loadShooter();
-        //     } else {
-        //         m_Intake.turnOffLoadShooter();
-        //     }
-        // } else if (OI.getRightTriggerForShooting()) {
-        //     // camera center shot
-        //     // m_Shooter.shootingRPM(3000, 2400);
-        //     // m_Shooter.shootingRPM(ntTopRPM.getDouble(0), ntBotRPM.getDouble(0));
-        //     if (m_shootingDistanceFirstRun) {
-        //         m_shootingDistance = m_VisionShooter.getDistance();
-        //         m_shootingDistanceFirstRun = false;
-        //     }
-        //     m_Shooter.shootingDist(m_shootingDistance);
-        //     if (m_Shooter.IsOkToShoot()) {
-        //         // Load shooter
-        //         m_Intake.loadShooter();
+        } else if (OI.getBarf()) {
+            m_Shooter.setBarfVoltage();
+            if (m_Shooter.isSpinningFastEnoughForBarf()) {
+                m_Intake.loadShooter();
+            } else {
+                m_Intake.turnOffLoadShooter();
+            }
+        } else if (OI.getRightTriggerForShooting()) {
+            // camera center shot
+            // m_Shooter.shootingRPM(3000, 2400);
+            // m_Shooter.shootingRPM(ntTopRPM.getDouble(0), ntBotRPM.getDouble(0));
+            if (m_shootingDistanceFirstRun) {
+                m_shootingDistance = m_VisionShooter.getDistance();
+                m_shootingDistanceFirstRun = false;
+            }
+            m_Shooter.shootingDist(m_shootingDistance);
+            if (m_Shooter.IsOkToShoot()) {
+                // Load shooter
+                m_Intake.loadShooter();
 
-        //     } else {
-        //         m_Intake.countinueIntakeMotors();
-        //     }
-        // } else if (OI.getRightBumperForWallShot()) {
-        //     // turn shooter on in rpm mode
-        //     // m_Shooter.shootingRPM(2500, 2650);
-        //     m_Shooter.shootingRPM(3000, 2420);
+            } else {
+                m_Intake.countinueIntakeMotors();
+            }
+        } else if (OI.getRightBumperForWallShot()) {
+            // turn shooter on in rpm mode
+            // m_Shooter.shootingRPM(2500, 2650);
+            m_Shooter.shootingRPM(3000, 2420);
 
-        //     if (m_Shooter.IsOkToShoot()) {
-        //         // Load shooter
-        //         m_Intake.loadShooter();
+            if (m_Shooter.IsOkToShoot()) {
+                // Load shooter
+                m_Intake.loadShooter();
 
-        //     } else {
-        //         m_Intake.countinueIntakeMotors();
-        //     }
-        // } else if (OI.getLeftBumperForTapeShot()) {
-        //     // 4000, 2900 for vision target on bot of screen
-        //     // m_Shooter.shootingRPM(5100, 3000);
-        //     m_Shooter.shootingRPM(2500, 2650); // tape speeds
-        //     if (m_Shooter.IsOkToShoot()) {
-        //         // load shooter
-        //         m_Intake.loadShooter();
-        //     } else {
-        //         m_Intake.turnOffLoadShooter();
-        //     }
-        // } else if (OI.xboxDrive.getYButton()) {
-        //     m_Shooter.shootingRPM(ntTopRPM.getDouble(0), ntBotRPM.getDouble(0));
-        //     if (m_Shooter.IsOkToShoot()) {
-        //         // load shooter
-        //         m_Intake.loadShooter();
-        //     } else {
-        //         m_Intake.turnOffLoadShooter();
-        //     }
-        // } else if (OI.getAimTurret()) {
-        //     m_Shooter.shootingRPM(3000, 2400);
-        // } else if (m_Intake.getBothBallsLoaded()) {
-        //     // speed up shooter automatically
-        //     m_Shooter.shootingRPM(3000, 2400);
-        // } else if (OI.driveAndShoot()) {
-        //     m_Shooter.shootingDist(m_state.GetPredictedDistanceToTarget());
-        //         if (m_Shooter.canShootWithVelocity()) {
-        //             m_Intake.loadShooter();
-        //         } else {
-        //             m_Intake.turnOffLoadShooter();
-        //         }
-        // } else {
-        //     m_Shooter.turnOff();
-        // } 
+            } else {
+                m_Intake.countinueIntakeMotors();
+            }
+        } else if (OI.getLeftBumperForTapeShot()) {
+            // 4000, 2900 for vision target on bot of screen
+            // m_Shooter.shootingRPM(5100, 3000);
+            m_Shooter.shootingRPM(2500, 2650); // tape speeds
+            if (m_Shooter.IsOkToShoot()) {
+                // load shooter
+                m_Intake.loadShooter();
+            } else {
+                m_Intake.turnOffLoadShooter();
+            }
+        } else if (OI.xboxDrive.getYButton()) {
+            m_Shooter.shootingRPM(ntTopRPM.getDouble(0), ntBotRPM.getDouble(0));
+            if (m_Shooter.IsOkToShoot()) {
+                // load shooter
+                m_Intake.loadShooter();
+            } else {
+                m_Intake.turnOffLoadShooter();
+            }
+        } else if (OI.getAimTurret()) {
+            m_Shooter.shootingRPM(3000, 2400);
+        } else if (m_Intake.getBothBallsLoaded()) {
+            // speed up shooter automatically
+            m_Shooter.shootingRPM(3000, 2400);
+        } else if (OI.driveAndShoot()) {
+            m_Shooter.shootingDist(m_state.getVelocityTurretDegrees());
+                if (m_Shooter.canShootWithVelocity()) {
+                    m_Intake.loadShooter();
+                } else {
+                    m_Intake.turnOffLoadShooter();
+                }
+        } else {
+            m_Shooter.turnOff();
+        } 
 
-        // // when shooting released, stop loading
-        // if (OI.getShootingReleased()) {
-        //     m_Intake.turnOffLoadShooter();
-        //     m_shootingDistanceFirstRun = true;
-        // }
+        // when shooting released, stop loading
+        if (OI.getShootingReleased()) {
+            m_Intake.turnOffLoadShooter();
+            m_shootingDistanceFirstRun = true;
+        }
 
-        // // // TURNTABLE
-        // if (OI.getAimTurret()) {
-        //     // m_Shooter.aimTurret(m_VisionShooter.getYaw());
-        //     m_Shooter.aimTurret(m_VisionShooter.getYaw());
-        // } else if (OI.aimWithPose()) {
-        //     m_Shooter.aimTurret(m_state.getTurretAimingAngle().getDegrees());
-        // } else if (OI.aimWithPose()) {
-        //     m_Shooter.setTurretAngle(m_state.getVelocityTurretDegrees());
-        // } else {
-        //     m_Shooter.TurnTable(OI.getRightTurntable(),
-        //             OI.getLeftTurntable());
-        // }
+        // // TURNTABLE
+        if (OI.getAimTurret()) {
+            // m_Shooter.aimTurret(m_VisionShooter.getYaw());
+            m_Shooter.aimTurret(m_VisionShooter.getYaw());
+        } else if (OI.aimWithPose()) {
+            m_Shooter.aimTurret(m_state.getTurretAimingAngle().getDegrees());
+        } else if (OI.aimWithPose()) {
+            m_Shooter.setTurretAngle(m_state.getVelocityTurretDegrees());
+        } else {
+            m_Shooter.TurnTable(OI.getRightTurntable(),
+                    OI.getLeftTurntable());
+        }
 
-        // if (OI.fortFiveTurnTable()) {// A
-        //     m_Shooter.setTurnTableAngleFortFive();
-        // }
-        // if (OI.hundredTurnTable()) {// X
-        //     m_Shooter.setTurnTableAngleHundred();
-        // }
-        // if (OI.negFortFiveTurnTable()) {// Y
-        //     m_Shooter.setTurnTableAngleNegFortFive();
-        // }
-        // if (OI.negHundredTurnTable()) {// B
-        //     m_Shooter.setTurnTableAngleHundred();
-        // }
+        if (OI.fortFiveTurnTable()) {// A
+            m_Shooter.setTurnTableAngleFortFive();
+        }
+        if (OI.hundredTurnTable()) {// X
+            m_Shooter.setTurnTableAngleHundred();
+        }
+        if (OI.negFortFiveTurnTable()) {// Y
+            m_Shooter.setTurnTableAngleNegFortFive();
+        }
+        if (OI.negHundredTurnTable()) {// B
+            m_Shooter.setTurnTableAngleHundred();
+        }
 
         m_Shooter.turnOff();
     }
