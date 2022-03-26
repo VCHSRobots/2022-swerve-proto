@@ -72,11 +72,12 @@ public class Shooter extends Base {
                 new distanceRPMPoint(9.25, 2300, 2640),
                 new distanceRPMPoint(10, 2300, 2750), 
                 new distanceRPMPoint(10.5, 2400, 2830),
-                new distanceRPMPoint(11, 2450, 2870),
+                new distanceRPMPoint(11, 2460, 2870),
                 new distanceRPMPoint(11.5, 2500, 2900),
-                new distanceRPMPoint(12, 2600, 2990),
+                new distanceRPMPoint(12, 2610, 2990),
                 new distanceRPMPoint(12.5, 2700, 3000),
-                new distanceRPMPoint(13, 2850, 3050),
+                new distanceRPMPoint(13, 2870, 3050),
+                
                 new distanceRPMPoint(13.5, 3000, 3100),
                 new distanceRPMPoint(14, 3100, 3250)
         };  
@@ -142,8 +143,8 @@ public class Shooter extends Base {
         // top settings
         baseConfig.slot0.kI = 0.0;
         baseConfig.slot0.kD = 0.0;
-        baseConfig.slot0.kF = 0.0515;
-        baseConfig.slot0.kP = 0.05; // 0.03
+        baseConfig.slot0.kF = 0.052;
+        baseConfig.slot0.kP = 0.059; // 0.03
         m_shootTalonTop.configAllSettings(baseConfig, 100);
 
         // TalonFXConfiguration botConfig = baseConfig;
