@@ -109,7 +109,9 @@ public class Intake extends Base {
     }
 
     public void turnOn() {
-        m_state = STATE.B;
+        if (getNumberOfBallsHolding() < 2) {
+            m_state = STATE.B;
+        }
     }
 
     @Override

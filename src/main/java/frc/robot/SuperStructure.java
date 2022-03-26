@@ -297,7 +297,9 @@ public class SuperStructure extends Base {
 
         // // TURNTABLE
         if (m_lastButtonWasClimber) {
-            m_Shooter.setTurretAngle(90);
+            if (Math.abs(m_Shooter.getTurretAngleDegrees() - 90) > 5) {
+                m_Shooter.setTurretAngle(90);
+            }
         } else if (OI.getAimTurret()) {
             // m_Shooter.aimTurret(m_VisionShooter.getYaw());
             if (m_VisionShooter.getTargetValid()) {
@@ -589,7 +591,11 @@ public class SuperStructure extends Base {
 
     public void Auto1b() {
         // default turret aiming code here
-
+        if (m_VisionShooter.getTargetValid()) {
+            m_Shooter.aimTurret(m_VisionShooter.getYaw());
+        } else {
+            m_Shooter.setTurretAngle(m_state.getTurretAimingAngle().getDegrees());
+        }
         // end turret code
 
         if (m_autoStep == 0) {
@@ -599,33 +605,26 @@ public class SuperStructure extends Base {
                 m_autoStep = 1;
                 m_Timer.reset();
                 m_Timer.start();
+                m_Intake.countinueIntakeMotors();
             }
             // always preheat shooter
-            m_Shooter.warmUp();
+            // m_Shooter.warmUp();
+            m_Shooter.shootingDist(Units.metersToFeet(3.13));
 
             // update with trajectory
             m_SwerveDrive.driveFromChassisSpeeds(m_auto.getNextChassisSpeeds(m_SwerveDrive.getPose2d()));
 
             // intake on
             m_Intake.turnOn();
-            // double targetAngle = -138;
-            // m_Shooter.setTurretAngle(targetAngle);
 
         } else if (m_autoStep == 1) {
             // trajectory over, holding 2 balls, shoot them
-            // double targetAngle = 168;
-            // m_Shooter.setTurretAngle(targetAngle);
-            // double angle = m_Shooter.getTurretAngleDegrees();
-            // if (angle < 0) {
-            //     angle += 360;
-            // }
             // shoot ball holding
             // if (m_shootingDistanceFirstRun) {
-            //     m_shootingDistance = m_VisionShooter.getDistance();
-            //     m_shootingDistanceFirstRun = false;
+            // m_shootingDistance = m_VisionShooter.getDistance();
+            // m_shootingDistanceFirstRun = false;
             // }
             m_Shooter.shootingDist(Units.metersToFeet(3.13));
-            // if (m_Shooter.IsOkToShoot() && Math.abs(targetAngle - angle) < 7) {
             if (m_Shooter.IsOkToShoot() && Math.abs(m_VisionShooter.getYaw()) < 4) {
                 m_Intake.loadShooter();
             } else {
@@ -637,171 +636,131 @@ public class SuperStructure extends Base {
                 if (m_zeroBallCounter > 7) {
                     m_zeroBallCounter = 0;
                     m_autoStep = 2;
-                    m_auto.setupAuto1p1();
+                    m_auto.setupAuto1bp2();
                     m_Timer.reset();
                     m_Timer.start();
                     m_shootingDistanceFirstRun = true;
-
                 }
             }
         } else if (m_autoStep == 2) {
-            // follow first trajectory to pick up 2 balls
+            // follow second trajectory to pick up 1 ball
             // move to next step when traj complete
             if (m_auto.isTrajectoryCompleted()) {
-                m_autoStep = 4;
+                m_autoStep = 3;
                 m_Timer.reset();
                 m_Timer.start();
+                m_Intake.countinueIntakeMotors();
             }
-            // warm up shooter if within 2 sec of traj end
-            if ((m_auto.m_chosenTrajectory.getTotalTimeSeconds() - m_Timer.get()) < 2) {
-                m_Shooter.warmUp();
-            } else {
-                m_Shooter.turnOff();
-            }
+            // m_Shooter.warmUp();
+            m_Shooter.shootingDist(Units.metersToFeet(3.7));
+
             // update with trajectory
             m_SwerveDrive.driveFromChassisSpeeds(m_auto.getNextChassisSpeeds(m_SwerveDrive.getPose2d()));
+
             m_Intake.turnOn();
-            double targetAngle = -138;
-            m_Shooter.setTurretAngle(targetAngle);
 
         } else if (m_autoStep == 3) {
-            // should have picked up 2 balls, or wait 1 second
-            // if (m_Intake.getNumberOfBallsHolding() > 1 || m_Timer.advanceIfElapsed(0.05))
-            // {
-            // m_autoStep = 4;
-            // }
-            // m_Shooter.warmUp();
-            // m_Intake.turnOn();
-
-        } else if (m_autoStep == 4) {
-            // shoot balls
-            // double targetAngle = -138;
-            // m_Shooter.setTurretAngle(targetAngle);
-            m_Shooter.aimTurret(m_VisionShooter.getYaw());
-
-            // shoot ball holding
-
-            // INCREASE SHOOTING RPM BY ABOUT 20
-            // m_Shooter.shootingRPM(3080, 2800);
-            if (m_shootingDistanceFirstRun) {
-                m_shootingDistance = m_VisionShooter.getDistance();
-                m_shootingDistanceFirstRun = false;
-            }
-            m_Shooter.shootingDist(11);
-
-            // if (m_Shooter.IsOkToShoot() && Math.abs(targetAngle -
-            // m_Shooter.getTurretAngleDegrees()) < 5) {
-            if (m_Shooter.IsOkToShoot() && Math.abs(m_VisionShooter.getYaw()) < 3) {
+            // shoot 1 ball
+            m_Shooter.shootingDist(Units.metersToFeet(3.7));
+            if (m_Shooter.IsOkToShoot() && Math.abs(m_VisionShooter.getYaw()) < 4) {
                 m_Intake.loadShooter();
             } else {
-                m_Intake.turnOffLoadShooter();
+                m_Intake.countinueIntakeMotors();
             }
-            // when no balls, move to next step
+
+            // when no more balls, go to next step
             if (m_Shooter.IsOkToShoot() && m_Intake.getNumberOfBallsHolding() == 0) {
                 m_zeroBallCounter++;
-                if (m_zeroBallCounter > 9) {
+                if (m_zeroBallCounter > 7) {
                     m_zeroBallCounter = 0;
-                    m_autoStep = 5;
+                    m_autoStep = 4;
+                    m_auto.setupAuto1bp3();
                     m_Timer.reset();
                     m_Timer.start();
                     m_shootingDistanceFirstRun = true;
                 }
             }
-        } else if (m_autoStep == 5) {
-            // wait 1/2 second, and setup next trajectory
-            if (m_Timer.advanceIfElapsed(0.1)) {
-                m_autoStep = 6;
-                m_auto.setupAuto1p2();
-            }
 
-            // m_Shooter.shootingRPM(3080, 2800);
-            m_Shooter.shootingDist(m_shootingDistance);
-
-            if (m_Shooter.IsOkToShoot()) {
-                m_Intake.loadShooter();
-            } else {
-                m_Intake.turnOffLoadShooter();
-            }
-        } else if (m_autoStep == 6) {
-            // follow second trajectory to loading station
+        } else if (m_autoStep == 4) {
+            // follow third trajectory to pick up 2 balls from loading station
+            // move to next step when traj complete
             if (m_auto.isTrajectoryCompleted()) {
-                m_autoStep = 8;
+                m_autoStep = 5;
                 m_Timer.reset();
                 m_Timer.start();
             }
-            // warm up shooter if within 2 sec of traj end
-            if ((m_auto.m_chosenTrajectory.getTotalTimeSeconds() - m_Timer.get()) < 2) {
-                m_Shooter.warmUp();
-            } else {
-                m_Shooter.turnOff();
-            }
+            m_Shooter.warmUp();
+            // m_Shooter.shootingDist(Units.metersToFeet(3.7));
+
             // update with trajectory
             m_SwerveDrive.driveFromChassisSpeeds(m_auto.getNextChassisSpeeds(m_SwerveDrive.getPose2d()));
             m_Intake.turnOn();
-            m_Shooter.setTurretAngle(185);
+
+        } else if (m_autoStep == 5) {
+            // wait at loading station
+            if (m_Timer.hasElapsed(2.0)) {
+                m_autoStep = 6;
+                m_Timer.reset();
+                m_Timer.start();
+                m_auto.setupAuto1bp4();
+            }
+            m_Shooter.warmUp();
+            m_SwerveDrive.drive(0, 0, 0, false);
+            m_Intake.turnOn();
+
+        } else if (m_autoStep == 6) {
+            // 4th trajectory from load station to hub
+            // move to next step when traj complete
+            if (m_auto.isTrajectoryCompleted()) {
+                m_autoStep = 7;
+                m_Timer.reset();
+                m_Timer.start();
+            }
+            // m_Shooter.warmUp();
+            m_Shooter.shootingDist(Units.metersToFeet(3.35));
+
+            // update with trajectory
+            m_SwerveDrive.driveFromChassisSpeeds(m_auto.getNextChassisSpeeds(m_SwerveDrive.getPose2d()));
+            m_Intake.turnOn();
 
         } else if (m_autoStep == 7) {
-            // picked up balls and stopped traj
-            // if (m_Intake.getNumberOfBallsHolding() > 1 || m_Timer.advanceIfElapsed(0.05))
-            // {
-            // m_autoStep = 8;
-            // }
-            // m_Intake.turnOn();
-            // m_Shooter.warmUp();
-
-        } else if (m_autoStep == 8) {
-            // shoot balls
-            // double targetAngle = 185;
-            // m_Shooter.setTurretAngle(targetAngle);
-            m_Shooter.aimTurret(m_VisionShooter.getYaw());
-            if (m_shootingDistanceFirstRun && m_VisionShooter.getYaw() < 3) {
-                m_shootingDistance = m_VisionShooter.getDistance();
-                m_shootingDistanceFirstRun = false;
-            }
-            m_Shooter.shootingDist(m_shootingDistance);
-
-            // double angle = m_Shooter.getTurretAngleDegrees();
-            // if (angle > 0) {
-            // angle = angle - 360;
-            // }
-            // if (angle < 0) {
-            // angle += 360;
-            // }
-            // shoot ball holding
-            // m_Shooter.shootingRPM(2650, 2590);
-
-            // if (m_Shooter.IsOkToShoot() && Math.abs(targetAngle - angle) < 8) {
-            if (m_Shooter.IsOkToShoot() && Math.abs(m_VisionShooter.getYaw()) < 3) {
+            // shoot last 2 balls
+            m_Shooter.shootingDist(Units.metersToFeet(3.35));
+            if (m_Shooter.IsOkToShoot() && Math.abs(m_VisionShooter.getYaw()) < 4) {
                 m_Intake.loadShooter();
             } else {
-                m_Intake.turnOffLoadShooter();
+                m_Intake.countinueIntakeMotors();
             }
+
+            // when no more balls, go to next step
             if (m_Shooter.IsOkToShoot() && m_Intake.getNumberOfBallsHolding() == 0) {
                 m_zeroBallCounter++;
-                if (m_zeroBallCounter > 6) {
+                if (m_zeroBallCounter > 7) {
                     m_zeroBallCounter = 0;
-                    m_autoStep = 9;
+                    m_autoStep = 8;
+                    m_auto.setupAuto1bp3();
                     m_Timer.reset();
                     m_Timer.start();
                     m_shootingDistanceFirstRun = true;
                 }
             }
-        } else if (m_autoStep == 9) {
+
+        } else if (m_autoStep == 8) {
             SmartDashboard.putNumber("auto time", Timer.getFPGATimestamp() - m_timestamp);
-            if (m_Timer.advanceIfElapsed(10)) {
-                m_autoStep = 10;
+            if (m_Timer.advanceIfElapsed(3)) {
+                m_autoStep = 9;
             }
-            m_Shooter.shootingDist(m_shootingDistance);
-            if (m_Shooter.IsOkToShoot()) {
+            m_Shooter.shootingDist(Units.metersToFeet(3.35));
+            if (m_Shooter.IsOkToShoot() && Math.abs(m_VisionShooter.getYaw()) < 4) {
                 m_Intake.loadShooter();
             } else {
-                m_Intake.turnOffLoadShooter();
+                m_Intake.countinueIntakeMotors();
             }
-        } else if (m_autoStep == 10) {
-            m_Shooter.turnOff();
+        } else if (m_autoStep == 9) {
+            m_Shooter.warmUp();
             m_Intake.turnOffLoadShooter();
         } else {
-            m_Shooter.turnOff();
+            m_Shooter.warmUp();
             m_Intake.turnOffLoadShooter();
         }
 
