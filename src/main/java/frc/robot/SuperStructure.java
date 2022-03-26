@@ -279,7 +279,7 @@ public class SuperStructure extends Base {
             // speed up shooter automatically
             m_Shooter.shootingDist(8);
         } else if (OI.getAimTurret()) {
-            m_Shooter.shootingRPM(3000, 2400);
+            m_Shooter.shootingDist(8);
         } else if (m_Intake.getBothBallsLoaded()) {
             // speed up shooter automatically
             m_Shooter.shootingRPM(3000, 2400);
