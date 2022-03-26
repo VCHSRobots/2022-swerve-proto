@@ -262,39 +262,48 @@ public class SuperStructure extends Base {
         // } else if (m_Intake.getBothBallsLoaded()) {
         //     // speed up shooter automatically
         //     m_Shooter.shootingRPM(3000, 2400);
+        // } else if (OI.driveAndShoot()) {
+        //     m_Shooter.shootingDist(m_state.GetPredictedDistanceToTarget());
+        //         if (m_Shooter.canShootWithVelocity()) {
+        //             m_Intake.loadShooter();
+        //         } else {
+        //             m_Intake.turnOffLoadShooter();
+        //         }
         // } else {
         //     m_Shooter.turnOff();
+        // } 
+
+        // // when shooting released, stop loading
+        // if (OI.getShootingReleased()) {
+        //     m_Intake.turnOffLoadShooter();
+        //     m_shootingDistanceFirstRun = true;
         // }
 
-        // when shooting released, stop loading
-        if (OI.getShootingReleased()) {
-            m_Intake.turnOffLoadShooter();
-            m_shootingDistanceFirstRun = true;
-        }
+        // // // TURNTABLE
+        // if (OI.getAimTurret()) {
+        //     // m_Shooter.aimTurret(m_VisionShooter.getYaw());
+        //     m_Shooter.aimTurret(m_VisionShooter.getYaw());
+        // } else if (OI.aimWithPose()) {
+        //     m_Shooter.aimTurret(m_state.getTurretAimingAngle().getDegrees());
+        // } else if (OI.aimWithPose()) {
+        //     m_Shooter.setTurretAngle(m_state.getVelocityTurretDegrees());
+        // } else {
+        //     m_Shooter.TurnTable(OI.getRightTurntable(),
+        //             OI.getLeftTurntable());
+        // }
 
-        // // TURNTABLE
-        if (OI.getAimTurret()) {
-            // m_Shooter.aimTurret(m_VisionShooter.getYaw());
-            m_Shooter.aimTurret(m_VisionShooter.getYaw());
-        } else if (OI.aimWithPose()) {
-            m_Shooter.aimTurret(m_state.getTurretAimingAngle().getDegrees());
-        } else {
-            m_Shooter.TurnTable(OI.getRightTurntable(),
-                    OI.getLeftTurntable());
-        }
-
-        if (OI.fortFiveTurnTable()) {// A
-            m_Shooter.setTurnTableAngleFortFive();
-        }
-        if (OI.hundredTurnTable()) {// X
-            m_Shooter.setTurnTableAngleHundred();
-        }
-        if (OI.negFortFiveTurnTable()) {// Y
-            m_Shooter.setTurnTableAngleNegFortFive();
-        }
-        if (OI.negHundredTurnTable()) {// B
-            m_Shooter.setTurnTableAngleHundred();
-        }
+        // if (OI.fortFiveTurnTable()) {// A
+        //     m_Shooter.setTurnTableAngleFortFive();
+        // }
+        // if (OI.hundredTurnTable()) {// X
+        //     m_Shooter.setTurnTableAngleHundred();
+        // }
+        // if (OI.negFortFiveTurnTable()) {// Y
+        //     m_Shooter.setTurnTableAngleNegFortFive();
+        // }
+        // if (OI.negHundredTurnTable()) {// B
+        //     m_Shooter.setTurnTableAngleHundred();
+        // }
 
 
         m_Shooter.turnOff();

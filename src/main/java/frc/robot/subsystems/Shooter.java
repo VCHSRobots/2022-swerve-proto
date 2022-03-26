@@ -412,6 +412,21 @@ public class Shooter extends Base {
         setTurretAngle(targetAngle);
     }
 
+    public boolean canShootWithVelocity() {
+        double errorTopRPM = ticksPer100msToRPM(m_shootTalonTop.getClosedLoopTarget()
+            - m_shootTalonTop.getSelectedSensorVelocity());
+        double errorBotRPM = ticksPer100msToRPM(m_shootTalonBot.getClosedLoopTarget()
+            - m_shootTalonBot.getSelectedSensorVelocity());
+
+            if (Math.abs(errorBotRPM) < 110 && Math.abs(errorTopRPM) < 125) {
+                m_isOKtoShootCounter++;
+            } else {
+                m_isOKtoShootCounter = 0;
+            }
+
+            return m_isOKtoShootCounter > 3;
+    }
+
     public void setTurretAngle(double angleTargetDegrees) {
         double newAngle = angleTargetDegrees % 360;
         if (newAngle < kMinAngle) {
