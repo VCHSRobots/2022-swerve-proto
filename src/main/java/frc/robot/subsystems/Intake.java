@@ -226,7 +226,7 @@ public class Intake extends Base {
                 // intake up
 
                 if (startIntake) {
-                    // don't care
+                    m_state = STATE.B;
                 }
 
                 if (stopIntake) {
@@ -254,6 +254,11 @@ public class Intake extends Base {
                 // add later
                 // m_doublePCM.set(Value.kReverse);
                 setIntakePnuematic(false); // TODO: uncomment this
+
+                // move movers if ball not at load shooter place
+                if(isBallAtMiddle()) {
+                    m_state = STATE.F;
+                }
 
                 break;
             case B:
@@ -315,10 +320,10 @@ public class Intake extends Base {
                 m_shooterLoader.set(ControlMode.PercentOutput, kLoaderLoadingSpeed);
                 break;
             case F:
-                // intake, mover, ON, loader OFF
+                // mover, ON,intake, loader OFF
                 // intake up
 
-                m_intake.set(ControlMode.PercentOutput, kIntakeOut);
+                m_intake.set(ControlMode.PercentOutput, 0);
                 m_mover.set(ControlMode.PercentOutput, kBTOut);
 
                 m_shooterLoader.set(ControlMode.PercentOutput, 0);
@@ -361,7 +366,7 @@ public class Intake extends Base {
         if (isBallAtLoad()) {
             m_state = STATE.A;
         } else {
-            m_state = STATE.B;
+            m_state = STATE.F;
         }
     }
 
