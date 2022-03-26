@@ -41,5 +41,4 @@ public class MovingAverage {
     public void clear() {
         numbers.clear();
     }
-
 }
