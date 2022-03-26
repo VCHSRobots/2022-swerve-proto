@@ -104,21 +104,49 @@ public class RobotState {
         return m_movingAverageTwist2d.getAverage().dtheta;
     }
 
+    /**
+     * 
+     * Gets the degrees the turret needs to be for the shooter to shoot at the target
+     * 
+     * @return degrees the turret should be at to shoot
+     */
     public double getVelocityTurretDegrees() {
         
         Twist2d predictedTwist2d = m_movingAverageTwist2d.getAverage();
+        double radiansToDegrees = 180 / Math.PI;
 
-        double predictedY = kFieldToCenterHub.getY() + (predictedTwist2d.dy * 5.0);
-        double predictedX = kFieldToCenterHub.getX() + (predictedTwist2d.dx * 5.0);
+        // don't use this, its a rough way to estimate ball time in the air based on our distance to the target
+        double predictedBallAirTime = (.6 * Math.atan(getPredictedDistanceToTarget()-10)) + 1;
+
+        double predictedY = kFieldToCenterHub.getY() + (predictedTwist2d.dy * 5.0) + (predictedTwist2d.dy * predictedBallAirTime);
+        double predictedX = kFieldToCenterHub.getX() + (predictedTwist2d.dx * 5.0) + (predictedTwist2d.dx * predictedBallAirTime);
         // double predictedTheta = kFieldToCenterHub.getRotation().getRadians() + predictedLocation.dtheta;
 
-        double predictedDegreesOfTurret = Math.atan2(predictedY, predictedX);
+        double predictedRadiansOfTurret = Math.atan2(predictedY, predictedX);
 
-        return predictedDegreesOfTurret;
+        return predictedRadiansOfTurret * radiansToDegrees;
 
     }
 
-    public double GetPredictedDistanceToTarget() {
+    /**
+     * 
+     * Gets the degrees offset for the turntable that the shooter needs to be to shoot at the target
+     * 
+     * @return degrees offset the shooter should be to shoot
+     */
+    public double getVelocityTurretDegreesOffset() {
+
+        return (getVelocityTurretDegrees() * 180/Math.PI) - getTurretAimingAngle().getRadians();
+
+    }
+
+    /**
+     * 
+     * Gets predicted distance from robot to target based on odometry
+     * 
+     * @return predicted distance with velocity based on odometry
+     */
+    public double getPredictedDistanceToTarget() {
 
         Twist2d predictedTwist2d = m_movingAverageTwist2d.getAverage();
         
@@ -128,5 +156,18 @@ public class RobotState {
         return Math.sqrt(Math.pow(predictedY, 2) + Math.pow(predictedX, 2));
     }
 
+    /**
+     * 
+     * Creates an offset for the target distance to the robot by utilizing the limelight
+     * 
+     * @param yaw limelight yaw
+     * @param pitch limelight pitch
+     * @return predicted distance offset to target with aid from limelight
+     */
+    public double getPredictedDistanceToTargetOffset(Rotation2d yaw, Rotation2d pitch) {
+        
+        return getPredictedDistanceToTarget() - getCameraToTargetDistance(yaw, pitch);
+
+    }
 
 }
