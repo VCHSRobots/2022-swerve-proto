@@ -264,13 +264,20 @@ public class SuperStructure extends Base {
                 m_Intake.turnOffLoadShooter();
             }
         } else if (OI.xboxDrive.getYButton()) {
-            m_Shooter.shootingRPM(ntTopRPM.getDouble(0), ntBotRPM.getDouble(0));
+            // m_Shooter.shootingDist(ntFeetToRPM.getDouble(0));
+            // m_Shooter.setVoltage(ntTopRPM.getDouble(0), ntBotRPM.getDouble(0));
+            m_Shooter.shootingRPM(ntTopRPM.getDouble(0.0), ntBotRPM.getDouble(0.0));
             if (m_Shooter.IsOkToShoot()) {
+                // if (OI.getAimTurret()) {
+
                 // load shooter
                 m_Intake.loadShooter();
             } else {
                 m_Intake.turnOffLoadShooter();
             }
+        } else if (ntShooterPreheatEnable.getBoolean(false) || (DriverStation.isFMSAttached() && !m_lastButtonWasClimber)) {
+            // speed up shooter automatically
+            m_Shooter.shootingDist(8);
         } else if (OI.getAimTurret()) {
             m_Shooter.shootingRPM(3000, 2400);
         } else if (m_Intake.getBothBallsLoaded()) {
@@ -285,7 +292,7 @@ public class SuperStructure extends Base {
                 }
         } else {
             m_Shooter.turnOff();
-        } 
+        }
 
         // when shooting released, stop loading
         if (OI.getShootingReleased()) {
@@ -294,13 +301,22 @@ public class SuperStructure extends Base {
         }
 
         // // TURNTABLE
-        if (OI.getAimTurret()) {
+        if (m_lastButtonWasClimber) {
+            if (Math.abs(m_Shooter.getTurretAngleDegrees() - 90) > 5) {
+                m_Shooter.setTurretAngle(90);
+            }
+        } else if (OI.getAimTurret()) {
             // m_Shooter.aimTurret(m_VisionShooter.getYaw());
-            m_Shooter.aimTurret(m_VisionShooter.getYaw());
+            if (m_VisionShooter.getTargetValid()) {
+                m_Shooter.aimTurret(m_VisionShooter.getYaw());
+            } else {
+                m_Shooter.setTurretAngle(m_state.getTurretAimingAngle().getDegrees());
+            }
         } else if (OI.aimWithPose()) {
-            m_Shooter.aimTurret(m_state.getTurretAimingAngle().getDegrees());
-        } else if (OI.aimWithPose()) {
-            m_Shooter.setTurretAngle(m_state.getVelocityTurretDegrees());
+            m_Shooter.setTurretAngle(m_state.getTurretAimingAngle().getDegrees());
+        } else if (m_Intake.getNumberOfBallsHolding() > 0 && !(OI.getRightTurntable() ||
+                OI.getLeftTurntable())) {
+            m_Shooter.setTurretAngle(m_state.getTurretAimingAngle().getDegrees());
         } else {
             m_Shooter.TurnTable(OI.getRightTurntable(),
                     OI.getLeftTurntable());
@@ -318,8 +334,6 @@ public class SuperStructure extends Base {
         if (OI.negHundredTurnTable()) {// B
             m_Shooter.setTurnTableAngleHundred();
         }
-
-        m_Shooter.turnOff();
     }
 
     // auto coding
