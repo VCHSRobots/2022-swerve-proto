@@ -142,7 +142,7 @@ public class Shooter extends Base {
         // top settings
         baseConfig.slot0.kI = 0.0;
         baseConfig.slot0.kD = 0.0;
-        baseConfig.slot0.kF = 0.051;
+        baseConfig.slot0.kF = 0.0515;
         baseConfig.slot0.kP = 0.05; // 0.03
         m_shootTalonTop.configAllSettings(baseConfig, 100);
 

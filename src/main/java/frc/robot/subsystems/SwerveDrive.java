@@ -59,6 +59,7 @@ public class SwerveDrive extends Base {
     private final SwerveDriveOdometry m_odometry = new SwerveDriveOdometry(m_kinematics, new Rotation2d(0));
 
     private boolean m_fieldRelative = true;
+    private boolean m_prevResetOdometry = false;
 
     // tracking vars to output to dashboard
     private ChassisSpeeds m_lastChassisSpeedsDesired = new ChassisSpeeds();
@@ -118,6 +119,10 @@ public class SwerveDrive extends Base {
         Shuffleboard.getTab("debug").add("front right", m_frontRight);
         Shuffleboard.getTab("debug").add("back left", m_backLeft);
         Shuffleboard.getTab("debug").add("back right", m_backRight);
+
+        Shuffleboard.getTab("debug").addNumber("getAngle", ()->m_gyro.getAngle());
+        Shuffleboard.getTab("debug").addNumber("getYaw", ()->m_gyro.getYaw());
+
     }
 
     @Override
@@ -138,7 +143,9 @@ public class SwerveDrive extends Base {
     // }
 
     public void resetOdometry(Pose2d pose) {
-        m_gyro.setAngleAdjustment(pose.getRotation().getDegrees());
+        // m_gyro.setAngleAdjustment(pose.getRotation().getDegrees());
+        m_gyro.setAngleAdjustment(-pose.getRotation().getDegrees()-m_gyro.getYaw());
+
         m_odometry.resetPosition(pose, getGyroRotation2d());
     }
 
@@ -259,13 +266,15 @@ public class SwerveDrive extends Base {
         } else if (setRobotRelative) {
             m_fieldRelative = false;
         }
-        if (resetOdometry) {
+        if (resetOdometry && !m_prevResetOdometry) {
             // zeroHeading();
             Translation2d againstRightWall =  new Translation2d(7.75, 0.5);
             Translation2d insideTopParallelEdge = new Translation2d(6, 4.75);
             resetOdometry(new Pose2d(insideTopParallelEdge, new Rotation2d()));
             // m_odometry.resetPosition(new Pose2d(insideTopParallelEdge, new Rotation2d()), getGyroRotation2d());
         }
+        m_prevResetOdometry = resetOdometry;
+
         updateOdometry();
     }
 
