@@ -10,7 +10,7 @@ import edu.wpi.first.wpilibj.util.Color;
 /** Add your docs here. */
 public class Constants {
 
-    public static final boolean isPracticeBot = true;
+    public static final boolean isPracticeBot = false;
 
     public static final class SwerveModuleOffsetRadiansPractice {
         // public static final double FRONT_LEFT = Units.degreesToRadians(-8.3);
