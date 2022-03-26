@@ -69,7 +69,7 @@ public class Shooter extends Base {
         distanceRPMPoint[] distanceRPMlist = {
                 new distanceRPMPoint(8.0, 2250, 2500),
                 new distanceRPMPoint(8.5, 2250, 2580),
-                new distanceRPMPoint(9.25, 2300, 2650),
+                new distanceRPMPoint(9.25, 2300, 2640),
                 new distanceRPMPoint(10, 2300, 2750), 
                 new distanceRPMPoint(10.5, 2400, 2830),
                 new distanceRPMPoint(11, 2450, 2870),

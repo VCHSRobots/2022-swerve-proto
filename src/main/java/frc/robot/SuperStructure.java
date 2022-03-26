@@ -74,6 +74,8 @@ public class SuperStructure extends Base {
             .getEntry();
     NetworkTableEntry ntLEDOn = CompTab.add("Limelight LED On", false)
             .withWidget(BuiltInWidgets.kToggleButton).getEntry();
+    NetworkTableEntry ntShooterPreheatEnable = CompTab.add("Shooter Preheat", false)
+            .withWidget(BuiltInWidgets.kToggleButton).getEntry();
 
     public SuperStructure(SwerveDrive swerveDrive, Intake intake, Shooter shooter, Climber climber) {
 
@@ -182,13 +184,6 @@ public class SuperStructure extends Base {
         m_Climber.control(OI.getSolenoidReverse(), OI.getSolenoidForward(), OI.getArmsUp(),
                 OI.getArmsDown(), OI.getNxtClimb(), OI.getFinClimb(), OI.getClimbEStop());
 
-        // testing purposaes, changes intake pnuematics
-        if (OI.forwardIntake()) {
-            m_Intake.setIntakePnuematic(true);
-        } else if (OI.reverseIntake()) {
-            m_Intake.setIntakePnuematic(false);
-        }
-
         // DRIVING //
         // VISION GET BALL
         if (OI.getVisionBallEngaged()) {
@@ -280,7 +275,7 @@ public class SuperStructure extends Base {
             } else {
                 m_Intake.turnOffLoadShooter();
             }
-        } else if (DriverStation.isFMSAttached() && !m_lastButtonWasClimber) {
+        } else if (ntShooterPreheatEnable.getBoolean(false) || (DriverStation.isFMSAttached() && !m_lastButtonWasClimber)) {
             // speed up shooter automatically
             m_Shooter.shootingDist(8);
         } else if (OI.getAimTurret()) {
