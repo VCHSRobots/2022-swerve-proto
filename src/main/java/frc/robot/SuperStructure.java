@@ -150,6 +150,7 @@ public class SuperStructure extends Base {
         m_Intake.robotPeriodic();
         m_auto.robotPeriodic();
         m_VisionShooter.calculateAngleError();
+        m_VisionShooter.addDistanceToMovingAverage();
 
         m_Climber.checkZero();
 
@@ -233,7 +234,8 @@ public class SuperStructure extends Base {
                 m_shootingDistance = m_VisionShooter.getDistance();
                 m_shootingDistanceFirstRun = false;
             }
-            m_Shooter.shootingDist(m_shootingDistance);
+            // m_Shooter.shootingDist(m_shootingDistance);
+            m_Shooter.shootingDist(m_VisionShooter.getMovingAverageDistance());
             if (m_Shooter.IsOkToShoot()) {
                 // Load shooter
                 m_Intake.loadShooter();

@@ -9,6 +9,7 @@ import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import frc.robot.util.MovingAverage;
 
 public class VisionShooter extends Base {
 
@@ -24,6 +25,8 @@ public class VisionShooter extends Base {
     private int m_lostCount = 0;
     private int m_MAXLOSTCOUNT = 7;
     private double m_max_angle_change_in_20ms = 10.0;
+
+    private MovingAverage m_movingAverage = new MovingAverage(10);
 
     @Override
     public void robotInit() {
@@ -109,6 +112,14 @@ public class VisionShooter extends Base {
         distanceFeet = visionTargetOffsetFromCenter + (targetHeight - cameraHeight)
                 / Math.tan(Units.degreesToRadians(cameraAngle + pitch));
         return distanceFeet;
+    }
+
+    public double getMovingAverageDistance() {
+        return m_movingAverage.getAverage();
+    }
+
+    public void addDistanceToMovingAverage() {
+        m_movingAverage.add(getDistance());
     }
 
     public void LEDoff() {
