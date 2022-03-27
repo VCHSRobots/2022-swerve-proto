@@ -616,7 +616,7 @@ public class SuperStructure extends Base {
             }
             // always preheat shooter
             // m_Shooter.warmUp();
-            m_Shooter.shootingDist(Units.metersToFeet(3.13));
+            m_Shooter.shootingDist(Units.metersToFeet(3));
 
             // update with trajectory
             m_SwerveDrive.driveFromChassisSpeeds(m_auto.getNextChassisSpeeds(m_SwerveDrive.getPose2d()));
@@ -631,7 +631,7 @@ public class SuperStructure extends Base {
             // m_shootingDistance = m_VisionShooter.getDistance();
             // m_shootingDistanceFirstRun = false;
             // }
-            m_Shooter.shootingDist(Units.metersToFeet(3.13));
+            m_Shooter.shootingDist(Units.metersToFeet(3));
             if (m_Shooter.IsOkToShoot() && Math.abs(m_VisionShooter.getYaw()) < 4) {
                 m_Intake.loadShooter();
             } else {
@@ -656,10 +656,9 @@ public class SuperStructure extends Base {
                 m_autoStep = 3;
                 m_Timer.reset();
                 m_Timer.start();
-                m_Intake.countinueIntakeMotors();
             }
             // m_Shooter.warmUp();
-            m_Shooter.shootingDist(Units.metersToFeet(3.7));
+            m_Shooter.shootingDist(Units.metersToFeet(3.6));
 
             // update with trajectory
             m_SwerveDrive.driveFromChassisSpeeds(m_auto.getNextChassisSpeeds(m_SwerveDrive.getPose2d()));
@@ -667,8 +666,18 @@ public class SuperStructure extends Base {
             m_Intake.turnOn();
 
         } else if (m_autoStep == 3) {
+            if (m_Timer.hasElapsed(0.75)) {
+                m_autoStep = 4;
+                m_Timer.reset();
+                m_Timer.start();
+                m_Intake.countinueIntakeMotors();
+            }
+            m_Shooter.shootingDist(Units.metersToFeet(3.6));
+            m_Intake.turnOn();
+            m_SwerveDrive.drive(0, 0, 0, false);
+        } else if (m_autoStep == 4) {
             // shoot 1 ball
-            m_Shooter.shootingDist(Units.metersToFeet(3.7));
+            m_Shooter.shootingDist(Units.metersToFeet(3.6));
             if (m_Shooter.IsOkToShoot() && Math.abs(m_VisionShooter.getYaw()) < 4) {
                 m_Intake.loadShooter();
             } else {
@@ -680,7 +689,7 @@ public class SuperStructure extends Base {
                 m_zeroBallCounter++;
                 if (m_zeroBallCounter > 7) {
                     m_zeroBallCounter = 0;
-                    m_autoStep = 4;
+                    m_autoStep = 5;
                     m_auto.setupAuto1bp3();
                     m_Timer.reset();
                     m_Timer.start();
@@ -688,11 +697,11 @@ public class SuperStructure extends Base {
                 }
             }
 
-        } else if (m_autoStep == 4) {
+        } else if (m_autoStep == 5) {
             // follow third trajectory to pick up 2 balls from loading station
             // move to next step when traj complete
             if (m_auto.isTrajectoryCompleted()) {
-                m_autoStep = 5;
+                m_autoStep = 6;
                 m_Timer.reset();
                 m_Timer.start();
             }
@@ -703,10 +712,10 @@ public class SuperStructure extends Base {
             m_SwerveDrive.driveFromChassisSpeeds(m_auto.getNextChassisSpeeds(m_SwerveDrive.getPose2d()));
             m_Intake.turnOn();
 
-        } else if (m_autoStep == 5) {
+        } else if (m_autoStep == 6) {
             // wait at loading station
-            if (m_Timer.hasElapsed(2.0)) {
-                m_autoStep = 6;
+            if (m_Timer.hasElapsed(1.0)) {
+                m_autoStep = 7;
                 m_Timer.reset();
                 m_Timer.start();
                 m_auto.setupAuto1bp4();
@@ -715,24 +724,24 @@ public class SuperStructure extends Base {
             m_SwerveDrive.drive(0, 0, 0, false);
             m_Intake.turnOn();
 
-        } else if (m_autoStep == 6) {
+        } else if (m_autoStep == 7) {
             // 4th trajectory from load station to hub
             // move to next step when traj complete
             if (m_auto.isTrajectoryCompleted()) {
-                m_autoStep = 7;
+                m_autoStep = 8;
                 m_Timer.reset();
                 m_Timer.start();
             }
             // m_Shooter.warmUp();
-            m_Shooter.shootingDist(Units.metersToFeet(3.35));
+            m_Shooter.shootingDist(Units.metersToFeet(3.3));
 
             // update with trajectory
             m_SwerveDrive.driveFromChassisSpeeds(m_auto.getNextChassisSpeeds(m_SwerveDrive.getPose2d()));
             m_Intake.turnOn();
 
-        } else if (m_autoStep == 7) {
+        } else if (m_autoStep == 8) {
             // shoot last 2 balls
-            m_Shooter.shootingDist(Units.metersToFeet(3.35));
+            m_Shooter.shootingDist(Units.metersToFeet(3.3));
             if (m_Shooter.IsOkToShoot() && Math.abs(m_VisionShooter.getYaw()) < 4) {
                 m_Intake.loadShooter();
             } else {
@@ -744,7 +753,7 @@ public class SuperStructure extends Base {
                 m_zeroBallCounter++;
                 if (m_zeroBallCounter > 7) {
                     m_zeroBallCounter = 0;
-                    m_autoStep = 8;
+                    m_autoStep = 9;
                     m_auto.setupAuto1bp3();
                     m_Timer.reset();
                     m_Timer.start();
@@ -752,18 +761,18 @@ public class SuperStructure extends Base {
                 }
             }
 
-        } else if (m_autoStep == 8) {
+        } else if (m_autoStep == 9) {
             SmartDashboard.putNumber("auto time", Timer.getFPGATimestamp() - m_timestamp);
             if (m_Timer.advanceIfElapsed(3)) {
-                m_autoStep = 9;
+                m_autoStep = 10;
             }
-            m_Shooter.shootingDist(Units.metersToFeet(3.35));
+            m_Shooter.shootingDist(Units.metersToFeet(3.3));
             if (m_Shooter.IsOkToShoot() && Math.abs(m_VisionShooter.getYaw()) < 4) {
                 m_Intake.loadShooter();
             } else {
                 m_Intake.countinueIntakeMotors();
             }
-        } else if (m_autoStep == 9) {
+        } else if (m_autoStep == 10) {
             m_Shooter.warmUp();
             m_Intake.turnOffLoadShooter();
         } else {
