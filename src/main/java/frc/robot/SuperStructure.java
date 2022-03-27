@@ -144,11 +144,12 @@ public class SuperStructure extends Base {
         m_state = new RobotState(m_SwerveDrive.getPose2d(), Rotation2d.fromDegrees(m_Shooter.getTurretAngleDegrees()));
     }
 
-    @Override
+     @Override
     public void robotPeriodic() {
         m_SwerveDrive.changeOdometry(OI.shouldSetFieldRelative(), OI.shouldSetRobotRelative(), OI.getResetOdometry());
         m_Intake.robotPeriodic();
         m_auto.robotPeriodic();
+        m_Climber.robotPeriodic();
         m_VisionShooter.calculateAngleError();
         m_VisionShooter.addDistanceToMovingAverage();
 
@@ -182,6 +183,9 @@ public class SuperStructure extends Base {
         m_VisionShooter.LEDon();
 
         // CLIMBER
+        // If any climbing functions are active, turn off shooter wheels.
+        if (m_lastButtonWasClimber) m_Shooter.turnOff();
+        // Send inputs to climber control.
         m_Climber.control(OI.getSolenoidReverse(), OI.getSolenoidForward(), OI.getArmsUp(),
                 OI.getArmsDown(), OI.getNxtClimb(), OI.getFinClimb(), OI.getClimbEStop());
 
@@ -282,7 +286,7 @@ public class SuperStructure extends Base {
             m_Shooter.shootingDist(8);
         } else if (OI.getAimTurret()) {
             m_Shooter.shootingDist(8);
-        } else if (m_Intake.getBothBallsLoaded()) {
+        } else if (m_Intake.getBothBallsLoaded() && !m_lastButtonWasClimber) {
             // speed up shooter automatically
             m_Shooter.shootingDist(8);
         } else if (OI.driveAndShoot()) {

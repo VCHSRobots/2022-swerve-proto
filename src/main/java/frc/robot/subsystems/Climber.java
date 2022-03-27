@@ -36,13 +36,19 @@ public class Climber extends Base {
     private DigitalInput m_bottomRightLimit = new DigitalInput(RobotMap.kClimber_RightBottomLimit);
     public double m_encoderValue;
 
-    private double kInchesPerEncoderTick = 0.00014573;
-    private double kInchesPerEncoderTick_Auto = 0.0000989;
+    private double kInchesPerEncoderTick = 0.00014573;  
+    private double  kInchesPerEncoderTick_Auto = 0.0000989; // Found by experiment
     private double kHighBarInches = 29.0;
-    private double kCurrentUnderTension = 15.0;  
     private boolean m_hasBeenCalibrated = false;
 
-    private int m_state = 0;    // Possible states: 0=manual, 1=FIN, 2=NXT
+    // These variables used for the auto climbing functions...
+    private int     m_state = 0;          // Possible states: 0=manual, 1=FIN, 2=NXT
+    private double  m_nxtseq_t0 = 0.0;    // Time at which minro seq starts.
+    private int     m_nxtseq = 0;         // Minor sequence number for NEXT auto.
+    private double  kTopDelayForSwing = 1.0;   // Delay after arms extend and reach the next bar, for robot to swing in.
+    private double  kTentionDistance = 22.5;   // Distance at which TE and SW hooks fully engaged on different bars.
+    private double  kSwingBackDistance = 10.00; // DIstance at which we should be fully on next bar with TE hooks.
+    private double  kWaitForTension = 0.5;     // TIme to wait for full tension after SW hooks in reverse.
 
     // init
     public void robotInit() {
@@ -76,6 +82,7 @@ public class Climber extends Base {
         config.supplyCurrLimit.enable = true;
         config.supplyCurrLimit.triggerThresholdCurrent = 30;
         config.supplyCurrLimit.triggerThresholdTime = 0.5;
+
 
         m_master.configAllSettings(config);
 
@@ -146,6 +153,11 @@ public class Climber extends Base {
 
         // encoder Value
         // encoderValue = m_follower_1.getSelectedSensorPosition();
+    }
+
+    // This is to allow adjustments to the auto climb during development.
+    public void robotPeriodic() {
+        // Update to update values here... ??
     }
 
     // THis is the control function that is called from tele_periodic and test_periodic. 
@@ -265,12 +277,24 @@ public class Climber extends Base {
         } else if (m_master.getSelectedSensorPosition() < 50000) {
             m_master.set(ControlMode.PercentOutput, -0.3);
         } else {
-            m_master.set(ControlMode.PercentOutput, -0.85); // was -0.85
+            m_master.set(ControlMode.PercentOutput, -0.95); // was -0.85
         }
         m_follower_1.follow(m_master);
         m_follower_2.follow(m_master);
         // m_follower_1.setVoltage(0);
         // m_follower_2.setVoltage(0);
+    }
+
+    public void armsDownSlow() {
+        if (getClimberZero()) {
+            m_master.set(ControlMode.PercentOutput, 0);
+        } else if (m_master.getSelectedSensorPosition() < 50000) {
+            m_master.set(ControlMode.PercentOutput, -0.3);
+        } else {
+            m_master.set(ControlMode.PercentOutput, -0.50); 
+        }
+        m_follower_1.follow(m_master);
+        m_follower_2.follow(m_master);
     }
 
     public void armsStop() {
@@ -285,17 +309,17 @@ public class Climber extends Base {
         m_master.setSelectedSensorPosition(0);
     }
 
-    public void goToHalf() {  // Not called?
-        m_master.set(ControlMode.MotionMagic, 12 / kInchesPerEncoderTick);
-    }
+    // public void goToHalf() {  // Not called?
+    //     m_master.set(ControlMode.MotionMagic, 12 / kInchesPerEncoderTick);
+    // }
 
-    public void goToFull() {  // Not called?
-        m_master.set(ControlMode.MotionMagic, 27 / kInchesPerEncoderTick);
-    }
+    // public void goToFull() {  // Not called?
+    //     m_master.set(ControlMode.MotionMagic, 27 / kInchesPerEncoderTick);
+    // }
 
-    public void goToZero() {  // Not called?
-        m_master.set(ControlMode.MotionMagic, 0);
-    }
+    // public void goToZero() {  // Not called?
+    //     m_master.set(ControlMode.MotionMagic, 0);
+    // }
 
     public boolean setClimberToZero() {
         if (getClimberZero()) {
@@ -340,9 +364,7 @@ public class Climber extends Base {
 
     // *******  Auto Sequence Functions ***********
 
-    private double  m_nxtseq_t0 = 0.0;    // Time at which minro seq starts.
-    private int     m_nxtseq = 0;         // Minor sequence number for NEXT auto.
-    private int     m_tensionCounter = 0; // Counter to sense tension.
+
 
     // Starts the auto operation to complete a climb to a bar.
     // It is assumed that the robot is engaged on the bar with
@@ -416,7 +438,6 @@ public class Climber extends Base {
         m_state = 2;
         m_nxtseq = 1;   // Start of sequence
         m_nxtseq_t0 = Timer.getFPGATimestamp();
-        m_tensionCounter = 0;
         // Start arms going up.
         armsUp();
     }
@@ -439,32 +460,32 @@ public class Climber extends Base {
             // are far enough to grab the bar.  Then swing back to enage the hooks.
             if (getArmPositionInches() > kHighBarInches) {
                 armsStop();
-                hooksReverse();
                 m_nxtseq_t0 = Timer.getFPGATimestamp();
                 m_nxtseq = 3;
+                hooksReverse();
             }
             return;
         }
         if(m_nxtseq == 3) {
             // Here we are delaying for a bit for the robot to swing and have the
-            // TE bars engage the upper bar.  Then we start pulling down.
-            if (Timer.getFPGATimestamp() - m_nxtseq_t0 > 10.0) {
+            // TE bars engage the upper bar.  Then we start pulling down, slowly to fully engage.
+            if (Timer.getFPGATimestamp() - m_nxtseq_t0 > kTopDelayForSwing) {          
                 m_nxtseq = 4;
                 m_nxtseq_t0 = Timer.getFPGATimestamp();
-                m_tensionCounter = 0;
-                armsDown(); 
+                armsDownSlow(); 
             }
             return;
         }
         if(m_nxtseq == 4) {
-            armsDown();
-            // Now we are pulling down.  This is the crutial step!!
+            armsDownSlow(); 
+            // Now we are pulling down slowly.  This is the crutial step!!
             // By experiment, we need to pull down until the distance
-            // is 21.5 inches.  At that point STOP.
-            if (getArmPositionInches() < 23.50) {
+            // is just right.  At that point STOP and swing forward.
+            if (getArmPositionInches() < kTentionDistance) {
                 armsStop();
                 m_nxtseq = 5;
                 m_nxtseq_t0 = Timer.getFPGATimestamp();
+                hooksForward();
             }
             return;
         }
@@ -472,34 +493,23 @@ public class Climber extends Base {
             armsStop();
             // Here we wait for just an instant (0.2 secs?) to make sure
             // the TE hooks are fully engaged.
-            if (Timer.getFPGATimestamp() - m_nxtseq_t0 > 4.0) {
-                m_nxtseq = 66;  
+            if (Timer.getFPGATimestamp() - m_nxtseq_t0 > kWaitForTension) {
+                m_nxtseq = 6;  
                 m_nxtseq_t0 = Timer.getFPGATimestamp();
-                armsStop();
-                hooksReverse();
+                armsDownSlow();
             }
             return;
         }
         if(m_nxtseq == 6) {
-            armsStop();
-            // Here we wait for the swing arms to apply pressure before
-            // continuing to climb. 
-            if (Timer.getFPGATimestamp() - m_nxtseq_t0 > 1.0) {
-                m_nxtseq = 7;
-                m_nxtseq_t0 = Timer.getFPGATimestamp();
-                armsDown();
-            }
-            return;
-        }
-        if(m_nxtseq == 7) {
-            armsDown();
+            armsDownSlow();
             // At this point, it should be safe to climb on the next
             // bar up for a few inches. Do that, then let the operator
             // take over.
-            if (getArmPositionInches() < 18.00) {
-                m_nxtseq = 8;
+            if (getArmPositionInches() < kSwingBackDistance) {
+                m_nxtseq = 7;
                 m_nxtseq_t0 = Timer.getFPGATimestamp();
                 armsStop();
+                hooksReverse();
             }
             return;
         }
