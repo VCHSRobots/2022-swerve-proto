@@ -260,20 +260,21 @@ public class SwerveDrive extends Base {
     }
 
     // Robot Periodic
-    public void changeOdometry(boolean setFieldRelative, boolean setRobotRelative, boolean resetOdometry) {
+    public void changeOdometry(boolean setFieldRelative, boolean setRobotRelative, boolean resetOdometryLaunchPad, boolean resetOdometryFender) {
         if (setFieldRelative) {
             m_fieldRelative = true;
         } else if (setRobotRelative) {
             m_fieldRelative = false;
         }
-        if (resetOdometry && !m_prevResetOdometry) {
-            // zeroHeading();
-            Translation2d againstRightWall =  new Translation2d(7.75, 0.5);
-            Translation2d insideTopParallelEdge = new Translation2d(6, 4.75);
-            resetOdometry(new Pose2d(insideTopParallelEdge, new Rotation2d()));
-            // m_odometry.resetPosition(new Pose2d(insideTopParallelEdge, new Rotation2d()), getGyroRotation2d());
+        if (resetOdometryLaunchPad && !m_prevResetOdometry) {
+            Translation2d launchPad = new Translation2d(3.86, 5.46);
+            resetOdometry(new Pose2d(launchPad, new Rotation2d()));
         }
-        m_prevResetOdometry = resetOdometry;
+        if (resetOdometryFender && !m_prevResetOdometry) {
+            Translation2d rightFender =  new Translation2d(7.82, 2.95);
+            resetOdometry(new Pose2d(rightFender, Rotation2d.fromDegrees(-111)));
+        }
+        m_prevResetOdometry = resetOdometryLaunchPad;
 
         updateOdometry();
     }
