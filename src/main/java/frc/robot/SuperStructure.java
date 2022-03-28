@@ -146,7 +146,7 @@ public class SuperStructure extends Base {
 
      @Override
     public void robotPeriodic() {
-        m_SwerveDrive.changeOdometry(OI.shouldSetFieldRelative(), OI.shouldSetRobotRelative(), OI.getResetOdometry());
+        m_SwerveDrive.changeOdometry(OI.shouldSetFieldRelative(), OI.shouldSetRobotRelative(), OI.getResetOdometryLaunchPad(), OI.getResetOdometryRightFender());
         m_Intake.robotPeriodic();
         m_auto.robotPeriodic();
         m_Climber.robotPeriodic();
@@ -158,7 +158,7 @@ public class SuperStructure extends Base {
         m_state.update(m_SwerveDrive.getPose2d(), Rotation2d.fromDegrees(m_Shooter.getTurretAngleDegrees()));
 
         // climber or shooter check
-        if (OI.aimWithPose() || OI.getAimTurret() || OI.getRightBumperForWallShot() || OI.getLeftBumperForTapeShot()
+        if (OI.getAimTurret() || OI.getRightBumperForWallShot() || OI.getLeftBumperForTapeShot()
                 || OI.getRightTriggerForShooting() || OI.getUnjam() || OI.getBarf() || OI.startIntake()) {
             m_lastButtonWasClimber = false;
         } else if (OI.getArmsDown() || OI.getArmsUp() || OI.getSolenoidForward() || OI.getSolenoidReverse()
@@ -318,8 +318,6 @@ public class SuperStructure extends Base {
             } else {
                 m_Shooter.setTurretAngle(m_state.getTurretAimingAngle().getDegrees());
             }
-        } else if (OI.aimWithPose()) {
-            m_Shooter.setTurretAngle(m_state.getTurretAimingAngle().getDegrees());
         } else if (m_Intake.getNumberOfBallsHolding() > 0 && !(OI.getRightTurntable() ||
                 OI.getLeftTurntable())) {
             m_Shooter.setTurretAngle(m_state.getTurretAimingAngle().getDegrees());

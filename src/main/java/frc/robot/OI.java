@@ -69,7 +69,7 @@ public class OI {
         return Math.copySign(Math.pow(xboxDrive.getRightX(), 2), xboxDrive.getRightX());
     }
 
-    static public boolean aimWithPose() {
+    static public boolean getResetOdometryRightFender() {
         return xboxDrive.getPOV() == 0;
     }
 
@@ -81,7 +81,7 @@ public class OI {
         return xboxDrive.getPOV() == 90;
     }
 
-    static public boolean getResetOdometry() {
+    static public boolean getResetOdometryLaunchPad() {
         return xboxDrive.getPOV() == 180;
     }
 
