@@ -166,10 +166,14 @@ public class OI {
     }
 
     static public boolean getClimbEStop() {
-        double x1 = xboxClimb.getRightTriggerAxis();
-        double x2 = xboxClimb.getLeftTriggerAxis();
+        double x = xboxClimb.getRightTriggerAxis();
         double threshhold = 0.5;
-        return x1 > threshhold || x2 > threshhold;
+        return x > threshhold;
+    }
+
+    static public double getClimbArmSpeed() {
+        double x = xboxClimb.getLeftTriggerAxis();
+        return x;
     }
 
     static public boolean fortFiveTurnTable() {

@@ -187,7 +187,7 @@ public class SuperStructure extends Base {
         if (m_lastButtonWasClimber) m_Shooter.turnOff();
         // Send inputs to climber control.
         m_Climber.control(OI.getSolenoidReverse(), OI.getSolenoidForward(), OI.getArmsUp(),
-                OI.getArmsDown(), OI.getNxtClimb(), OI.getFinClimb(), OI.getClimbEStop());
+                OI.getArmsDown(), OI.getNxtClimb(), OI.getFinClimb(), OI.getClimbArmSpeed(), OI.getClimbEStop());
 
         // DRIVING //
         // VISION GET BALL
@@ -926,7 +926,7 @@ public class SuperStructure extends Base {
     public void testPeriodic() {
         // CLIMBER
         m_Climber.control(OI.getSolenoidReverse(), OI.getSolenoidForward(), OI.getArmsUp(), OI.getArmsDown(),
-                OI.getNxtClimb(), OI.getFinClimb(), OI.getClimbEStop());
+                OI.getNxtClimb(), OI.getFinClimb(), OI.getClimbArmSpeed(), OI.getClimbEStop());
 
         if (OI.getDriveForward()) {
             m_SwerveDrive.drive(0.01, 0.00, 0, false);
