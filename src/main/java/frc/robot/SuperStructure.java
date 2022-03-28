@@ -232,15 +232,8 @@ public class SuperStructure extends Base {
             }
         } else if (OI.getRightTriggerForShooting()) {
             // camera center shot
-            // m_Shooter.shootingRPM(3000, 2400);
-            // m_Shooter.shootingRPM(ntTopRPM.getDouble(0), ntBotRPM.getDouble(0));
-            if (m_shootingDistanceFirstRun) {
-                m_shootingDistance = m_VisionShooter.getDistance();
-                m_shootingDistanceFirstRun = false;
-            }
-            // m_Shooter.shootingDist(m_shootingDistance);
             m_Shooter.shootingDist(m_VisionShooter.getMovingAverageDistance());
-            if (m_Shooter.IsOkToShoot()) {
+            if (m_Shooter.IsOkToShoot() && (Math.abs(m_VisionShooter.getYaw()) < 3)) {
                 // Load shooter
                 m_Intake.loadShooter();
 
@@ -249,7 +242,6 @@ public class SuperStructure extends Base {
             }
         } else if (OI.getRightBumperForWallShot()) {
             // turn shooter on in rpm mode
-            // m_Shooter.shootingRPM(2500, 2650);
             m_Shooter.shootingRPM(3000, 2420);
 
             if (m_Shooter.IsOkToShoot()) {
