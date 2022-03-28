@@ -38,8 +38,7 @@ public class SwerveModule implements Sendable {
         private static final int kTalonFXEncoderResolution = 2048;
         private static final double kDriveMetersPerIntegratedTick = 2.0 * Math.PI * kWheelRadius * (1.0 / 6.54)
                         * (1.0 / (double) kTalonFXEncoderResolution);
-
-        // TODO: find this.
+                        
         // 360 deg * turning rot per motor rot * motor rot per 2048 enc ticks
         private static final double kTurningRotPerMotorRot = 1 / 10.0;
 
