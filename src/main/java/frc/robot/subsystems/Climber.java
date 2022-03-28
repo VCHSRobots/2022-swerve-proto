@@ -37,7 +37,8 @@ public class Climber extends Base {
     public double m_encoderValue;
 
     private double kInchesPerEncoderTick = 0.00014573;  
-    private double  kInchesPerEncoderTick_Auto = 0.0000989; // Found by experiment
+    private double kInchesPerEncoderTick_Auto = 0.0000989; // Found by experiment
+    private double kLastDisttoDownInches = 2.0;  // The limit at which the arms will go down with speed.
     private double kHighBarInches = 29.0;
     private boolean m_hasBeenCalibrated = false;
 
@@ -45,10 +46,11 @@ public class Climber extends Base {
     private int     m_state = 0;          // Possible states: 0=manual, 1=FIN, 2=NXT
     private double  m_nxtseq_t0 = 0.0;    // Time at which minro seq starts.
     private int     m_nxtseq = 0;         // Minor sequence number for NEXT auto.
-    private double  kTopDelayForSwing = 1.0;   // Delay after arms extend and reach the next bar, for robot to swing in.
-    private double  kTentionDistance = 22.5;   // Distance at which TE and SW hooks fully engaged on different bars.
+    private double  kTopDelayForSwing = 0.75;   // Delay after arms extend and reach the next bar, for robot to swing in.
+    private double  kTentionDistance = 21.50;   // Distance at which TE and SW hooks fully engaged on different bars.
     private double  kSwingBackDistance = 10.00; // DIstance at which we should be fully on next bar with TE hooks.
-    private double  kWaitForTension = 0.5;     // TIme to wait for full tension after SW hooks in reverse.
+    private double  kWaitForTension = 1.0;     // TIme to wait for full tension after SW hooks in reverse.
+    private double  m_lastArmSpeed = 0.0;      // Speed at which the arms are moving down during auto Next
 
     // init
     public void robotInit() {
@@ -164,7 +166,7 @@ public class Climber extends Base {
     // NOTE: For the new climber auto functions to work without breaking the robot,
     // This routine must be called on every TelePeriodic cycle!!  
     public void control(boolean shortHookBack, boolean shortHookForward, boolean armsUp, boolean armsDown,
-        boolean climbNext, boolean climbFinish, boolean climbEStop) {
+        boolean climbNext, boolean climbFinish, double climbArmSpeed, boolean climbEStop) {
 
         // IF we are in an auto sequence, and ANY non-auto button is pressed, the auto
         // sequence is stopped, and we return to manual.
@@ -210,6 +212,8 @@ public class Climber extends Base {
             armsUp();
             } else if (armsDown) {
                 armsDown();
+            } else if (climbArmSpeed > 0.0) {
+                armsDownAtSpeed(climbArmSpeed);
             } else {
                 armsStop();
             }
@@ -263,7 +267,7 @@ public class Climber extends Base {
     }
 
     public void armsUp() {
-        m_master.set(ControlMode.PercentOutput,0.9); // was 0.9
+        m_master.set(ControlMode.PercentOutput,0.95); // was 0.9
 
         m_follower_1.follow(m_master);
         m_follower_2.follow(m_master);
@@ -274,7 +278,7 @@ public class Climber extends Base {
     public void armsDown() {
         if (getClimberZero()) {
             m_master.set(ControlMode.PercentOutput, 0);
-        } else if (m_master.getSelectedSensorPosition() < 50000) {
+        } else if ( getArmPositionInches() < kLastDisttoDownInches) {
             m_master.set(ControlMode.PercentOutput, -0.3);
         } else {
             m_master.set(ControlMode.PercentOutput, -0.95); // was -0.85
@@ -285,13 +289,14 @@ public class Climber extends Base {
         // m_follower_2.setVoltage(0);
     }
 
-    public void armsDownSlow() {
+    public void armsDownAtSpeed(double percent) {
+        double x = -percent;
         if (getClimberZero()) {
             m_master.set(ControlMode.PercentOutput, 0);
-        } else if (m_master.getSelectedSensorPosition() < 50000) {
+        } else if ( getArmPositionInches() < kLastDisttoDownInches) {
             m_master.set(ControlMode.PercentOutput, -0.3);
         } else {
-            m_master.set(ControlMode.PercentOutput, -0.50); 
+            m_master.set(ControlMode.PercentOutput, x); 
         }
         m_follower_1.follow(m_master);
         m_follower_2.follow(m_master);
@@ -472,15 +477,24 @@ public class Climber extends Base {
             if (Timer.getFPGATimestamp() - m_nxtseq_t0 > kTopDelayForSwing) {          
                 m_nxtseq = 4;
                 m_nxtseq_t0 = Timer.getFPGATimestamp();
-                armsDownSlow(); 
+                m_lastArmSpeed = 0.95;
+                armsDownAtSpeed(m_lastArmSpeed); 
             }
             return;
         }
         if(m_nxtseq == 4) {
-            armsDownSlow(); 
-            // Now we are pulling down slowly.  This is the crutial step!!
-            // By experiment, we need to pull down until the distance
-            // is just right.  At that point STOP and swing forward.
+            // This is the crutial step!!
+            // As we pull down, we must stop almost exactly at the tention distance.
+            // As we get closer, slow down so that we do not overshoot too much.
+            double distToGo = getArmPositionInches() - kTentionDistance;
+            if (distToGo > 4.0) {
+                m_lastArmSpeed = 0.95;
+            } else if (distToGo < 0.0) {
+                m_lastArmSpeed = 0.3;
+            } else {
+                m_lastArmSpeed = 0.3 + 0.65*(distToGo / 4.0);
+            }
+            armsDownAtSpeed(m_lastArmSpeed);
             if (getArmPositionInches() < kTentionDistance) {
                 armsStop();
                 m_nxtseq = 5;
@@ -491,17 +505,16 @@ public class Climber extends Base {
         }
         if(m_nxtseq == 5) {
             armsStop();
-            // Here we wait for just an instant (0.2 secs?) to make sure
-            // the TE hooks are fully engaged.
+            // Here we wait to make sure the TE hooks are fully engaged.
             if (Timer.getFPGATimestamp() - m_nxtseq_t0 > kWaitForTension) {
                 m_nxtseq = 6;  
                 m_nxtseq_t0 = Timer.getFPGATimestamp();
-                armsDownSlow();
+                armsDown();
             }
             return;
         }
         if(m_nxtseq == 6) {
-            armsDownSlow();
+            armsDown();
             // At this point, it should be safe to climb on the next
             // bar up for a few inches. Do that, then let the operator
             // take over.

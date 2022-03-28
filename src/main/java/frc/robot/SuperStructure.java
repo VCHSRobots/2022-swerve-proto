@@ -146,7 +146,7 @@ public class SuperStructure extends Base {
 
     @Override
     public void robotPeriodic() {
-        m_SwerveDrive.changeOdometry(OI.shouldSetFieldRelative(), OI.shouldSetRobotRelative(), OI.getResetOdometry());
+        m_SwerveDrive.changeOdometry(OI.shouldSetFieldRelative(), OI.shouldSetRobotRelative(), OI.getResetOdometryLaunchPad(), OI.getResetOdometryRightFender());
         m_Intake.robotPeriodic();
         m_auto.robotPeriodic();
         m_Climber.robotPeriodic();
@@ -158,7 +158,7 @@ public class SuperStructure extends Base {
         m_state.update(m_SwerveDrive.getPose2d(), Rotation2d.fromDegrees(m_Shooter.getTurretAngleDegrees()));
 
         // climber or shooter check
-        if (OI.aimWithPose() || OI.getAimTurret() || OI.getRightBumperForWallShot() || OI.getLeftBumperForTapeShot()
+        if (OI.getAimTurret() || OI.getRightBumperForWallShot() || OI.getLeftBumperForTapeShot()
                 || OI.getRightTriggerForShooting() || OI.getUnjam() || OI.getBarf() || OI.startIntake()) {
             m_lastButtonWasClimber = false;
         } else if (OI.getArmsDown() || OI.getArmsUp() || OI.getSolenoidForward() || OI.getSolenoidReverse()
@@ -188,7 +188,7 @@ public class SuperStructure extends Base {
             m_Shooter.turnOff();
         // Send inputs to climber control.
         m_Climber.control(OI.getSolenoidReverse(), OI.getSolenoidForward(), OI.getArmsUp(),
-                OI.getArmsDown(), OI.getNxtClimb(), OI.getFinClimb(), OI.getClimbEStop());
+                OI.getArmsDown(), OI.getNxtClimb(), OI.getFinClimb(), OI.getClimbArmSpeed(), OI.getClimbEStop());
 
         // DRIVING //
         // VISION GET BALL
@@ -911,7 +911,7 @@ public class SuperStructure extends Base {
     public void testPeriodic() {
         // CLIMBER
         m_Climber.control(OI.getSolenoidReverse(), OI.getSolenoidForward(), OI.getArmsUp(), OI.getArmsDown(),
-                OI.getNxtClimb(), OI.getFinClimb(), OI.getClimbEStop());
+                OI.getNxtClimb(), OI.getFinClimb(), OI.getClimbArmSpeed(), OI.getClimbEStop());
 
         if (OI.getDriveForward()) {
             m_SwerveDrive.drive(0.01, 0.00, 0, false);

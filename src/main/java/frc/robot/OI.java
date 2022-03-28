@@ -69,7 +69,7 @@ public class OI {
         return Math.copySign(Math.pow(xboxDrive.getRightX(), 2), xboxDrive.getRightX());
     }
 
-    static public boolean aimWithPose() {
+    static public boolean getResetOdometryRightFender() {
         return xboxDrive.getPOV() == 0;
     }
 
@@ -81,7 +81,7 @@ public class OI {
         return xboxDrive.getPOV() == 90;
     }
 
-    static public boolean getResetOdometry() {
+    static public boolean getResetOdometryLaunchPad() {
         return xboxDrive.getPOV() == 180;
     }
 
@@ -166,10 +166,14 @@ public class OI {
     }
 
     static public boolean getClimbEStop() {
-        double x1 = xboxClimb.getRightTriggerAxis();
-        double x2 = xboxClimb.getLeftTriggerAxis();
+        double x = xboxClimb.getRightTriggerAxis();
         double threshhold = 0.5;
-        return x1 > threshhold || x2 > threshhold;
+        return x > threshhold;
+    }
+
+    static public double getClimbArmSpeed() {
+        double x = xboxClimb.getLeftTriggerAxis();
+        return x;
     }
 
     static public boolean fortFiveTurnTable() {
