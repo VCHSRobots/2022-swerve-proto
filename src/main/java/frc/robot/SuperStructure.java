@@ -617,7 +617,7 @@ public class SuperStructure extends Base {
         m_Shooter.turnOff();
         m_SwerveDrive.driveFromChassisSpeeds(new ChassisSpeeds(), new Translation2d());
         m_Intake.stopMotors();
-        m_Climber.control(false, false, false, false, false, false, 0, false);
+        m_Climber.control(false, false, false, false, false, false, 0, 0);
     }
 
     @Override
