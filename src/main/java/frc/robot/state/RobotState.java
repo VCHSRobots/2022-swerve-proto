@@ -117,16 +117,20 @@ public class RobotState {
         Twist2d predictedTwist2d = m_movingAverageTwist2d.getAverage();
         double radiansToDegrees = 180 / Math.PI;
 
-        // don't use this, its a rough way to estimate ball time in the air based on our distance to the target
-        double predictedBallAirTime = (.6 * Math.atan(getPredictedDistanceToTarget()-10)) + 1;
+        Pose2d robotPose = getRobotToCenterHub(Timer.getFPGATimestamp());
 
-        double predictedY = kFieldToCenterHub.getY() + (predictedTwist2d.dy * 5.0) + (predictedTwist2d.dy * predictedBallAirTime);
-        double predictedX = kFieldToCenterHub.getX() + (predictedTwist2d.dx * 5.0) + (predictedTwist2d.dx * predictedBallAirTime);
-        // double predictedTheta = kFieldToCenterHub.getRotation().getRadians() + predictedLocation.dtheta;
+        /* Don't use this later, its a rough way to estimate ball time in the air based on our distance to the target
+         How I got this was through getting rough timings from our shots from previous matches.
+         This isn't accurate with our shooter at all considering the current flywheel change, 
+         I would need to know our initial velocity to do this properly, but it works for now */
+        double predictedBallAirTime = 0.6 * Math.log(getPredictedDistanceToTarget());
+
+        double predictedY = robotPose.getY() - (predictedTwist2d.dy * 25.0) - (predictedTwist2d.dy * predictedBallAirTime);
+        double predictedX = robotPose.getX() - (predictedTwist2d.dx * 25.0) - (predictedTwist2d.dx * predictedBallAirTime);
 
         double predictedRadiansOfTurret = Math.atan2(predictedY, predictedX);
 
-        return predictedRadiansOfTurret * radiansToDegrees;
+        return (predictedRadiansOfTurret * radiansToDegrees);
 
     }
 
@@ -138,7 +142,7 @@ public class RobotState {
      */
     public double getVelocityTurretDegreesOffset() {
 
-        return (getVelocityTurretDegrees() * 180/Math.PI) - getTurretAimingAngle().getRadians();
+        return getVelocityTurretDegrees() - getTurretAimingAngle().getDegrees();
 
     }
 
@@ -162,13 +166,12 @@ public class RobotState {
      * 
      * Creates an offset for the target distance to the robot by utilizing the limelight
      * 
-     * @param yaw limelight yaw
-     * @param pitch limelight pitch
+     * @param distanceFromTarget distance from the target
      * @return predicted distance offset to target with aid from limelight
      */
-    public double getPredictedDistanceToTargetOffset(Rotation2d yaw, Rotation2d pitch) {
+    public double getPredictedDistanceToTargetOffset(double distanceFromTarget) {
         
-        return getPredictedDistanceToTarget() - getCameraToTargetDistance(yaw, pitch);
+        return getPredictedDistanceToTarget() - distanceFromTarget;
 
     }
 
