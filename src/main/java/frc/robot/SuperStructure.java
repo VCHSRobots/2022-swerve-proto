@@ -146,7 +146,6 @@ public class SuperStructure extends Base {
                 OI.getResetOdometryLaunchPad(), OI.getResetOdometryRightFender());
         m_Intake.robotPeriodic();
         m_auto.robotPeriodic();
-        m_Climber.robotPeriodic();
         m_VisionShooter.calculateAngleError();
         m_VisionShooter.addDistanceToMovingAverage();
 
@@ -265,7 +264,7 @@ public class SuperStructure extends Base {
             m_Shooter.shootingDist(8);
         } else if (OI.getAimTurret()) {
             m_Shooter.shootingDist(8);
-        } else if (m_Intake.getBothBallsLoaded() && !m_lastButtonWasClimber) {
+        } else if (m_Intake.getBothBallsLoaded()) {
             // speed up shooter automatically
             m_Shooter.shootingDist(8);
         } else if (OI.driveAndShoot()) {
@@ -419,6 +418,7 @@ public class SuperStructure extends Base {
                 m_autoStep = 3;
                 m_Timer.reset();
                 m_Timer.start();
+                m_Intake.countinueIntakeMotors();
             }
             // m_Shooter.warmUp();
             m_Shooter.shootingDist(Units.metersToFeet(secondShotMeters));
@@ -452,7 +452,7 @@ public class SuperStructure extends Base {
                 m_zeroBallCounter++;
                 if (m_zeroBallCounter > 7) {
                     m_zeroBallCounter = 0;
-                    m_autoStep = 5;
+                    m_autoStep = 4;
                     m_auto.setupAuto1bp3();
                     m_Timer.reset();
                     m_Timer.start();
@@ -460,11 +460,11 @@ public class SuperStructure extends Base {
                 }
             }
 
-        } else if (m_autoStep == 5) {
+        } else if (m_autoStep == 4) {
             // follow third trajectory to pick up 2 balls from loading station
             // move to next step when traj complete
             if (m_auto.isTrajectoryCompleted()) {
-                m_autoStep = 6;
+                m_autoStep = 5;
                 m_Timer.reset();
                 m_Timer.start();
             }
@@ -474,7 +474,7 @@ public class SuperStructure extends Base {
             m_SwerveDrive.driveFromChassisSpeeds(m_auto.getNextChassisSpeeds(m_SwerveDrive.getPose2d()));
             m_Intake.turnOn();
 
-        } else if (m_autoStep == 6) {
+        } else if (m_autoStep == 5) {
             // wait at loading station
             if (m_Timer.hasElapsed(1.0) || m_Intake.getNumberOfBallsHolding() == 2) {
                 m_autoStep = 7;
@@ -486,11 +486,11 @@ public class SuperStructure extends Base {
             m_SwerveDrive.drive(0, 0, 0, false);
             m_Intake.turnOn();
 
-        } else if (m_autoStep == 7) {
+        } else if (m_autoStep == 6) {
             // 4th trajectory from load station to hub
             // move to next step when traj complete
             if (m_auto.isTrajectoryCompleted()) {
-                m_autoStep = 8;
+                m_autoStep = 7;
                 m_Timer.reset();
                 m_Timer.start();
             }
@@ -501,7 +501,7 @@ public class SuperStructure extends Base {
             m_SwerveDrive.driveFromChassisSpeeds(m_auto.getNextChassisSpeeds(m_SwerveDrive.getPose2d()));
             m_Intake.turnOn();
 
-        } else if (m_autoStep == 8) {
+        } else if (m_autoStep == 7) {
             // shoot last 2 balls
             m_Shooter.shootingDist(Units.metersToFeet(thirdShotMeters));
             if (m_Shooter.IsOkToShoot() && Math.abs(m_VisionShooter.getYaw()) < 3) {
@@ -515,7 +515,7 @@ public class SuperStructure extends Base {
                 m_zeroBallCounter++;
                 if (m_zeroBallCounter > 7) {
                     m_zeroBallCounter = 0;
-                    m_autoStep = 9;
+                    m_autoStep = 8;
                     m_auto.setupAuto1bp3();
                     m_Timer.reset();
                     m_Timer.start();
@@ -523,10 +523,10 @@ public class SuperStructure extends Base {
                 }
             }
 
-        } else if (m_autoStep == 9) {
+        } else if (m_autoStep == 8) {
             SmartDashboard.putNumber("auto time", Timer.getFPGATimestamp() - m_timestamp);
             if (m_Timer.advanceIfElapsed(3)) {
-                m_autoStep = 10;
+                m_autoStep = 9;
             }
             m_Shooter.shootingDist(Units.metersToFeet(thirdShotMeters));
             if (m_Shooter.IsOkToShoot() && Math.abs(m_VisionShooter.getYaw()) < 3) {
@@ -534,7 +534,7 @@ public class SuperStructure extends Base {
             } else {
                 m_Intake.countinueIntakeMotors();
             }
-        } else if (m_autoStep == 10) {
+        } else if (m_autoStep == 9) {
             m_Shooter.warmUp();
             m_Intake.turnOffLoadShooter();
         } else {
