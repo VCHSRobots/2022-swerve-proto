@@ -34,8 +34,8 @@ import frc.robot.state.RobotState;
 public class SuperStructure extends Base {
 
     private static final String kAuto1b = "Auto1b";
-    private static final String kCustomAuto = "Auto2";
-    private static final String kCustomAuto1 = "Auto3";
+    private static final String kAuto2 = "Auto2";
+    private static final String kAutoMarsRock = "MarsRock";
     private final SendableChooser<String> m_chooser = new SendableChooser<>();
 
     private SwerveDrive m_SwerveDrive;
@@ -135,8 +135,8 @@ public class SuperStructure extends Base {
 
         // auto chooser
         m_chooser.setDefaultOption(kAuto1b, kAuto1b);
-        m_chooser.addOption(kCustomAuto, kCustomAuto);
-        m_chooser.addOption(kCustomAuto1, kCustomAuto1);
+        m_chooser.addOption(kAuto2, kAuto2);
+        m_chooser.addOption(kAutoMarsRock, kAutoMarsRock);
         Shuffleboard.getTab("super").add("Auto Choose", m_chooser).withSize(1, 1).withPosition(0, 5);
 
         m_state = new RobotState(m_SwerveDrive.getPose2d(), Rotation2d.fromDegrees(m_Shooter.getTurretAngleDegrees()));
@@ -340,10 +340,10 @@ public class SuperStructure extends Base {
 
         if (m_chooser.getSelected() == kAuto1b) {
             m_auto.setupAuto1bp1();
-        } else if (m_chooser.getSelected() == kCustomAuto) {
+        } else if (m_chooser.getSelected() == kAuto2) {
             m_auto.setupAuto2();
-        } else if (m_chooser.getSelected() == kCustomAuto1) {
-            m_auto.setupAuto3();
+        } else if (m_chooser.getSelected() == kAutoMarsRock) {
+            
         }
         state = m_auto.getInitialState();
 
@@ -356,9 +356,9 @@ public class SuperStructure extends Base {
     public void autonomousPeriodic() {
         if (m_chooser.getSelected() == kAuto1b) {
             Auto1b();
-        } else if (m_chooser.getSelected() == kCustomAuto) {
+        } else if (m_chooser.getSelected() == kAuto2) {
             Auto2();
-        } else if (m_chooser.getSelected() == kCustomAuto1) {
+        } else if (m_chooser.getSelected() == kAutoMarsRock) {
             Auto3();
         }
     }
@@ -367,6 +367,9 @@ public class SuperStructure extends Base {
         // default turret aiming code here
         aimTurretAuto();
         // end turret code
+        double firstShotMeters = 2.8;
+        double secondShotMeters = 3.6;
+        double thirdShotMeters = 4;
 
         if (m_autoStep == 0) {
             // follow auto1b_part1 trajectory to pick up 1 balls
@@ -379,7 +382,7 @@ public class SuperStructure extends Base {
             }
             // always preheat shooter
             // m_Shooter.warmUp();
-            m_Shooter.shootingDist(Units.metersToFeet(3));
+            m_Shooter.shootingDist(Units.metersToFeet(firstShotMeters));
 
             // update with trajectory
             m_SwerveDrive.driveFromChassisSpeeds(m_auto.getNextChassisSpeeds(m_SwerveDrive.getPose2d()));
@@ -388,14 +391,8 @@ public class SuperStructure extends Base {
             m_Intake.turnOn();
 
         } else if (m_autoStep == 1) {
-            // trajectory over, holding 2 balls, shoot them
-            // shoot ball holding
-            // if (m_shootingDistanceFirstRun) {
-            // m_shootingDistance = m_VisionShooter.getDistance();
-            // m_shootingDistanceFirstRun = false;
-            // }
-            m_Shooter.shootingDist(Units.metersToFeet(3));
-            if (m_Shooter.IsOkToShoot() && Math.abs(m_VisionShooter.getYaw()) < 4) {
+            m_Shooter.shootingDist(Units.metersToFeet(firstShotMeters));
+            if (m_Shooter.IsOkToShoot() && Math.abs(m_VisionShooter.getYaw()) < 3) {
                 m_Intake.loadShooter();
             } else {
                 m_Intake.countinueIntakeMotors();
@@ -421,7 +418,7 @@ public class SuperStructure extends Base {
                 m_Timer.start();
             }
             // m_Shooter.warmUp();
-            m_Shooter.shootingDist(Units.metersToFeet(3.6));
+            m_Shooter.shootingDist(Units.metersToFeet(secondShotMeters));
 
             // update with trajectory
             m_SwerveDrive.driveFromChassisSpeeds(m_auto.getNextChassisSpeeds(m_SwerveDrive.getPose2d()));
@@ -429,24 +426,24 @@ public class SuperStructure extends Base {
             m_Intake.turnOn();
 
         } else if (m_autoStep == 3) {
-            if (m_Timer.hasElapsed(0.75)) {
+            // delay to pick up ball
+            if (m_Timer.hasElapsed(0.5)) {
                 m_autoStep = 4;
                 m_Timer.reset();
                 m_Timer.start();
                 m_Intake.countinueIntakeMotors();
             }
-            m_Shooter.shootingDist(Units.metersToFeet(3.6));
+            m_Shooter.shootingDist(Units.metersToFeet(secondShotMeters));
             m_Intake.turnOn();
             m_SwerveDrive.drive(0, 0, 0, false);
         } else if (m_autoStep == 4) {
             // shoot 1 ball
-            m_Shooter.shootingDist(Units.metersToFeet(3.6));
-            if (m_Shooter.IsOkToShoot() && Math.abs(m_VisionShooter.getYaw()) < 4) {
+            m_Shooter.shootingDist(Units.metersToFeet(secondShotMeters));
+            if (m_Shooter.IsOkToShoot() && Math.abs(m_VisionShooter.getYaw()) < 3) {
                 m_Intake.loadShooter();
             } else {
                 m_Intake.countinueIntakeMotors();
             }
-
             // when no more balls, go to next step
             if (m_Shooter.IsOkToShoot() && m_Intake.getNumberOfBallsHolding() == 0) {
                 m_zeroBallCounter++;
@@ -469,7 +466,6 @@ public class SuperStructure extends Base {
                 m_Timer.start();
             }
             m_Shooter.warmUp();
-            // m_Shooter.shootingDist(Units.metersToFeet(3.7));
 
             // update with trajectory
             m_SwerveDrive.driveFromChassisSpeeds(m_auto.getNextChassisSpeeds(m_SwerveDrive.getPose2d()));
@@ -477,7 +473,7 @@ public class SuperStructure extends Base {
 
         } else if (m_autoStep == 6) {
             // wait at loading station
-            if (m_Timer.hasElapsed(1.0)) {
+            if (m_Timer.hasElapsed(1.0) || m_Intake.getNumberOfBallsHolding() == 2) {
                 m_autoStep = 7;
                 m_Timer.reset();
                 m_Timer.start();
@@ -496,7 +492,7 @@ public class SuperStructure extends Base {
                 m_Timer.start();
             }
             // m_Shooter.warmUp();
-            m_Shooter.shootingDist(Units.metersToFeet(3.3));
+            m_Shooter.shootingDist(Units.metersToFeet(thirdShotMeters));
 
             // update with trajectory
             m_SwerveDrive.driveFromChassisSpeeds(m_auto.getNextChassisSpeeds(m_SwerveDrive.getPose2d()));
@@ -504,8 +500,8 @@ public class SuperStructure extends Base {
 
         } else if (m_autoStep == 8) {
             // shoot last 2 balls
-            m_Shooter.shootingDist(Units.metersToFeet(3.3));
-            if (m_Shooter.IsOkToShoot() && Math.abs(m_VisionShooter.getYaw()) < 4) {
+            m_Shooter.shootingDist(Units.metersToFeet(thirdShotMeters));
+            if (m_Shooter.IsOkToShoot() && Math.abs(m_VisionShooter.getYaw()) < 3) {
                 m_Intake.loadShooter();
             } else {
                 m_Intake.countinueIntakeMotors();
@@ -529,8 +525,8 @@ public class SuperStructure extends Base {
             if (m_Timer.advanceIfElapsed(3)) {
                 m_autoStep = 10;
             }
-            m_Shooter.shootingDist(Units.metersToFeet(3.3));
-            if (m_Shooter.IsOkToShoot() && Math.abs(m_VisionShooter.getYaw()) < 4) {
+            m_Shooter.shootingDist(Units.metersToFeet(thirdShotMeters));
+            if (m_Shooter.IsOkToShoot() && Math.abs(m_VisionShooter.getYaw()) < 3) {
                 m_Intake.loadShooter();
             } else {
                 m_Intake.countinueIntakeMotors();
@@ -618,43 +614,10 @@ public class SuperStructure extends Base {
     }
 
     public void Auto3() {
-        aimTurretAuto();
-        if (m_autoStep == 0) {
-            m_Shooter.shootingRPM(ntTopRPM.getNumber(0).doubleValue(), ntBotRPM.getNumber(0).doubleValue());
-            if (m_Shooter.IsOkToShoot()) {
-                m_Intake.loadShooter();
-            }
-            if (m_Intake.getNumberOfBallsHolding() == 0) {
-                m_autoStep = 1;
-                m_Timer.reset();
-                m_Timer.start();
-
-            }
-
-        } else if (m_autoStep == 1) {
-            m_Shooter.shootingRPM(ntTopRPM.getNumber(0).doubleValue(), ntBotRPM.getNumber(0).doubleValue());
-            if (m_Shooter.IsOkToShoot()) {
-                m_Intake.loadShooter();
-            }
-            if (m_Timer.advanceIfElapsed(0.5)) {
-                m_autoStep = 2;
-            }
-        } else if (m_autoStep == 2) {
-            m_SwerveDrive.driveFromChassisSpeeds(m_auto.getNextChassisSpeeds(m_SwerveDrive.getPose2d()));
-            if (m_auto.isTrajectoryCompleted()) {
-                m_autoStep = 3;
-
-            }
-            m_Shooter.turnOff();
-            m_Intake.turnOffLoadShooter();
-        } else if (m_autoStep == 3) {
-            m_Shooter.turnOff();
-            m_Intake.turnOffLoadShooter();
-
-        }
-
-        // always update intake state
-        m_Intake.changeState(false, false);
+        m_Shooter.turnOff();
+        m_SwerveDrive.driveFromChassisSpeeds(new ChassisSpeeds(), new Translation2d());
+        m_Intake.stopMotors();
+        m_Climber.control(false, false, false, false, false, false, 0, false);
     }
 
     @Override

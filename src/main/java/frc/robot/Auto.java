@@ -20,9 +20,7 @@ import frc.robot.subsystems.SwerveDrive;
 public class Auto {
 
     PathPlannerTrajectory trajectory2;
-    PathPlannerTrajectory trajectory3;
-    PathPlannerTrajectory trajectory_auto1_part1;
-    PathPlannerTrajectory trajectory_auto1_part2;
+
     PathPlannerTrajectory trajectory_auto1b_part1;
     PathPlannerTrajectory trajectory_auto1b_part2;
     PathPlannerTrajectory trajectory_auto1b_part3;
@@ -48,28 +46,14 @@ public class Auto {
         controller = new HolonomicDriveController(xController, yController, thetaController);
 
         trajectory2 = PathPlanner.loadPath("auto2", 1, 1);
-        trajectory_auto1_part1 = PathPlanner.loadPath("auto1_part1", 4, 2.4);
-        trajectory_auto1_part2 = PathPlanner.loadPath("auto1_part2", 4, 2.4);
 
         trajectory_auto1b_part1 = PathPlanner.loadPath("auto1b_part1", 3.5, 2.3);
         trajectory_auto1b_part2 = PathPlanner.loadPath("auto1b_part2", 3.5, 2.3);
         trajectory_auto1b_part3 = PathPlanner.loadPath("auto1b_part3", 3.5, 2.3);
         trajectory_auto1b_part4 = PathPlanner.loadPath("auto1b_part4", 3.5, 2.3);
-
-        trajectory3 = PathPlanner.loadPath("auto3", 1, 1);
-        // trajectory_auto4_part1 = PathPlanner.loadPath("auto4_part1", 4, 2.4);
-        // trajectory_auto4_part2 = PathPlanner.loadPath("auto4_part2", 4, 2.4);
-        
-
-        // Shuffleboard.getTab("super").addNumber("timer", ()->timer.get());
-
     }
 
     public void robotInit() {
-
-        // Shuffleboard.getTab("auto").add("xController", xController);
-        // Shuffleboard.getTab("auto").add("yController", yController);
-        // Shuffleboard.getTab("auto").add("theta controller", thetaController);
 
     }
 
@@ -77,18 +61,6 @@ public class Auto {
         timer.start();
         timer.reset();
         m_currentAutoStep = 0;
-    }
-
-    public void setupAuto1p1() {
-        m_chosenTrajectory = trajectory_auto1_part1;
-        timer.start();
-        timer.reset();
-    }
-
-    public void setupAuto1p2() {
-        m_chosenTrajectory = trajectory_auto1_part2;
-        timer.start();
-        timer.reset();
     }
 
     public void setupAuto1bp1() {
@@ -117,12 +89,6 @@ public class Auto {
 
     public void setupAuto2() {
         m_chosenTrajectory = trajectory2;
-        timer.start();
-        timer.reset();
-    }
-
-    public void setupAuto3() {
-        m_chosenTrajectory = trajectory3;
         timer.start();
         timer.reset();
     }
