@@ -540,6 +540,7 @@ public class SuperStructure extends Base {
         } else {
             m_Shooter.warmUp();
             m_Intake.turnOffLoadShooter();
+            
         }
 
         // always update intake state
