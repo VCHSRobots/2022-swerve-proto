@@ -28,7 +28,6 @@ import edu.wpi.first.networktables.NetworkTableEntry;
 
 import com.pathplanner.lib.PathPlannerTrajectory.PathPlannerState;
 
-
 /** Add your docs here. */
 public class SuperStructure extends Base {
 
@@ -143,7 +142,8 @@ public class SuperStructure extends Base {
 
     @Override
     public void robotPeriodic() {
-        m_SwerveDrive.changeOdometry(OI.shouldSetFieldRelative(), OI.shouldSetRobotRelative(), OI.getResetOdometryLaunchPad(), OI.getResetOdometryRightFender());
+        m_SwerveDrive.changeOdometry(OI.shouldSetFieldRelative(), OI.shouldSetRobotRelative(),
+                OI.getResetOdometryLaunchPad(), OI.getResetOdometryRightFender());
         m_Intake.robotPeriodic();
         m_auto.robotPeriodic();
         m_Climber.robotPeriodic();
@@ -185,7 +185,7 @@ public class SuperStructure extends Base {
             m_Shooter.turnOff();
         // Send inputs to climber control.
         m_Climber.control(OI.getSolenoidReverse(), OI.getSolenoidForward(), OI.getArmsUp(), OI.getArmsDown(),
-            OI.getNxtClimb(), OI.getFinClimb(), OI.getClimbArmSpeedDown(), OI.getClimbArmSpeedUp());
+                OI.getNxtClimb(), OI.getFinClimb(), OI.getClimbArmSpeedDown(), OI.getClimbArmSpeedUp());
 
         // DRIVING //
         // VISION GET BALL
@@ -206,7 +206,7 @@ public class SuperStructure extends Base {
 
         if (OI.getUnjam()) {
             m_Intake.unjamShooter();
-            
+
         } else if (OI.getBarf()) {
             m_Shooter.setBarfVoltage();
             if (m_Shooter.isSpinningFastEnoughForBarf()) {
@@ -317,6 +317,8 @@ public class SuperStructure extends Base {
             m_Shooter.aimTurret(m_VisionShooter.getYaw());
         } else {
             m_Shooter.setTurretAngle(m_state.getTurretAimingAngle().getDegrees());
+            // TODO: try this below
+            // m_Shooter.setTurretAngle(m_state.getTurretAimingAngle(m_SwerveDrive.getAngVel()).getDegrees());
         }
     }
 
@@ -342,7 +344,7 @@ public class SuperStructure extends Base {
         } else if (m_chooser.getSelected() == kAuto2) {
             m_auto.setupAuto2();
         } else if (m_chooser.getSelected() == kAutoMarsRock) {
-            
+
         }
         state = m_auto.getInitialState();
 

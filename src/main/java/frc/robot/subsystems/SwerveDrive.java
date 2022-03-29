@@ -153,6 +153,10 @@ public class SwerveDrive extends Base {
         return m_odometry.getPoseMeters();
     }
 
+    public double getAngVel() {
+        return Units.degreesToRadians(m_gyro.getRate());
+    }
+
     public void stopModules() {
         m_frontLeft.stop();
         m_frontRight.stop();

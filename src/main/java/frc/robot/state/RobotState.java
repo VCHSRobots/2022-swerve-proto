@@ -79,6 +79,12 @@ public class RobotState {
         return rot;
     }
 
+    public Rotation2d getTurretAimingAngle(double drivetrainAngularVelRadians) {
+        Rotation2d preAngVelAngle = getTurretAimingAngle();
+        double dt = 0.020;
+        return preAngVelAngle.plus(new Rotation2d(drivetrainAngularVelRadians*dt));
+    }
+
     public double getCameraToTargetDistance(Rotation2d yaw, Rotation2d pitch) {
         double distance = 3;
         double horizontalToCameraAngle = Units.degreesToRadians(53.0); // angle from horizontal to axis of camera view

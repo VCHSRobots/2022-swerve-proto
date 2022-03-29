@@ -396,14 +396,6 @@ public class Shooter extends Base {
         m_turnTableTalon.set(ControlMode.PercentOutput, turntableSpeed);
     }
 
-    public void configZeroSettings() {
-        m_turnTableTalon.setSelectedSensorPosition(0);
-        m_turnTableTalon.configReverseSoftLimitThreshold(-16100, 50);
-        m_turnTableTalon.configForwardSoftLimitThreshold(8100, 50);
-        m_turnTableTalon.configForwardSoftLimitEnable(true, 50);
-        m_turnTableTalon.configReverseSoftLimitEnable(true, 50);
-    }
-
     public void aimTurret(double angleYawDegreesOffset) {
         if (Math.abs(angleYawDegreesOffset) < 0.5) {
             m_turnTableTalon.setVoltage(0);
