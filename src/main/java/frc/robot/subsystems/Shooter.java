@@ -375,8 +375,8 @@ public class Shooter extends Base {
     }
 
     public void setBarfVoltage() {
-        m_shootTalonBot.setVoltage(2.75);
-        m_shootTalonTop.setVoltage(2.75);
+        m_shootTalonBot.setVoltage(2.5);
+        m_shootTalonTop.setVoltage(2.5);
 
     }
 

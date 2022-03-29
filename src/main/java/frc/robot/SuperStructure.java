@@ -144,9 +144,9 @@ public class SuperStructure extends Base {
         m_state = new RobotState(m_SwerveDrive.getPose2d(), Rotation2d.fromDegrees(m_Shooter.getTurretAngleDegrees()));
     }
 
-     @Override
+    @Override
     public void robotPeriodic() {
-        m_SwerveDrive.changeOdometry(OI.shouldSetFieldRelative(), OI.shouldSetRobotRelative(), OI.getResetOdometry());
+        m_SwerveDrive.changeOdometry(OI.shouldSetFieldRelative(), OI.shouldSetRobotRelative(), OI.getResetOdometryLaunchPad(), OI.getResetOdometryRightFender());
         m_Intake.robotPeriodic();
         m_auto.robotPeriodic();
         m_Climber.robotPeriodic();
@@ -158,7 +158,7 @@ public class SuperStructure extends Base {
         m_state.update(m_SwerveDrive.getPose2d(), Rotation2d.fromDegrees(m_Shooter.getTurretAngleDegrees()));
 
         // climber or shooter check
-        if (OI.aimWithPose() || OI.getAimTurret() || OI.getRightBumperForWallShot() || OI.getLeftBumperForTapeShot()
+        if (OI.getAimTurret() || OI.getRightBumperForWallShot() || OI.getLeftBumperForTapeShot()
                 || OI.getRightTriggerForShooting() || OI.getUnjam() || OI.getBarf() || OI.startIntake()) {
             m_lastButtonWasClimber = false;
         } else if (OI.getArmsDown() || OI.getArmsUp() || OI.getSolenoidForward() || OI.getSolenoidReverse()
@@ -184,7 +184,8 @@ public class SuperStructure extends Base {
 
         // CLIMBER
         // If any climbing functions are active, turn off shooter wheels.
-        if (m_lastButtonWasClimber) m_Shooter.turnOff();
+        if (m_lastButtonWasClimber)
+            m_Shooter.turnOff();
         // Send inputs to climber control.
         m_Climber.control(OI.getSolenoidReverse(), OI.getSolenoidForward(), OI.getArmsUp(), OI.getArmsDown(),
             OI.getNxtClimb(), OI.getFinClimb(), OI.getClimbArmSpeedDown(), OI.getClimbArmSpeedUp());
@@ -207,22 +208,8 @@ public class SuperStructure extends Base {
         // INTAKE / SHOOTING
 
         if (OI.getUnjam()) {
-            // m_Shooter.shootingRPM(2700, 2700);
-            // if (m_Intake.getNumberOfBallsHolding() == 0) {
-            // m_barfTimerStarted = false;
-            // m_Timer.reset();
-            // m_Timer.stop();
-            // m_Intake.turnOffLoadShooter();
-            // }
-            // if (m_barfTimerStarted && m_Timer.advanceIfElapsed(0.5)) {
-            // m_Intake.loadShooter();
-            // } else if (!m_barfTimerStarted) {
-            // m_Timer.reset();
-            // m_Timer.start();
-            // m_barfTimerStarted = true;
-            // }
             m_Intake.unjamShooter();
-
+            
         } else if (OI.getBarf()) {
             m_Shooter.setBarfVoltage();
             if (m_Shooter.isSpinningFastEnoughForBarf()) {
@@ -232,15 +219,8 @@ public class SuperStructure extends Base {
             }
         } else if (OI.getRightTriggerForShooting()) {
             // camera center shot
-            // m_Shooter.shootingRPM(3000, 2400);
-            // m_Shooter.shootingRPM(ntTopRPM.getDouble(0), ntBotRPM.getDouble(0));
-            if (m_shootingDistanceFirstRun) {
-                m_shootingDistance = m_VisionShooter.getDistance();
-                m_shootingDistanceFirstRun = false;
-            }
-            // m_Shooter.shootingDist(m_shootingDistance);
             m_Shooter.shootingDist(m_VisionShooter.getMovingAverageDistance());
-            if (m_Shooter.IsOkToShoot()) {
+            if (m_Shooter.IsOkToShoot() && (Math.abs(m_VisionShooter.getYaw()) < 3)) {
                 // Load shooter
                 m_Intake.loadShooter();
 
@@ -249,7 +229,6 @@ public class SuperStructure extends Base {
             }
         } else if (OI.getRightBumperForWallShot()) {
             // turn shooter on in rpm mode
-            // m_Shooter.shootingRPM(2500, 2650);
             m_Shooter.shootingRPM(3000, 2420);
 
             if (m_Shooter.IsOkToShoot()) {
@@ -281,7 +260,8 @@ public class SuperStructure extends Base {
             } else {
                 m_Intake.turnOffLoadShooter();
             }
-        } else if (ntShooterPreheatEnable.getBoolean(false) || (DriverStation.isFMSAttached() && !m_lastButtonWasClimber)) {
+        } else if (ntShooterPreheatEnable.getBoolean(false)
+                || (DriverStation.isFMSAttached() && !m_lastButtonWasClimber)) {
             // speed up shooter automatically
             m_Shooter.shootingDist(8);
         } else if (OI.getAimTurret()) {
@@ -291,11 +271,11 @@ public class SuperStructure extends Base {
             m_Shooter.shootingDist(8);
         } else if (OI.driveAndShoot()) {
             m_Shooter.shootingDist(m_state.getVelocityTurretDegrees());
-                if (m_Shooter.canShootWithVelocity()) {
-                    m_Intake.loadShooter();
-                } else {
-                    m_Intake.turnOffLoadShooter();
-                }
+            if (m_Shooter.canShootWithVelocity()) {
+                m_Intake.loadShooter();
+            } else {
+                m_Intake.turnOffLoadShooter();
+            }
         } else {
             m_Shooter.turnOff();
         }
@@ -312,17 +292,10 @@ public class SuperStructure extends Base {
                 m_Shooter.setTurretAngle(90);
             }
         } else if (OI.getAimTurret()) {
-            // m_Shooter.aimTurret(m_VisionShooter.getYaw());
-            if (m_VisionShooter.getTargetValid()) {
-                m_Shooter.aimTurret(m_VisionShooter.getYaw());
-            } else {
-                m_Shooter.setTurretAngle(m_state.getTurretAimingAngle().getDegrees());
-            }
-        } else if (OI.aimWithPose()) {
-            m_Shooter.setTurretAngle(m_state.getTurretAimingAngle().getDegrees());
+            aimTurretAuto();
         } else if (m_Intake.getNumberOfBallsHolding() > 0 && !(OI.getRightTurntable() ||
                 OI.getLeftTurntable())) {
-            m_Shooter.setTurretAngle(m_state.getTurretAimingAngle().getDegrees());
+            aimTurretAuto();
         } else {
             m_Shooter.TurnTable(OI.getRightTurntable(),
                     OI.getLeftTurntable());
@@ -339,6 +312,14 @@ public class SuperStructure extends Base {
         }
         if (OI.negHundredTurnTable()) {// B
             m_Shooter.setTurnTableAngleHundred();
+        }
+    }
+
+    public void aimTurretAuto() {
+        if (m_VisionShooter.getTargetValid()) {
+            m_Shooter.aimTurret(m_VisionShooter.getYaw());
+        } else {
+            m_Shooter.setTurretAngle(m_state.getTurretAimingAngle().getDegrees());
         }
     }
 
@@ -602,11 +583,7 @@ public class SuperStructure extends Base {
 
     public void Auto1b() {
         // default turret aiming code here
-        if (m_VisionShooter.getTargetValid()) {
-            m_Shooter.aimTurret(m_VisionShooter.getYaw());
-        } else {
-            m_Shooter.setTurretAngle(m_state.getTurretAimingAngle().getDegrees());
-        }
+        aimTurretAuto();
         // end turret code
 
         if (m_autoStep == 0) {
@@ -859,8 +836,8 @@ public class SuperStructure extends Base {
     }
 
     public void Auto3() {
+        aimTurretAuto();
         if (m_autoStep == 0) {
-            m_Shooter.setTurretAngle(m_state.getTurretAimingAngle().getDegrees());
             m_Shooter.shootingRPM(ntTopRPM.getNumber(0).doubleValue(), ntBotRPM.getNumber(0).doubleValue());
             if (m_Shooter.IsOkToShoot()) {
                 m_Intake.loadShooter();
