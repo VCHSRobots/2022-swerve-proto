@@ -4,8 +4,6 @@
 
 package frc.robot.subsystems;
 
-import java.lang.Thread.State;
-
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
@@ -20,7 +18,6 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
-import edu.wpi.first.wpilibj.shuffleboard.WidgetType;
 import frc.robot.RobotMap;
 import edu.wpi.first.wpilibj.Timer;
 
@@ -72,8 +69,6 @@ public class Intake extends Base {
 
     STATE m_state = STATE.A;
 
-    private boolean hasDetectedMiddle;
-
     public Intake() {
         m_colorSensor.init();
 
@@ -121,7 +116,6 @@ public class Intake extends Base {
     }
 
     public void autonomousInit() {
-        hasDetectedMiddle = false;
         m_state = STATE.C;
     }
 
@@ -193,7 +187,6 @@ public class Intake extends Base {
                 if (isBallAtMiddle() && isBallAtLoad()) {
                     // 2nd ball loaded, stop intaking
                     m_state = STATE.A;
-                    hasDetectedMiddle = true;
                 }
 
                 // SPIT BALL OUT IF BAD (WRONG COLOR) :))))))
@@ -253,9 +246,7 @@ public class Intake extends Base {
                 m_mover.set(ControlMode.PercentOutput, 0);
                 m_shooterLoader.set(ControlMode.PercentOutput, 0);
 
-                // add later
-                // m_doublePCM.set(Value.kReverse);
-                setIntakePnuematic(false); // TODO: uncomment this
+                setIntakePnuematic(false);
 
                 break;
             case B:
@@ -348,7 +339,6 @@ public class Intake extends Base {
     // Goes back to the first state
     public void turnOffLoadShooter() {
         m_state = STATE.A;
-        // TODO: put this back to STATE.A
     }
 
     public void stopMotors() {

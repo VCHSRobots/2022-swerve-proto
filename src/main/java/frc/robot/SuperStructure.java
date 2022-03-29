@@ -4,6 +4,9 @@
 
 package frc.robot;
 
+import frc.robot.state.RobotState;
+import frc.robot.subsystems.*;
+
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.PneumaticHub;
@@ -14,11 +17,6 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import frc.robot.state.RobotState;
-import frc.robot.subsystems.*;
-
-import com.pathplanner.lib.PathPlannerTrajectory.PathPlannerState;
-
 import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.cscore.UsbCamera;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -28,7 +26,8 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.NetworkTableEntry;
 
-import frc.robot.state.RobotState;
+import com.pathplanner.lib.PathPlannerTrajectory.PathPlannerState;
+
 
 /** Add your docs here. */
 public class SuperStructure extends Base {
@@ -61,7 +60,7 @@ public class SuperStructure extends Base {
     boolean m_shootingDistanceFirstRun = true;
 
     private final Compressor m_phCompressor = new Compressor(PneumaticsModuleType.REVPH);
-    private final PneumaticHub m_ph = new PneumaticHub();
+    private final PneumaticHub m_ph = new PneumaticHub(); // even though not used, keep here
 
     ShuffleboardTab ShootMotorTab = Shuffleboard.getTab("super");
     ShuffleboardTab CompTab = Shuffleboard.getTab("computil");

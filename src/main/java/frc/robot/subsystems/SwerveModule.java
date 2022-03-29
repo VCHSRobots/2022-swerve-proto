@@ -22,8 +22,6 @@ import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.RemoteFeedbackDevice;
 import com.ctre.phoenix.motorcontrol.RemoteSensorSource;
 import com.ctre.phoenix.motorcontrol.StatusFrameEnhanced;
-import com.ctre.phoenix.motorcontrol.TalonFXFeedbackDevice;
-import com.ctre.phoenix.motorcontrol.can.FilterConfiguration;
 import com.ctre.phoenix.motorcontrol.can.TalonFXConfiguration;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import com.ctre.phoenix.sensors.AbsoluteSensorRange;
@@ -40,7 +38,7 @@ public class SwerveModule implements Sendable {
                         * (1.0 / (double) kTalonFXEncoderResolution);
                         
         // 360 deg * turning rot per motor rot * motor rot per 2048 enc ticks
-        private static final double kTurningRotPerMotorRot = 1 / 10.0;
+        // wheel turning rotations per turning motor rotations = 1 : 10
 
         private static final double kModuleMaxAngularVelocity = 2 * SwerveDrive.kMaxAngularSpeed;
         private static final double kModuleMaxAngularAcceleration = 8 * Math.PI; // radians per second squared

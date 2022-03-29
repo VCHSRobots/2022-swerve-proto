@@ -15,12 +15,9 @@ import com.ctre.phoenix.sensors.SensorTimeBase;
 import com.ctre.phoenix.sensors.SensorVelocityMeasPeriod;
 
 import edu.wpi.first.math.controller.ProfiledPIDController;
-import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
-import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.RobotMap;
 import frc.robot.util.InterpolatingDouble;
 import frc.robot.util.InterpolatingTreeMap;
@@ -34,15 +31,12 @@ public class Shooter extends Base {
     // 360.0);
     private final double kEncoderTicksPerDegree = (231.0 / 56.0) * (62.0 / 13.0) * 2048 * (1.0 / 360.0);
 
-    private final double kZeroOffsetEncoderTicks = 0;
     private final double kZeroOffsetDegrees = -165;
-    private final double kAngleOffset = 180;
     private final double kMinAngle = -135;
     private final double kMaxAngle = 275;
     private final double kMaxAngularVelocity = 600.0; // keep within 560, started at 135
     private final double kMaxAngularAcceleration = 12000.0; // keep within 5700, started at 455
-    private double m_targetAngle = 0;
-    private boolean m_isTurningAround = false;
+    // private double m_targetAngle = 0; // keep for later in case 
     // Shuffleboard Tabs and NetworkTableEntries.
     ShuffleboardTab debugTab = Shuffleboard.getTab("debug");
     // NetworkTableEntry ntVoltage = Shuffleboard.getTab("Shooter").add("voltage", 0.0).getEntry();
@@ -415,15 +409,7 @@ public class Shooter extends Base {
             m_turnTableTalon.setVoltage(0);
             return;
         }
-
         double targetAngle = getTurretAngleDegrees() + angleYawDegreesOffset;
-        // if (m_isTurningAround) {
-        // if (Math.abs(targetAngle - m_targetAngle) < 17) {
-        // m_isTurningAround = false;
-        // } else {
-        // targetAngle = m_targetAngle;
-        // }
-        // }
         setTurretAngle(targetAngle);
     }
 
@@ -446,51 +432,23 @@ public class Shooter extends Base {
         double newAngle = angleTargetDegrees % 360;
         if (newAngle < kMinAngle) {
             newAngle += 360;
-            // m_targetAngle = newAngle;
-            // m_isTurningAround = true;
         } else if (newAngle > kMaxAngle) {
             newAngle -= 360;
-            // m_targetAngle = newAngle;
-            // m_isTurningAround = true;
         }
         double targetAngleTicks = angleDegreesToEncoderTicks(newAngle);
         // kS to overcome friction
-        double kS = Math.copySign(0.020, targetAngleTicks -
+        double kS = Math.copySign(0.02, targetAngleTicks -
                 m_turnTableTalon.getSelectedSensorPosition());
         m_turnTableTalon.set(ControlMode.MotionMagic, targetAngleTicks,
                 DemandType.ArbitraryFeedForward, kS);
-
-        // Calculate the turning motor output from the turning PID controller.
-        // double newAngle = angleTargetDegrees % 360;
-        // if (newAngle < kMinAngle) {
-        // newAngle += 360;
-        // } else if (newAngle > kMaxAngle) {
-        // newAngle -= 360;
-        // }
-        // SmartDashboard.putNumber("newangle", newAngle);
-
-        // final double turnOutput = m_turretPIDController
-        // .calculate(getTurretAngleDegrees(), newAngle);
-        // final double turnFeedforward = m_turretFeedForward
-        // .calculate(m_turretPIDController.getSetpoint().velocity);
-        // SmartDashboard.putNumber("turret PID vel",
-        // m_turretPIDController.getSetpoint().velocity);
-        // SmartDashboard.putNumber("turret ff", turnFeedforward);
-        // SmartDashboard.putNumber("turret PID pos err",
-        // m_turretPIDController.getPositionError());
-        // // m_turnTableTalon.setVoltage(turnOutput + turnFeedforward);
-        // m_turnTableTalon.setVoltage(turnFeedforward + turnOutput);
     }
 
     public double angleDegreesToEncoderTicks(double degrees) {
-        // double setAngle = Math.IEEEremainder(degrees, 360);
         return (degrees) * kEncoderTicksPerDegree;
     }
 
-    // return
     public double getTurretAngleDegrees() {
         double angleDegrees = (m_turntableEncoder.getPosition() - kZeroOffsetDegrees);
-        // return Math.IEEEremainder(angleDegrees, 360);
         return angleDegrees;
     }
 
@@ -513,14 +471,6 @@ public class Shooter extends Base {
     public void setTurnTableAngleNegHundred() {
         setTurretAngle(90);
     }
-
-    public void setTurntableToNTValue() {
-        // m_turnTableTalon.setVoltage(ntVoltage.getDouble(0.0));
-        // setTurretAngle(ntVoltage.getDouble(0.0));
-        System.out.println("*** SETTING POSITION ***");
-        SmartDashboard.putBoolean("Enter New Code", true);
-    }
-
 }
 
 /*
