@@ -46,20 +46,24 @@ public class ColorSensor extends Base {
    * with given confidence range.
    */
   private final ColorMatch m_colorMatcher = new ColorMatch();
-  ColorMatchResult m_match = new ColorMatchResult(new Color(1,1,1), 0.3);
+  ColorMatchResult m_match = new ColorMatchResult(new Color(1, 1, 1), 0.3);
   Color m_detectedColor = new Color(0.1, 0.1, 0.1);
 
   // ShuffleboardTab colorSensorTab = Shuffleboard.getTab("ColorSensor");
   // NetworkTableEntry ntRedColor = colorSensorTab.add("Red", 0).getEntry();
   // NetworkTableEntry ntBlueColor = colorSensorTab.add("Blue", 0).getEntry();
-  // NetworkTableEntry ntConfidence = colorSensorTab.add("Confidence", 0).getEntry();
-  // NetworkTableEntry ntDetected = colorSensorTab.add("Detected Color", 0).getEntry();
-  // NetworkTableEntry ntBlueCount = colorSensorTab.add("blue count", 0).getEntry();
+  // NetworkTableEntry ntConfidence = colorSensorTab.add("Confidence",
+  // 0).getEntry();
+  // NetworkTableEntry ntDetected = colorSensorTab.add("Detected Color",
+  // 0).getEntry();
+  // NetworkTableEntry ntBlueCount = colorSensorTab.add("blue count",
+  // 0).getEntry();
   // NetworkTableEntry ntRedCount = colorSensorTab.add("red count", 0).getEntry();
-  // NetworkTableEntry ntGreenCount = colorSensorTab.add("green count", 0).getEntry();
+  // NetworkTableEntry ntGreenCount = colorSensorTab.add("green count",
+  // 0).getEntry();
   // NetworkTableEntry ntProximity = colorSensorTab.add("prox", 0).getEntry();
   // NetworkTableEntry ntGreenColor = colorSensorTab.add("green", 0).getEntry();
-  
+
   public static boolean ballDetected = false;
 
   public static boolean redBallDetected = false;
@@ -82,8 +86,6 @@ public class ColorSensor extends Base {
   public boolean isRedBallDetected() {
     return m_match.color == kRedBallColor && m_match.confidence > 0.88;
   }
-
-
 
   // Robot Periodic
   public void checkColor() {
@@ -125,12 +127,17 @@ public class ColorSensor extends Base {
 
   }
 
+  public boolean isBallDetected() {
+    // m_colorSensor.getProximity()
+    return isBlueBallDetected() || isRedBallDetected();
+  }
+
   public void updateNT() {
     /**
      * Open Smart Dashboard or Shuffleboard to see the color detected by the
      * sensor.
      */
-    
+
     // ntRedColor.setDouble(m_detectedColor.red);
     // ntBlueColor.setDouble(m_detectedColor.blue);
     // ntGreenColor.setDouble(m_detectedColor.green);
