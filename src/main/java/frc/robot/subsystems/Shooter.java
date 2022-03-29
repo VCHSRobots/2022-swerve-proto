@@ -15,13 +15,17 @@ import com.ctre.phoenix.sensors.SensorTimeBase;
 import com.ctre.phoenix.sensors.SensorVelocityMeasPeriod;
 
 import edu.wpi.first.math.controller.ProfiledPIDController;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import frc.robot.RobotMap;
 import frc.robot.util.InterpolatingDouble;
 import frc.robot.util.InterpolatingTreeMap;
 import frc.robot.util.distanceRPMPoint;
+import frc.robot.state.RobotState;
 
 public class Shooter extends Base {
     // turntable gear ratio
@@ -433,6 +437,43 @@ public class Shooter extends Base {
                 m_turnTableTalon.getSelectedSensorPosition());
         m_turnTableTalon.set(ControlMode.MotionMagic, targetAngleTicks,
                 DemandType.ArbitraryFeedForward, kS);
+    }
+
+   /**
+    * resets the turntables odometry based on the turret and hub
+    * @param limelightDist
+    * @param m_state
+    * @param timeStamp
+    * @return new pose 2d of the robot based PURELY on the shooter
+    */
+    public Pose2d resetTurntableOdometry(double limelightDist, RobotState m_state, double timeStamp) {
+
+        double visionTargetOffsetFromCenter = 2.0;
+        double cameraHeight = 2.6667; // height of camera on robot
+        double targetHeight = 8.46833; // height of retroreflective tape in feet
+
+        double cameraToHubHeightDelta = targetHeight - cameraHeight;
+
+        double straightDistToHubCenter = Math.sqrt(Math.pow(limelightDist, 2) - Math.pow(cameraToHubHeightDelta, 2)) + visionTargetOffsetFromCenter;
+
+        double x = m_state.getRobotToCenterHub(timeStamp).getX();
+        double y = m_state.getRobotToCenterHub(timeStamp).getY();
+
+        if (turntableOdometryCanChange()) {
+            x = Math.sin(getTurretAngleDegrees()) * straightDistToHubCenter;
+            y = Math.sqrt(Math.pow(straightDistToHubCenter, 2) - Math.pow(x, 2));    
+        }
+        
+        return new Pose2d(x, y, new Rotation2d(Units.degreesToRadians(getTurretAngleDegrees())));
+    }
+
+
+    /**
+     * just a filler function for now, it won't ever be true
+     * @return
+     */
+    public boolean turntableOdometryCanChange() {
+        return false;
     }
 
     public double angleDegreesToEncoderTicks(double degrees) {
