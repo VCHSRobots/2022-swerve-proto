@@ -166,11 +166,11 @@ public class Climber extends Base {
     // NOTE: For the new climber auto functions to work without breaking the robot,
     // This routine must be called on every TelePeriodic cycle!!  
     public void control(boolean shortHookBack, boolean shortHookForward, boolean armsUp, boolean armsDown,
-        boolean climbNext, boolean climbFinish, double climbArmSpeed, boolean climbEStop) {
+        boolean climbNext, boolean climbFinish, double climbArmSpeedDown, double climbArmSpeedUp) {
 
         // IF we are in an auto sequence, and ANY non-auto button is pressed, the auto
         // sequence is stopped, and we return to manual.
-        if (shortHookBack || shortHookForward || armsUp || armsDown || climbEStop) {
+        if (shortHookBack || shortHookForward || armsUp || armsDown || (climbArmSpeedDown > 0.1) || (climbArmSpeedUp > 0.1)) {
             eStop();
         }
 
@@ -212,8 +212,10 @@ public class Climber extends Base {
             armsUp();
             } else if (armsDown) {
                 armsDown();
-            } else if (climbArmSpeed > 0.0) {
-                armsDownAtSpeed(climbArmSpeed);
+            } else if (climbArmSpeedDown > 0.0) {
+                armsDownAtSpeed(climbArmSpeedDown);
+            } else if (climbArmSpeedUp > 0.0) {
+                armsUpAtSpeed(climbArmSpeedUp);
             } else {
                 armsStop();
             }
@@ -269,6 +271,14 @@ public class Climber extends Base {
     public void armsUp() {
         m_master.set(ControlMode.PercentOutput,0.95); // was 0.9
 
+        m_follower_1.follow(m_master);
+        m_follower_2.follow(m_master);
+        // m_follower_1.setVoltage(0);
+        // m_follower_2.setVoltage(0);
+    }
+
+    public void armsUpAtSpeed(double percent) {
+        m_master.set(ControlMode.PercentOutput, percent); 
         m_follower_1.follow(m_master);
         m_follower_2.follow(m_master);
         // m_follower_1.setVoltage(0);
