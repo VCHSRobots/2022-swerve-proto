@@ -165,14 +165,13 @@ public class OI {
         return xboxClimb.getYButtonPressed();
     }
 
-    static public boolean getClimbEStop() {
-        double x = xboxClimb.getRightTriggerAxis();
-        double threshhold = 0.5;
-        return x > threshhold;
+    static public double getClimbArmSpeedDown() {
+        double x = xboxClimb.getLeftTriggerAxis();
+        return x;
     }
 
-    static public double getClimbArmSpeed() {
-        double x = xboxClimb.getLeftTriggerAxis();
+    static public double getClimbArmSpeedUp() {
+        double x = xboxClimb.getRightTriggerAxis();
         return x;
     }
 
