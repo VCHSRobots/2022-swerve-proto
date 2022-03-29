@@ -156,10 +156,12 @@ public class SuperStructure extends Base {
 
         // climber or shooter check
         if (OI.getAimTurret() || OI.getRightBumperForWallShot() || OI.getLeftBumperForTapeShot()
-                || OI.getRightTriggerForShooting() || OI.getUnjam() || OI.getBarf() || OI.startIntake()) {
+                || OI.getRightTriggerForShooting() || OI.getUnjam() || OI.getBarf() || OI.startIntake()
+                || OI.getLeftTurntable() || OI.getRightTurntable()) {
             m_lastButtonWasClimber = false;
         } else if (OI.getArmsDown() || OI.getArmsUp() || OI.getSolenoidForward() || OI.getSolenoidReverse()
-                || OI.getNxtClimb() || OI.getFinClimb()) {
+                || OI.getNxtClimb() || OI.getFinClimb() || OI.getClimbArmSpeedUp() > 0.2
+                || OI.getClimbArmSpeedDown() > 0.2) {
             m_lastButtonWasClimber = true;
         }
     }
