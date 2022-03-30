@@ -8,7 +8,7 @@ package frc.robot;
 public class OI {
     static xbox4415 xboxDrive = new xbox4415(0);
     static xbox4415 xboxClimb = new xbox4415(1);
-    static xbox4415 xboxShooterTesting = new xbox4415(2);
+    // static xbox4415 xboxShooterTesting = new xbox4415(2);
     // static xbox4415 xboxIntakeTesting = new xbox4415(3);
     // static xbox4415 xbox_drive_test = new xbox4415(4);
     static boolean m_prevTrigger = false;
@@ -63,6 +63,10 @@ public class OI {
 
     static public boolean getBarf() {
         return xboxDrive.getRightBumper() && xboxDrive.getLeftBumper();
+    }
+
+    static public boolean getYforDisableAutoAim() {
+        return xboxDrive.getYButton();
     }
 
     static public double getDriveRot() {
@@ -176,32 +180,33 @@ public class OI {
     }
 
     static public boolean fortFiveTurnTable() {
-        return xboxShooterTesting.getAButton();
-        // return false;
+        // return xboxShooterTesting.getAButton();
+        return false;
     }
 
     static public boolean hundredTurnTable() {
-        return xboxShooterTesting.getXButton();
-        // return false;
+        // return xboxShooterTesting.getXButton();
+        return false;
     }
 
     static public boolean negFortFiveTurnTable() {
-        return xboxShooterTesting.getYButton();
-        // return false;
+        // return xboxShooterTesting.getYButton();
+        return false;
     }
 
     static public boolean negHundredTurnTable() {
-        return xboxShooterTesting.getBButton();
-        // return false;
+        // return xboxShooterTesting.getBButton();
+        return false;
     }
 
     static public boolean turntableVoltage() {
-        return xboxShooterTesting.getRightBumper();
+        // return xboxShooterTesting.getRightBumper();
+        return false;
     }
 
     static public boolean aimTurretTest() {
-        return xboxShooterTesting.getLeftTriggerAxis() > 0.3;
-        // return false;
+        // return xboxShooterTesting.getLeftTriggerAxis() > 0.3;
+        return false;
     }
 
     static public boolean driveAndShoot() {

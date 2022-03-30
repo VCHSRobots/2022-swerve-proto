@@ -263,10 +263,15 @@ public class SwerveDrive extends Base {
         drive(xSpeed, ySpeed, rot, m_fieldRelative, centerOfRotationMeters);
     }
 
+    public void setFieldRelative() {
+        m_fieldRelative = true;
+    }
+
     // Robot Periodic
     public void changeOdometry(boolean setFieldRelative, boolean setRobotRelative, boolean resetOdometryLaunchPad, boolean resetOdometryFender) {
         if (setFieldRelative) {
             m_fieldRelative = true;
+            resetOdometry(new Pose2d(getPose2d().getTranslation(), new Rotation2d()));
         } else if (setRobotRelative) {
             m_fieldRelative = false;
         }

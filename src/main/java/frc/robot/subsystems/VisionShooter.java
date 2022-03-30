@@ -26,7 +26,7 @@ public class VisionShooter extends Base {
     private int m_MAXLOSTCOUNT = 7;
     private double m_max_angle_change_in_20ms = 10.0;
 
-    private MovingAverage m_movingAverage = new MovingAverage(10);
+    private MovingAverage m_movingAverage = new MovingAverage(8);
 
     @Override
     public void robotInit() {
@@ -35,7 +35,6 @@ public class VisionShooter extends Base {
 
     public boolean getTargetValid() {
         return ntTargetValid.getDouble(0) == 1.0;
-        // return ntTargetValid.getBoolean(false);
     }
 
     public double calculateAngleError() {
@@ -136,6 +135,10 @@ public class VisionShooter extends Base {
 
     public boolean canSeeTarget() {
         return hasLastTarget;
+    }
+
+    public boolean isOnTarget() {
+        return getTargetValid() && getYaw() < 2;
     }
 
 }

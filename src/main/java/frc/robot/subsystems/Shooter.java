@@ -19,6 +19,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import frc.robot.RobotMap;
@@ -105,16 +106,30 @@ public class Shooter extends Base {
         return ticksPer100msToRPM(m_shootTalonBot.getSelectedSensorVelocity());
     }
 
+    public double getBotClosedLoopTarget() {
+        if (m_shootTalonBot.getControlMode() == ControlMode.PercentOutput) {
+            return 0.0;
+        }
+        return ticksPer100msToRPM(m_shootTalonBot.getClosedLoopTarget());
+    }
+
+    public double getTopClosedLoopTarget() {
+        if (m_shootTalonTop.getControlMode() == ControlMode.PercentOutput) {
+            return 0.0;
+        }
+        return ticksPer100msToRPM(m_shootTalonTop.getClosedLoopTarget());
+    }
+
     // END SHUFFLEBOARD HELPERS
 
     public void robotInit() {
-        debugTab.addNumber("Actual Top RPM", () -> getTopMotorRPM()).withPosition(4, 1).withSize(4, 3);
+        debugTab.addNumber("Actual Top RPM", () -> getTopMotorRPM()).withPosition(4, 1).withSize(4, 3)
+                .withWidget(BuiltInWidgets.kGraph);
+        debugTab.addNumber("Actual Bot RPM", () -> getBotMotorRPM()).withPosition(4, 4).withSize(4, 3)
+                .withWidget(BuiltInWidgets.kGraph);
+        debugTab.addNumber("Top Setpoint", () -> getTopClosedLoopTarget());
                 // .withWidget(BuiltInWidgets.kGraph);
-        debugTab.addNumber("Actual Bot RPM", () -> getBotMotorRPM()).withPosition(4, 4).withSize(4, 3);
-                // .withWidget(BuiltInWidgets.kGraph);
-        debugTab.addNumber("Top Setpoint", () -> ticksPer100msToRPM(m_shootTalonTop.getClosedLoopTarget()));
-                // .withWidget(BuiltInWidgets.kGraph);
-        debugTab.addNumber("Bot Setpoint", () -> ticksPer100msToRPM(m_shootTalonBot.getClosedLoopTarget()));
+        debugTab.addNumber("Bot Setpoint", () -> getBotClosedLoopTarget());
                 // .withWidget(BuiltInWidgets.kGraph);
 
         TalonFXConfiguration baseConfig = new TalonFXConfiguration();
@@ -280,10 +295,10 @@ public class Shooter extends Base {
     }
 
     public void warmUp() {
-        shootingRPM(2400, 2700);
+        shootingRPM(2200, 2000);
     }
 
-    // Shooting function with Distance. (NOT READY!!)
+    // Shooting function with Distance.
     public void shootingDist(double distanceFeet) {
         setSpeedsDist(distanceFeet);
     }
