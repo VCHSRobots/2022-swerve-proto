@@ -430,7 +430,7 @@ public class SuperStructure extends Base {
 
         } else if (m_autoStep == 3) {
             // delay to pick up ball
-            if (m_Timer.hasElapsed(0.75) || m_Intake.getNumberOfBallsHolding()>0) {
+            if (m_Timer.hasElapsed(0.9) || m_Intake.getNumberOfBallsHolding()>0) {
                 m_autoStep = 4;
                 m_Timer.reset();
                 m_Timer.start();

@@ -87,7 +87,7 @@ public class VisionShooter extends Base {
     }
 
     public double getYaw() {
-        return -ntTargetYaw.getDouble(0) + 0.0;
+        return -ntTargetYaw.getDouble(0) + 2.0;
     }
 
     public double getPitch() {
@@ -104,12 +104,12 @@ public class VisionShooter extends Base {
         double pitch = getPitch();
         /*
          * from internet
-         * distance = delta_height / (tan(cameraAngle + Pitch) * cos(Yaw))
+         * distance = delta_height / (tan(cameraAngle + Pitch) * cos(ntYaw))
          * 
          * d = (targetHeight - cameraHeight) / tan(cameraAngle + Pitch)
          */
         distanceFeet = visionTargetOffsetFromCenter + (targetHeight - cameraHeight)
-                / Math.tan(Units.degreesToRadians(cameraAngle + pitch));
+                / (Math.tan(Units.degreesToRadians(cameraAngle + pitch)) * Math.cos(ntTargetYaw.getDouble(0.0)));
         return distanceFeet;
     }
 
