@@ -62,7 +62,8 @@ public class OI {
     }
 
     static public boolean getBarf() {
-        return xboxDrive.getRightBumper() && xboxDrive.getLeftBumper();
+        // return xboxDrive.getRightBumper() && xboxDrive.getLeftBumper();
+        return xboxDrive.getLeftBumper();
     }
 
     static public boolean getYforDisableAutoAim() {

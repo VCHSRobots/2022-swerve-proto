@@ -173,6 +173,8 @@ public class SuperStructure extends Base {
         m_Climber.eStop();
         m_VisionShooter.LEDon();
         m_SwerveDrive.setFieldRelative();
+        m_autoAimEnabled = true;
+
     }
 
     @Override
@@ -202,15 +204,13 @@ public class SuperStructure extends Base {
 
         // INTAKE / SHOOTING
         // If any climbing functions are active, turn off shooter wheels.
-        if (m_lastButtonWasClimber) {
-            m_Shooter.turnOff();
-        } else if (OI.getUnjam()) {
+        if (OI.getUnjam()) {
             m_Intake.unjamShooter();
 
         } else if (OI.getBarf()) {
             m_Shooter.setBarfVoltage();
-            if (m_Shooter.isSpinningFastEnoughForBarf()    
-                && Math.abs(m_Shooter.getTurretAngleDegrees() - 180) < 4) {
+            if (m_Shooter.isSpinningFastEnoughForBarf()
+                    && Math.abs(m_Shooter.getTurretAngleDegrees() - 180) < 4) {
                 m_Intake.loadShooter();
             } else {
                 m_Intake.turnOffLoadShooter();
@@ -236,29 +236,20 @@ public class SuperStructure extends Base {
             } else {
                 m_Intake.countinueIntakeMotors();
             }
-        } else if (OI.getLeftBumperForTapeShot()) {
-            // 4000, 2900 for vision target on bot of screen
-            // m_Shooter.shootingRPM(5100, 3000);
-            m_Shooter.shootingRPM(2500, 2650); // tape speeds
-            if (m_Shooter.IsOkToShoot()) {
-                // load shooter
-                m_Intake.loadShooter();
-            } else {
-                m_Intake.turnOffLoadShooter();
-            }
-        // } else if (OI.xboxDrive.getYButton()) {
-        //     // m_Shooter.shootingDist(ntFeetToRPM.getDouble(0));
-        //     // m_Shooter.setVoltage(ntTopRPM.getDouble(0), ntBotRPM.getDouble(0));
-        //     m_Shooter.shootingRPM(ntTopRPM.getDouble(0.0), ntBotRPM.getDouble(0.0));
-        //     if (m_Shooter.IsOkToShoot()) {
-        //         // if (OI.getAimTurret()) {
-        //         // load shooter
-        //         m_Intake.loadShooter();
-        //     } else {
-        //         m_Intake.turnOffLoadShooter();
-        //     }
-        } else if (ntShooterPreheatEnable.getBoolean(false)
-                || (DriverStation.isFMSAttached() && !m_lastButtonWasClimber)) {
+            // } else if (OI.getLeftBumperForTapeShot()) {
+            // // 4000, 2900 for vision target on bot of screen
+            // // m_Shooter.shootingRPM(5100, 3000);
+            // m_Shooter.shootingRPM(2500, 2650); // tape speeds
+            // if (m_Shooter.IsOkToShoot()) {
+            // // load shooter
+            // m_Intake.loadShooter();
+            // } else {
+            // m_Intake.turnOffLoadShooter();
+            // }
+        } else if (m_lastButtonWasClimber) {
+            m_Shooter.turnOff();
+        } else if ((ntShooterPreheatEnable.getBoolean(false)
+                || DriverStation.isFMSAttached()) && !m_lastButtonWasClimber) {
             // speed up shooter automatically
             m_Shooter.shootingDist(8);
         } else if (OI.getAimTurret()) {
@@ -266,13 +257,13 @@ public class SuperStructure extends Base {
         } else if (m_Intake.getBothBallsLoaded() && !m_lastButtonWasClimber) {
             // speed up shooter automatically
             m_Shooter.shootingDist(8);
-        } else if (OI.driveAndShoot()) {
-            m_Shooter.shootingDist(m_state.getVelocityTurretDegrees());
-            if (m_Shooter.canShootWithVelocity()) {
-                m_Intake.loadShooter();
-            } else {
-                m_Intake.turnOffLoadShooter();
-            }
+            // } else if (OI.driveAndShoot()) {
+            // m_Shooter.shootingDist(m_state.getVelocityTurretDegrees());
+            // if (m_Shooter.canShootWithVelocity()) {
+            // m_Intake.loadShooter();
+            // } else {
+            // m_Intake.turnOffLoadShooter();
+            // }
         } else {
             m_Shooter.turnOff();
         }
@@ -280,6 +271,14 @@ public class SuperStructure extends Base {
         // when shooting released, stop loading
         if (OI.getShootingReleased()) {
             m_Intake.turnOffLoadShooter();
+        }
+
+        if (OI.getYforDisableAutoAim()) {
+            m_autoAimEnabled = false;
+        }
+
+        if (OI.shouldSetFieldRelative() || OI.getResetOdometryLaunchPad() || OI.getResetOdometryRightFender()) {
+            m_autoAimEnabled = true;
         }
 
         // // TURNTABLE
@@ -290,26 +289,15 @@ public class SuperStructure extends Base {
                 m_Shooter.setTurretAngle(90);
             }
         } else if (OI.getAimTurret()) {
-            aimTurretAuto();
-        } else if (m_Intake.getNumberOfBallsHolding() > 0 && !(OI.getRightTurntable() ||
-                OI.getLeftTurntable())) {
+            // aimTurretAuto();
+            if (m_VisionShooter.getTargetValid()) {
+                m_Shooter.aimTurret(m_VisionShooter.getYaw());
+            }
+        } else if (m_autoAimEnabled) {
             aimTurretAuto();
         } else {
             m_Shooter.TurnTable(OI.getRightTurntable(),
                     OI.getLeftTurntable());
-        }
-
-        if (OI.fortFiveTurnTable()) {// A
-            m_Shooter.setTurnTableAngleFortFive();
-        }
-        if (OI.hundredTurnTable()) {// X
-            m_Shooter.setTurnTableAngleHundred();
-        }
-        if (OI.negFortFiveTurnTable()) {// Y
-            m_Shooter.setTurnTableAngleNegFortFive();
-        }
-        if (OI.negHundredTurnTable()) {// B
-            m_Shooter.setTurnTableAngleHundred();
         }
     }
 
@@ -328,6 +316,7 @@ public class SuperStructure extends Base {
     @Override
     public void autonomousInit() {
         m_autoStep = 0;
+        m_autoAimEnabled = true;
         m_auto.autonomousInit();
         m_Intake.autonomousInit();
         m_Climber.hooksReverse();
@@ -430,7 +419,7 @@ public class SuperStructure extends Base {
 
         } else if (m_autoStep == 3) {
             // delay to pick up ball
-            if (m_Timer.hasElapsed(0.9) || m_Intake.getNumberOfBallsHolding()>0) {
+            if (m_Timer.hasElapsed(0.9) || m_Intake.getNumberOfBallsHolding() > 0) {
                 m_autoStep = 4;
                 m_Timer.reset();
                 m_Timer.start();
@@ -562,7 +551,7 @@ public class SuperStructure extends Base {
             m_SwerveDrive.stopModules();
             m_Intake.turnOn();
         } else if (m_autoStep == 2) {
-            if(m_VisionShooter.getYaw() <= 0.1) {
+            if (m_VisionShooter.getYaw() <= 0.1) {
                 m_autoStep = 3;
             }
         } else if (m_autoStep == 3) {
@@ -624,6 +613,7 @@ public class SuperStructure extends Base {
 
     @Override
     public void testInit() {
+        m_autoAimEnabled = true;
         m_phCompressor.enableAnalog(90, 110);
         m_Shooter.TurnTable(false, false);
         m_VisionShooter.LEDon();
