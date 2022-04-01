@@ -221,13 +221,12 @@ public class SuperStructure extends Base {
             if (m_Shooter.IsOkToShoot() && m_VisionShooter.isOnTarget()) {
                 // Load shooter
                 m_Intake.loadShooter();
-
             } else {
                 m_Intake.countinueIntakeMotors();
             }
         } else if (OI.getRightBumperForWallShot()) {
             // turn shooter on in rpm mode
-            m_Shooter.shootingRPM(3000, 2420);
+            m_Shooter.shootingRPM(3200, 2500);
 
             if (m_Shooter.IsOkToShoot()) {
                 // Load shooter

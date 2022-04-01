@@ -66,27 +66,23 @@ public class Shooter extends Base {
 
     public Shooter() {
         distanceRPMPoint[] distanceRPMlist = {
-                new distanceRPMPoint(8.0, 2270, 2510),
-                new distanceRPMPoint(8.5, 2270, 2590),
-                new distanceRPMPoint(9.25, 2320, 2650),
-                new distanceRPMPoint(10, 2320, 2760), 
-                new distanceRPMPoint(10.5, 2420, 2840),
-                new distanceRPMPoint(11, 2480, 2880),
-                new distanceRPMPoint(11.5, 2520, 2910),
-                new distanceRPMPoint(12, 2630, 3000),
-                new distanceRPMPoint(12.5, 2720, 3010),
-                new distanceRPMPoint(13, 2890, 3060),
-                new distanceRPMPoint(13.2, 2930, 3070),
-                new distanceRPMPoint(13.5, 3020, 3110),
-                new distanceRPMPoint(14, 3120, 3160),
-                new distanceRPMPoint(14.5, 3220, 3160),
-                new distanceRPMPoint(15, 3520, 3210),
-                new distanceRPMPoint(15.5, 3820, 3210),
-                
-                new distanceRPMPoint(16, 4120, 3260),
-
-
-
+                new distanceRPMPoint(8.0, 2290, 2520),
+                new distanceRPMPoint(8.5, 2290, 2600),
+                new distanceRPMPoint(9.25, 2340, 2660),
+                new distanceRPMPoint(10, 2340, 2770), 
+                new distanceRPMPoint(10.5, 2440, 2850),
+                new distanceRPMPoint(11, 2500, 2890),
+                new distanceRPMPoint(11.5, 2540, 2920),
+                new distanceRPMPoint(12, 2650, 3010),
+                new distanceRPMPoint(12.5, 2740, 3020),
+                new distanceRPMPoint(13, 2910, 3070),
+                new distanceRPMPoint(13.2, 2950, 3080),
+                new distanceRPMPoint(13.5, 3040, 3120),
+                new distanceRPMPoint(14, 3140, 3170),
+                new distanceRPMPoint(14.5, 3240, 3170),
+                new distanceRPMPoint(15, 3540, 3220),
+                new distanceRPMPoint(15.5, 3840, 3220),
+                new distanceRPMPoint(16, 4140, 3270),
         };  
 
         for (distanceRPMPoint point : distanceRPMlist) {

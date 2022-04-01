@@ -26,7 +26,7 @@ public class VisionShooter extends Base {
     private int m_MAXLOSTCOUNT = 7;
     private double m_max_angle_change_in_20ms = 10.0;
 
-    private MovingAverage m_movingAverage = new MovingAverage(8);
+    private MovingAverage m_movingAverage = new MovingAverage(12);
 
     @Override
     public void robotInit() {
