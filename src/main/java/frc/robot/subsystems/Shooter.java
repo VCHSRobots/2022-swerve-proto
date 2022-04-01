@@ -66,24 +66,24 @@ public class Shooter extends Base {
 
     public Shooter() {
         distanceRPMPoint[] distanceRPMlist = {
-                new distanceRPMPoint(8.0, 2250, 2500),
-                new distanceRPMPoint(8.5, 2250, 2580),
-                new distanceRPMPoint(9.25, 2300, 2640),
-                new distanceRPMPoint(10, 2300, 2750), 
-                new distanceRPMPoint(10.5, 2400, 2830),
-                new distanceRPMPoint(11, 2460, 2870),
-                new distanceRPMPoint(11.5, 2500, 2900),
-                new distanceRPMPoint(12, 2610, 2990),
-                new distanceRPMPoint(12.5, 2700, 3000),
-                new distanceRPMPoint(13, 2870, 3050),
-                new distanceRPMPoint(13.2, 2910, 3060),
-                new distanceRPMPoint(13.5, 3000, 3100),
-                new distanceRPMPoint(14, 3100, 3150),
-                new distanceRPMPoint(14.5, 3200, 3150),
-                new distanceRPMPoint(15, 3500, 3200),
-                new distanceRPMPoint(15.5, 3800, 3200),
+                new distanceRPMPoint(8.0, 2270, 2510),
+                new distanceRPMPoint(8.5, 2270, 2590),
+                new distanceRPMPoint(9.25, 2320, 2650),
+                new distanceRPMPoint(10, 2320, 2760), 
+                new distanceRPMPoint(10.5, 2420, 2840),
+                new distanceRPMPoint(11, 2480, 2880),
+                new distanceRPMPoint(11.5, 2520, 2910),
+                new distanceRPMPoint(12, 2630, 3000),
+                new distanceRPMPoint(12.5, 2720, 3010),
+                new distanceRPMPoint(13, 2890, 3060),
+                new distanceRPMPoint(13.2, 2930, 3070),
+                new distanceRPMPoint(13.5, 3020, 3110),
+                new distanceRPMPoint(14, 3120, 3160),
+                new distanceRPMPoint(14.5, 3220, 3160),
+                new distanceRPMPoint(15, 3520, 3210),
+                new distanceRPMPoint(15.5, 3820, 3210),
                 
-                new distanceRPMPoint(16, 4100, 3250),
+                new distanceRPMPoint(16, 4120, 3260),
 
 
 
