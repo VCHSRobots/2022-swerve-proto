@@ -554,7 +554,7 @@ public class SuperStructure extends Base {
                 m_autoStep = 3;
             }
         } else if (m_autoStep == 3) {
-            m_Shooter.shootingRPM(2800, 2800);
+            m_Shooter.shootingRPM(2850, 2800);
             if (m_Shooter.IsOkToShoot()) {
                 m_Intake.loadShooter();
             }
@@ -569,7 +569,7 @@ public class SuperStructure extends Base {
             if (m_Timer.advanceIfElapsed(5)) {
                 m_autoStep++;
             }
-            m_Shooter.shootingRPM(2800, 2800);
+            m_Shooter.shootingRPM(2850, 2800);
             if (m_Shooter.IsOkToShoot()) {
                 m_Intake.loadShooter();
             }

@@ -139,7 +139,7 @@ public class VisionShooter extends Base {
 
     public boolean isOnTarget() {
         // TODO: should the be Math.abs(getYaw())?
-        return getTargetValid() && Math.abs(getYaw()) < 10;
+        return getTargetValid() && Math.abs(getYaw()) < 6;
     }
 
 }
