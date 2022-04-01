@@ -360,7 +360,7 @@ public class SuperStructure extends Base {
         // end turret code
         double firstShotMeters = 3.0;
         double secondShotMeters = 3.7;
-        double thirdShotMeters = 3.3;
+        double thirdShotMeters = 3.6;
 
         if (m_autoStep == 0) {
             // follow auto1b_part1 trajectory to pick up 1 balls
