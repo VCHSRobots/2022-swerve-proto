@@ -358,7 +358,7 @@ public class SuperStructure extends Base {
         // default turret aiming code here
         aimTurretAuto();
         // end turret code
-        double firstShotMeters = 2.8;
+        double firstShotMeters = 3.0;
         double secondShotMeters = 3.7;
         double thirdShotMeters = 3.3;
 
