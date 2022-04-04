@@ -6,7 +6,7 @@ package frc.robot;
 
 import frc.robot.state.RobotState;
 import frc.robot.subsystems.*;
-
+import frc.robot.subsystems.intake.Intake;
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.PneumaticHub;

@@ -28,5 +28,12 @@ public class Constants {
         public static final double BACK_LEFT = Units.degreesToRadians(76.82);
         public static final double BACK_RIGHT = Units.degreesToRadians(15.91);
     }
+    public static final class IntakeMotorSpeeds {
+        public static final double kIntakeOut = 0.9;
+        public static final double kBTOut = 0.8;
+        public static final double kLoaderOut = 0.5;
+        public static final double kLoaderLoadingSpeed = 0.8;
+    }
+
     public static final double xboxDeadband = 0.09;
 }
