@@ -23,8 +23,6 @@ import frc.robot.subsystems.Base;
 import frc.robot.subsystems.intake.input.*;
 import edu.wpi.first.wpilibj.Timer;
 
-import java.util.ArrayList;
-
 /** Add your docs here. */
 public class Intake extends Base {
 
@@ -96,7 +94,8 @@ public class Intake extends Base {
         // debugTab.addNumber("Middle Cur", () -> m_mover.getSupplyCurrent());
         // debugTab.addNumber("Loader Cur", () -> m_shooterLoader.getSupplyCurrent());
 
-        inputManager = getNewInputManager();
+        InputSetUpActions inputSetUpActions = new InputSetUpActions(this);
+        inputManager = inputSetUpActions.getNewInputManager();
     }
 
     // Robot Init
@@ -200,6 +199,10 @@ public class Intake extends Base {
         // ntShooterLoaderSpeed.setDouble(m_shooterLoader.getMotorOutputPercent());
     }
 
+    public void setState(IntakeState state) {
+        m_state = state;
+    }
+
     public boolean getBothBallsLoaded() {
         if (isBallAtLoad() && isBallAtMiddle()) {
             return true;
@@ -222,110 +225,6 @@ public class Intake extends Base {
         count += isBallAtLoad() ? 1 : 0;
         count += (isBallAtMiddle()) ? 1 : 0;
         return count;
-    }
-
-    private InputManager getNewInputManager() {
-        ArrayList<Input> inputs = new ArrayList<>();
-
-        inputs.add(setUpInputA());
-        inputs.add(setUpInputB());
-        inputs.add(setUpInputC());
-        inputs.add(setUpInputD());
-        inputs.add(setUpInputE());
-        inputs.add(setUpInputF());
-
-        return new InputManager(inputs);
-    }
-
-    // intake and load off, intake up
-    private Input setUpInputA() {
-        InputActions inputActionsA = new InputActions() {
-
-            public void startIntakeAction() {
-                if (isBallAtMiddle() && isBallAtLoad()) {
-                    m_state = IntakeState.A;
-                } else {
-                    m_state = IntakeState.B;
-                }
-            }
-            public void isBallAtLoadAndMiddleAction() {
-                m_state = IntakeState.F;
-            }
-            
-        };
-        return new Input(inputActionsA);
-    }
-
-    // intake, mover, ON, loader ON
-    // intake down
-    private Input setUpInputB() {
-        InputActions inputActionsB = new InputActions() {
-
-            public void stopIntakeAction() {
-                m_state = IntakeState.A;
-            }
-            public void isBallAtLoadAction() {
-                m_state = IntakeState.C;
-            }
-
-        };
-        return new Input(inputActionsB);
-    }
-
-    // intake, mover, ON, loader OFF
-    // intake down
-    private Input setUpInputC() {
-        InputActions inputActionsC = new InputActions() {
-
-            public void stopIntakeAction() {
-                m_state = IntakeState.A;
-            }
-            public void isBallAtLoadAction() {
-                m_state = IntakeState.B;
-            }
-            public void isBallAtLoadAndMiddleAction() {
-                m_state = IntakeState.A;
-            }
-
-        };
-        return new Input(inputActionsC);
-    }
-
-    // previously used state
-    private Input setUpInputD() {
-        InputActions inputActionsD = new InputActions() {};
-        return new Input(inputActionsD);
-    }
-
-    // start loading balls into shooter (loadShooter)
-    // stops when no more shooter buttons are pressed
-    private Input setUpInputE() {
-        InputActions inputActionsE = new InputActions() {
-            public void startIntakeAction() {
-                m_state = IntakeState.B;
-            }
-            public void stopIntakeAction() {
-                m_state = IntakeState.A;
-            }
-        };
-        return new Input(inputActionsE);
-    }
-
-    // move ball at color sensor location to shooter loader
-    // intake up
-    private Input setUpInputF() {
-        InputActions inputActionsF = new InputActions() {
-            public void startIntakeAction() {
-                m_state = IntakeState.B;
-            }
-            public void stopIntakeAction() {
-                m_state = IntakeState.A;
-            }
-            public void isBallAtLoadAction() {
-                m_state = IntakeState.A;
-            }
-        };
-        return new Input(inputActionsF);
     }
 
     private void spitWrongColorBallOut() {

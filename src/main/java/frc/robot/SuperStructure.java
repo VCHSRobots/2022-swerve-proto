@@ -4,9 +4,16 @@
 
 package frc.robot;
 
-import frc.robot.state.RobotState;
-import frc.robot.subsystems.*;
-import frc.robot.subsystems.intake.Intake;
+import com.pathplanner.lib.PathPlannerTrajectory.PathPlannerState;
+
+import edu.wpi.first.cameraserver.CameraServer;
+import edu.wpi.first.cscore.UsbCamera;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.math.util.Units;
+import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.PneumaticHub;
@@ -17,16 +24,13 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.cameraserver.CameraServer;
-import edu.wpi.first.cscore.UsbCamera;
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import edu.wpi.first.math.util.Units;
-import edu.wpi.first.networktables.NetworkTableEntry;
-
-import com.pathplanner.lib.PathPlannerTrajectory.PathPlannerState;
+import frc.robot.state.RobotState;
+import frc.robot.subsystems.Base;
+import frc.robot.subsystems.Climber;
+import frc.robot.subsystems.Shooter;
+import frc.robot.subsystems.SwerveDrive;
+import frc.robot.subsystems.VisionShooter;
+import frc.robot.subsystems.intake.Intake;
 
 /** Add your docs here. */
 public class SuperStructure extends Base {

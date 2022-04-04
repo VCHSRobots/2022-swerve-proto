@@ -2,7 +2,7 @@ package frc.robot.subsystems.intake.input;
 
 public class Input {
     
-    public InputActions inputActions;
+    private InputActions inputActions;
 
     public Input(InputActions inputActions) {
         this.inputActions = inputActions;
