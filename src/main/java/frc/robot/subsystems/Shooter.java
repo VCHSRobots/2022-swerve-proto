@@ -450,6 +450,10 @@ public class Shooter extends Base {
                 DemandType.ArbitraryFeedForward, kS);
     }
 
+    public void turretAnglePredictionCheck() {
+        
+    }
+
    /**
     * resets the turntables odometry based on the turret and hub
     * @param limelightDist

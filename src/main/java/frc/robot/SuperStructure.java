@@ -50,6 +50,7 @@ public class SuperStructure extends Base {
     boolean m_barfTimerStarted = false;
     boolean m_lastButtonWasClimber = false;
     boolean m_autoAimEnabled = true;
+    boolean m_turretClearForShot = false;
 
     Timer m_Timer = new Timer();
     int m_autoStep = 0;
@@ -245,6 +246,13 @@ public class SuperStructure extends Base {
             // } else {
             // m_Intake.turnOffLoadShooter();
             // }
+
+        } else if (OI.ShootAndRun()) {
+            m_Shooter.shootingDist(m_state.getPredictedDistanceToTarget());
+            m_turretClearForShot = Math.abs(m_state.getVelocityTurretDegrees() - m_Shooter.getTurretAngleDegrees()) < 1.5;
+            if (m_state.robotHasStableVelocity() && m_Shooter.canShootWithVelocity() && m_turretClearForShot) {
+                m_Intake.loadShooter();
+            }
         } else if (m_lastButtonWasClimber) {
             m_Shooter.turnOff();
         } else if ((ntShooterPreheatEnable.getBoolean(false)
@@ -291,6 +299,12 @@ public class SuperStructure extends Base {
             // aimTurretAuto();
             if (m_VisionShooter.getTargetValid()) {
                 m_Shooter.aimTurret(m_VisionShooter.getYaw());
+            }
+        } else if (OI.ShootAndRun()) {
+            if (m_VisionShooter.getTargetValid()) {
+                m_Shooter.setTurretAngle(m_state.getVelocityTurretDegreesOffset());
+            } else {
+                m_Shooter.setTurretAngle(m_state.getVelocityTurretDegrees());
             }
         } else if (m_autoAimEnabled) {
             aimTurretAuto();

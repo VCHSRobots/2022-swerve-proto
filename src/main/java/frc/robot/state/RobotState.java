@@ -15,8 +15,9 @@ public class RobotState {
     Pose2d m_pose;
     Rotation2d m_turretAngle;
     double m_lastTimestamp;
+    double msTillShoot = 100;
 
-    MovingAverageTwist2d m_movingAverageTwist2d = new MovingAverageTwist2d(5);
+    MovingAverageTwist2d m_movingAverageTwist2d = new MovingAverageTwist2d(8);
 
     final public Pose2d kFieldToCenterHub = new Pose2d(new Translation2d(Units.inchesToMeters(324), Units.inchesToMeters(162)),
             new Rotation2d());
@@ -116,6 +117,7 @@ public class RobotState {
         
         Twist2d predictedTwist2d = m_movingAverageTwist2d.getAverage();
         double radiansToDegrees = 180 / Math.PI;
+        double loopsUntilShoot = msTillShoot / 20.0;
 
         Pose2d robotPose = getRobotToCenterHub(Timer.getFPGATimestamp());
 
@@ -125,8 +127,8 @@ public class RobotState {
          I would need to know our initial velocity to do this properly, but it works for now */
         double predictedBallAirTime = 0.6 * Math.log(getPredictedDistanceToTarget());
 
-        double predictedY = robotPose.getY() - (predictedTwist2d.dy * 25.0) - (predictedTwist2d.dy * predictedBallAirTime);
-        double predictedX = robotPose.getX() - (predictedTwist2d.dx * 25.0) - (predictedTwist2d.dx * predictedBallAirTime);
+        double predictedY = robotPose.getY() - (predictedTwist2d.dy * loopsUntilShoot) - (predictedTwist2d.dy * predictedBallAirTime);
+        double predictedX = robotPose.getX() - (predictedTwist2d.dx * loopsUntilShoot) - (predictedTwist2d.dx * predictedBallAirTime);
 
         double predictedRadiansOfTurret = Math.atan2(predictedY, predictedX);
 
@@ -173,6 +175,10 @@ public class RobotState {
         
         return getPredictedDistanceToTarget() - distanceFromTarget;
 
+    }
+
+    public boolean robotHasStableVelocity() {
+        return m_movingAverageTwist2d.isAcceptablePrediction();
     }
 
 }
