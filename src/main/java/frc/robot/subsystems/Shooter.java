@@ -53,6 +53,8 @@ public class Shooter extends Base {
     CANCoder m_turntableEncoder = new CANCoder(RobotMap.kShooter_TurretEncoder, RobotMap.kCANivore_name);
 
     private int m_isOKtoShootCounter = 0;
+    private int m_turretOKtoShootCounter = 0;
+    private double errTurretDegrees = 2.0;
 
     private ProfiledPIDController m_turretPIDController = new ProfiledPIDController(0.08, 0, 0,
             new Constraints(kMaxAngularVelocity, kMaxAngularAcceleration));
@@ -288,6 +290,7 @@ public class Shooter extends Base {
     @Override
     public void teleopInit() {
         m_isOKtoShootCounter = 0;
+        m_turretOKtoShootCounter = 0;
     }
 
     public void warmUp() {
@@ -426,13 +429,24 @@ public class Shooter extends Base {
         double errorBotRPM = ticksPer100msToRPM(m_shootTalonBot.getClosedLoopTarget()
             - m_shootTalonBot.getSelectedSensorVelocity());
 
-            if (Math.abs(errorBotRPM) < 110 && Math.abs(errorTopRPM) < 125) {
+            if (Math.abs(errorBotRPM) < 80 && Math.abs(errorTopRPM) < 100) {
                 m_isOKtoShootCounter++;
             } else {
                 m_isOKtoShootCounter = 0;
             }
 
             return m_isOKtoShootCounter > 3;
+    }
+
+    public boolean turretCanShootWithVelocity(double angleDesired) {
+        
+        if (Math.abs(getTurretAngleDegrees()) - angleDesired < errTurretDegrees) {
+            m_turretOKtoShootCounter++;
+        } else {
+            m_turretOKtoShootCounter = 0;
+        }
+        
+        return m_turretOKtoShootCounter > 3;
     }
 
     public void setTurretAngle(double angleTargetDegrees) {

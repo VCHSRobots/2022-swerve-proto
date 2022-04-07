@@ -58,6 +58,7 @@ public class SuperStructure extends Base {
     private Auto m_auto = new Auto();
 
     double m_shootingDistance = 0;
+    double desiredAngle = 0;
 
     private final Compressor m_phCompressor = new Compressor(PneumaticsModuleType.REVPH);
     private final PneumaticHub m_ph = new PneumaticHub(); // even though not used, keep here
@@ -250,9 +251,10 @@ public class SuperStructure extends Base {
         } else if (OI.ShootAndRun()) {
             // m_Shooter.shootingDist(m_VisionShooter.getMovingAverageDistance() + m_state.getPredictedDistanceToTargetOffset(m_VisionShooter.getMovingAverageDistance()));
             m_Shooter.shootingDist((m_VisionShooter.getDistance() + m_state.getPredictedDistanceToTargetOffset(m_VisionShooter.getDistance())));
-            m_turretClearForShot = Math.abs(m_state.getVelocityTurretDegrees() - m_Shooter.getTurretAngleDegrees()) < 1.0;
-            if (m_state.robotHasStableVelocity() && m_Shooter.canShootWithVelocity() && m_turretClearForShot) {
+            if (m_state.robotHasStableVelocity() && m_Shooter.canShootWithVelocity() && m_Shooter.turretCanShootWithVelocity(desiredAngle)) {
                 m_Intake.loadShooter();
+            } else {
+                m_Intake.turnOffLoadShooter();
             }
         } else if (m_lastButtonWasClimber) {
             m_Shooter.turnOff();
@@ -303,7 +305,8 @@ public class SuperStructure extends Base {
             }
         } else if (OI.ShootAndRun()) {
             if (m_VisionShooter.getTargetValid()) {
-                m_Shooter.setTurretAngle((m_state.getVelocityTurretDegreesOffset(m_VisionShooter.getYaw() + 110) + m_VisionShooter.getYaw() + 110));
+                desiredAngle = m_state.getVelocityTurretDegreesOffset(m_VisionShooter.getYaw() + 110) + m_VisionShooter.getYaw() + 110;
+                m_Shooter.setTurretAngle(desiredAngle);
             } else {
                 m_Shooter.setTurretAngle(m_state.getVelocityTurretDegrees());
             }
