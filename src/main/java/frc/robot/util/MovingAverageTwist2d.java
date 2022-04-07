@@ -10,7 +10,7 @@ import edu.wpi.first.math.geometry.Twist2d;
 public class MovingAverageTwist2d {
     ArrayList<Twist2d> twists = new ArrayList<Twist2d>();
     private int maxSize;
-    static final double errorMargin = 0.05;
+    static final double errorMargin = 0.10;
 
 
     public MovingAverageTwist2d(int maxSize) {
@@ -51,7 +51,7 @@ public class MovingAverageTwist2d {
 
     public boolean isAcceptablePrediction() {
         for (Twist2d twist : twists) {
-            if (Math.abs(twist.dx-getAverage().dx) > errorMargin || Math.abs(twist.dy-getAverage().dy) > errorMargin) {
+            if (Math.abs(twist.dx-this.getAverage().dx) > errorMargin || Math.abs(twist.dy-this.getAverage().dy) > errorMargin) {
                 return false;
             }
         }

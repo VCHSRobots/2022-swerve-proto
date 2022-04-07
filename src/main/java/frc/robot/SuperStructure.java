@@ -248,8 +248,9 @@ public class SuperStructure extends Base {
             // }
 
         } else if (OI.ShootAndRun()) {
-            m_Shooter.shootingDist(m_state.getPredictedDistanceToTarget());
-            m_turretClearForShot = Math.abs(m_state.getVelocityTurretDegrees() - m_Shooter.getTurretAngleDegrees()) < 1.5;
+            // m_Shooter.shootingDist(m_VisionShooter.getMovingAverageDistance() + m_state.getPredictedDistanceToTargetOffset(m_VisionShooter.getMovingAverageDistance()));
+            m_Shooter.shootingDist((m_VisionShooter.getDistance() + m_state.getPredictedDistanceToTargetOffset(m_VisionShooter.getDistance())));
+            m_turretClearForShot = Math.abs(m_state.getVelocityTurretDegrees() - m_Shooter.getTurretAngleDegrees()) < 1.0;
             if (m_state.robotHasStableVelocity() && m_Shooter.canShootWithVelocity() && m_turretClearForShot) {
                 m_Intake.loadShooter();
             }
@@ -302,7 +303,7 @@ public class SuperStructure extends Base {
             }
         } else if (OI.ShootAndRun()) {
             if (m_VisionShooter.getTargetValid()) {
-                m_Shooter.setTurretAngle(m_state.getVelocityTurretDegreesOffset());
+                m_Shooter.setTurretAngle((m_state.getVelocityTurretDegreesOffset(m_VisionShooter.getYaw() + 110) + m_VisionShooter.getYaw() + 110));
             } else {
                 m_Shooter.setTurretAngle(m_state.getVelocityTurretDegrees());
             }
@@ -315,13 +316,13 @@ public class SuperStructure extends Base {
     }
 
     public void aimTurretAuto() {
-        if (m_VisionShooter.getTargetValid()) {
-            m_Shooter.aimTurret(m_VisionShooter.getYaw());
-        } else {
+        // if (m_VisionShooter.getTargetValid()) {
+        //     m_Shooter.aimTurret(m_VisionShooter.getYaw());
+        // } else {
             // m_Shooter.setTurretAngle(m_state.getTurretAimingAngle().getDegrees());
             // TODO: try this below
             m_Shooter.setTurretAngle(m_state.getTurretAimingAngle(m_SwerveDrive.getAngVel()).getDegrees());
-        }
+        // }
     }
 
     // auto coding
