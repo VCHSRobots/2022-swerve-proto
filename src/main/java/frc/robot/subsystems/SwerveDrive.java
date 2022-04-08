@@ -143,10 +143,13 @@ public class SwerveDrive extends Base {
     // }
 
     public void resetOdometry(Pose2d pose) {
-        // m_gyro.setAngleAdjustment(pose.getRotation().getDegrees());
-        m_gyro.setAngleAdjustment(-pose.getRotation().getDegrees()-m_gyro.getYaw());
-
-        m_odometry.resetPosition(pose, getGyroRotation2d());
+        if (pose == null) {
+            m_odometry.resetPosition(getPose2d(), getGyroRotation2d());
+        } else {
+            // m_gyro.setAngleAdjustment(pose.getRotation().getDegrees());
+            m_gyro.setAngleAdjustment(-pose.getRotation().getDegrees()-m_gyro.getYaw());
+            m_odometry.resetPosition(pose, getGyroRotation2d());
+        }
     }
 
     public Pose2d getPose2d() {
