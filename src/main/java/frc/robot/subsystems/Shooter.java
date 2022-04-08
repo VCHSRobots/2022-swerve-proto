@@ -16,7 +16,6 @@ import com.ctre.phoenix.sensors.SensorVelocityMeasPeriod;
 
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
@@ -26,7 +25,6 @@ import frc.robot.RobotMap;
 import frc.robot.util.InterpolatingDouble;
 import frc.robot.util.InterpolatingTreeMap;
 import frc.robot.util.distanceRPMPoint;
-import frc.robot.state.RobotState;
 
 public class Shooter extends Base {
     // turntable gear ratio
@@ -478,25 +476,13 @@ public class Shooter extends Base {
     * @param timeStamp
     * @return new pose 2d of the robot based PURELY on the shooter
     */
-    public Pose2d resetTurntableOdometry(double limelightDist, RobotState m_state, double timeStamp) {
+    public Pose2d resetTurntableOdometry(double limelightDist, SwerveDrive swerveDrive) {
 
-        double visionTargetOffsetFromCenter = 2.0;
-        double cameraHeight = 2.6667; // height of camera on robot
-        double targetHeight = 8.46833; // height of retroreflective tape in feet
-
-        double cameraToHubHeightDelta = targetHeight - cameraHeight;
-
-        double straightDistToHubCenter = Math.sqrt(Math.pow(limelightDist, 2) - Math.pow(cameraToHubHeightDelta, 2)) + visionTargetOffsetFromCenter;
-
-        double x = m_state.getRobotToCenterHub(timeStamp).getX();
-        double y = m_state.getRobotToCenterHub(timeStamp).getY();
-
-        if (turntableOdometryCanChange()) {
-            x = Math.sin(getTurretAngleDegrees()) * straightDistToHubCenter;
-            y = Math.sqrt(Math.pow(straightDistToHubCenter, 2) - Math.pow(x, 2));    
-        }
+        double x = Math.cos(Units.degreesToRadians(getTurretAngleDegrees())) * limelightDist;
+        double acSquared = (Math.pow(limelightDist, 2) - Math.pow(x, 2));
+        double y = Math.sqrt(acSquared) * (acSquared / Math.abs(acSquared));
         
-        return new Pose2d(x, y, new Rotation2d(Units.degreesToRadians(getTurretAngleDegrees())));
+        return new Pose2d(x, y, swerveDrive.getPose2d().getRotation());
     }
 
 
