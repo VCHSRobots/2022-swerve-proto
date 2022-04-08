@@ -144,6 +144,7 @@ public class SwerveDrive extends Base {
 
     public void resetOdometry(Pose2d pose) {
         if (pose == null) {
+            System.out.println("cannot reset, pose is " + pose);
             m_odometry.resetPosition(getPose2d(), getGyroRotation2d());
         } else {
             // m_gyro.setAngleAdjustment(pose.getRotation().getDegrees());

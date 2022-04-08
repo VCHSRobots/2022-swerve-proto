@@ -358,7 +358,7 @@ public class Shooter extends Base {
     }
 
     // Boolean that checks if shooter is reading to shoot at a good speed.
-    public boolean IsOkToShoot() {
+    public boolean ShooterIsOkToShoot() {
         if (m_shootTalonBot.getControlMode() == ControlMode.PercentOutput) {
             return false;
         }
@@ -445,7 +445,7 @@ public class Shooter extends Base {
             m_turretOKtoShootCounter = 0;
         }
         
-        return m_turretOKtoShootCounter > 1;
+        return m_turretOKtoShootCounter > 2;
     }
 
     public void setTurretAngle(double angleTargetDegrees) {
@@ -461,19 +461,6 @@ public class Shooter extends Base {
                 m_turnTableTalon.getSelectedSensorPosition());
         m_turnTableTalon.set(ControlMode.MotionMagic, targetAngleTicks,
                 DemandType.ArbitraryFeedForward, kS);
-    }
-
-    public void turretAnglePredictionCheck() {
-        
-    }
-
-
-    /**
-     * just a filler function for now, it won't ever be true
-     * @return
-     */
-    public boolean turntableOdometryCanChange() {
-        return false;
     }
 
     public double angleDegreesToEncoderTicks(double degrees) {
