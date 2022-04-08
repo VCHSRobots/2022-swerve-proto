@@ -21,6 +21,7 @@ import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.cscore.UsbCamera;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.util.Units;
@@ -59,6 +60,7 @@ public class SuperStructure extends Base {
 
     double m_shootingDistance = 0;
     double desiredAngle = 0;
+    int loopCounter = 0;
 
     private final Compressor m_phCompressor = new Compressor(PneumaticsModuleType.REVPH);
     private final PneumaticHub m_ph = new PneumaticHub(); // even though not used, keep here
@@ -183,6 +185,7 @@ public class SuperStructure extends Base {
     public void teleopPeriodic() {
         m_phCompressor.enableAnalog(90, 112);
         m_VisionShooter.LEDon();
+        loopCounter++;
 
         // CLIMBER
         // Send inputs to climber control.
@@ -200,11 +203,12 @@ public class SuperStructure extends Base {
             m_SwerveDrive.driveWithXbox(OI.getDriveY(), OI.getDriveX(), OI.getDriveRot(),
                     false, false);
         }
-
+        
         System.out.println(m_SwerveDrive.getPose2d());
-        if (m_VisionShooter.isOnTarget()) {
+        if (m_VisionShooter.isOnTarget() && loopCounter % 25 == 0) {
             System.out.println("changing");
-            m_SwerveDrive.resetOdometry(m_Shooter.resetTurntableOdometry(m_VisionShooter.getDistance(), m_SwerveDrive));
+            Transform2d newRobotPose = m_state.resetRobotPoseOdometry(m_VisionShooter.getDistance(), m_Shooter.getTurretAngleDegrees());
+            m_SwerveDrive.resetOdometry(new Pose2d(newRobotPose.getX(), newRobotPose.getY(), m_SwerveDrive.getPose2d().getRotation()));
         }
 
         // // TURNTABLE

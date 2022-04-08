@@ -15,9 +15,7 @@ import com.ctre.phoenix.sensors.SensorTimeBase;
 import com.ctre.phoenix.sensors.SensorVelocityMeasPeriod;
 
 import edu.wpi.first.math.controller.ProfiledPIDController;
-import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
-import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
@@ -467,22 +465,6 @@ public class Shooter extends Base {
 
     public void turretAnglePredictionCheck() {
         
-    }
-
-   /**
-    * resets the turntables odometry based on the turret and hub
-    * @param limelightDist
-    * @param m_state
-    * @param timeStamp
-    * @return new pose 2d of the robot based PURELY on the shooter
-    */
-    public Pose2d resetTurntableOdometry(double limelightDist, SwerveDrive swerveDrive) {
-
-        double x = Math.cos(Units.degreesToRadians(getTurretAngleDegrees())) * limelightDist;
-        double acSquared = (Math.pow(limelightDist, 2) - Math.pow(x, 2));
-        double y = Math.sqrt(acSquared) * (acSquared / Math.abs(acSquared));
-        
-        return new Pose2d(x, y, swerveDrive.getPose2d().getRotation());
     }
 
 

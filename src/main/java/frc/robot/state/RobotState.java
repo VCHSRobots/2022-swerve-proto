@@ -177,4 +177,23 @@ public class RobotState {
         return m_movingAverageTwist2d.isAcceptablePrediction();
     }
 
+    /**
+    * resets the turntables odometry based on the turret and hub
+    * @param limelightDist Current limelight distance in FEET to center hub
+    * @param turretDegrees Current DEGREES Of turret
+    * @return new pose 2d of the robot based PURELY on the shooter
+    */
+    public Transform2d resetRobotPoseOdometry(double limelightDist, double turretDegrees) {
+
+        double x = Math.cos(Units.degreesToRadians(turretDegrees)) * Units.feetToMeters(limelightDist);
+        double acSquared = (Math.pow(limelightDist, 2) - Math.pow(x, 2));
+        double y = Math.sqrt(acSquared) * (acSquared / Math.abs(acSquared));
+        
+        if (x < -0.5 || x > 17 || y < -0.5 || y > 9) {
+            return null;
+        }
+
+        return new Pose2d(x, y, new Rotation2d(0.0)).minus(kFieldToCenterHub);
+    }
+
 }

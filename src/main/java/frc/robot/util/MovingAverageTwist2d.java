@@ -10,7 +10,7 @@ import edu.wpi.first.math.geometry.Twist2d;
 public class MovingAverageTwist2d {
     ArrayList<Twist2d> twists = new ArrayList<Twist2d>();
     private int maxSize;
-    static final double errorMargin = 0.02;
+    static final double errorMargin = 0.01;
 
 
     public MovingAverageTwist2d(int maxSize) {
