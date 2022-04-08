@@ -189,7 +189,7 @@ public class RobotState {
         double acSquared = (Math.pow(limelightDist, 2) - Math.pow(x, 2));
         double y = Math.sqrt(acSquared) * (acSquared / Math.abs(acSquared));
         
-        if (x < -0.5 || x > 17 || y < -0.5 || y > 9) {
+        if (x < -0.5 || x > 17.0 || y < -0.5 || y > 9.0) {
             return null;
         }
 

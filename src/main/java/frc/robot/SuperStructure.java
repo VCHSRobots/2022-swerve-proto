@@ -109,7 +109,7 @@ public class SuperStructure extends Base {
 
         // Shuffleboard.getTab("super").add("compressor",
         // m_phCompressor).withPosition(12, 0).withSize(1, 1);
-        Shuffleboard.getTab("super").addBoolean("IsOkToShoot", () -> m_Shooter.IsOkToShoot()).withPosition(0, 4);
+        Shuffleboard.getTab("super").addBoolean("IsOkToShoot", () -> m_Shooter.ShooterIsOkToShoot()).withPosition(0, 4);
 
         Shuffleboard.getTab("super").addNumber("Camera Based Distance", () -> m_VisionShooter.getDistance())
                 .withPosition(5, 0).withSize(2, 1);
@@ -257,7 +257,7 @@ public class SuperStructure extends Base {
         } else if (OI.getRightTriggerForShooting()) {
             // camera center shot
             m_Shooter.shootingDist(m_VisionShooter.getMovingAverageDistance());
-            if (m_Shooter.IsOkToShoot() && m_VisionShooter.isOnTarget()) {
+            if (m_Shooter.ShooterIsOkToShoot() && m_VisionShooter.isOnTarget()) {
                 // Load shooter
                 m_Intake.loadShooter();
             } else {
@@ -267,7 +267,7 @@ public class SuperStructure extends Base {
             // turn shooter on in rpm mode
             m_Shooter.shootingRPM(3400, 2530);
 
-            if (m_Shooter.IsOkToShoot()) {
+            if (m_Shooter.ShooterIsOkToShoot()) {
                 // Load shooter
                 m_Intake.loadShooter();
 
@@ -420,13 +420,13 @@ public class SuperStructure extends Base {
         } else if (m_autoStep == 1) {
             // shoot 2 balls
             m_Shooter.shootingDist(Units.metersToFeet(firstShotMeters));
-            if (m_Shooter.IsOkToShoot() && Math.abs(m_VisionShooter.getYaw()) < 3) {
+            if (m_Shooter.ShooterIsOkToShoot() && Math.abs(m_VisionShooter.getYaw()) < 3) {
                 m_Intake.loadShooter();
             } else {
                 m_Intake.countinueIntakeMotors();
             }
             // when no more balls, go to next step
-            if (m_Shooter.IsOkToShoot() && m_Intake.getNumberOfBallsHolding() == 0) {
+            if (m_Shooter.ShooterIsOkToShoot() && m_Intake.getNumberOfBallsHolding() == 0) {
                 m_zeroBallCounter++;
                 if (m_zeroBallCounter > 7) {
                     m_zeroBallCounter = 0;
@@ -466,13 +466,13 @@ public class SuperStructure extends Base {
         } else if (m_autoStep == 4) {
             // shoot 1 ball
             m_Shooter.shootingDist(Units.metersToFeet(secondShotMeters));
-            if (m_Shooter.IsOkToShoot() && Math.abs(m_VisionShooter.getYaw()) < 3) {
+            if (m_Shooter.ShooterIsOkToShoot() && Math.abs(m_VisionShooter.getYaw()) < 3) {
                 m_Intake.loadShooter();
             } else {
                 m_Intake.countinueIntakeMotors();
             }
             // when no more balls, go to next step
-            if (m_Shooter.IsOkToShoot() && m_Intake.getNumberOfBallsHolding() == 0) {
+            if (m_Shooter.ShooterIsOkToShoot() && m_Intake.getNumberOfBallsHolding() == 0) {
                 m_zeroBallCounter++;
                 if (m_zeroBallCounter > 7) {
                     m_zeroBallCounter = 0;
@@ -527,14 +527,14 @@ public class SuperStructure extends Base {
         } else if (m_autoStep == 8) {
             // shoot last 2 balls
             m_Shooter.shootingDist(Units.metersToFeet(thirdShotMeters));
-            if (m_Shooter.IsOkToShoot() && Math.abs(m_VisionShooter.getYaw()) < 3) {
+            if (m_Shooter.ShooterIsOkToShoot() && Math.abs(m_VisionShooter.getYaw()) < 3) {
                 m_Intake.loadShooter();
             } else {
                 m_Intake.countinueIntakeMotors();
             }
 
             // when no more balls, go to next step
-            if (m_Shooter.IsOkToShoot() && m_Intake.getNumberOfBallsHolding() == 0) {
+            if (m_Shooter.ShooterIsOkToShoot() && m_Intake.getNumberOfBallsHolding() == 0) {
                 m_zeroBallCounter++;
                 if (m_zeroBallCounter > 7) {
                     m_zeroBallCounter = 0;
@@ -551,7 +551,7 @@ public class SuperStructure extends Base {
                 m_autoStep = 10;
             }
             m_Shooter.shootingDist(Units.metersToFeet(thirdShotMeters));
-            if (m_Shooter.IsOkToShoot() && Math.abs(m_VisionShooter.getYaw()) < 3) {
+            if (m_Shooter.ShooterIsOkToShoot() && Math.abs(m_VisionShooter.getYaw()) < 3) {
                 m_Intake.loadShooter();
             } else {
                 m_Intake.countinueIntakeMotors();
@@ -591,7 +591,7 @@ public class SuperStructure extends Base {
             }
         } else if (m_autoStep == 3) {
             m_Shooter.shootingRPM(2850, 2800);
-            if (m_Shooter.IsOkToShoot()) {
+            if (m_Shooter.ShooterIsOkToShoot()) {
                 m_Intake.loadShooter();
             }
             if (m_Intake.getNumberOfBallsHolding() == 0) {
@@ -606,7 +606,7 @@ public class SuperStructure extends Base {
                 m_autoStep++;
             }
             m_Shooter.shootingRPM(2850, 2800);
-            if (m_Shooter.IsOkToShoot()) {
+            if (m_Shooter.ShooterIsOkToShoot()) {
                 m_Intake.loadShooter();
             }
             m_SwerveDrive.stopModules();
