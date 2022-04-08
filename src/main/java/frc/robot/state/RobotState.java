@@ -15,9 +15,9 @@ public class RobotState {
     Pose2d m_pose;
     Rotation2d m_turretAngle;
     double m_lastTimestamp;
-    double msTillShoot = 100;
+    double msTillShoot = 115;
 
-    MovingAverageTwist2d m_movingAverageTwist2d = new MovingAverageTwist2d(8);
+    MovingAverageTwist2d m_movingAverageTwist2d = new MovingAverageTwist2d(10);
 
     final public Pose2d kFieldToCenterHub = new Pose2d(new Translation2d(Units.inchesToMeters(324), Units.inchesToMeters(162)),
             new Rotation2d());
@@ -121,16 +121,9 @@ public class RobotState {
 
         Pose2d robotPose = getRobotToCenterHub(Timer.getFPGATimestamp());
 
-        /* Don't use this later, its a rough way to estimate ball time in the air based on our distance to the target
-         How I got this was through getting rough timings from our shots from previous matches.
-         This isn't accurate with our shooter at all considering the current flywheel change, 
-         I would need to know our initial velocity to do this properly, but it works for now */
-        // double predictedBallAirTime = 0.6 * Math.log(getPredictedDistanceToTarget());
-
-        double predictedBallAirTime = 1.3;
+        double predictedBallAirTime = 0.14388*getPredictedDistanceToTarget() - 0.35283;
         double predictedY = robotPose.getY() - (predictedTwist2d.dy * loopsUntilShoot) - (predictedTwist2d.dy * predictedBallAirTime);
         double predictedX = robotPose.getX() - (predictedTwist2d.dx * loopsUntilShoot) - (predictedTwist2d.dx * predictedBallAirTime);
-
 
         double predictedRadiansOfTurret = Math.atan2(predictedY, predictedX);
 
@@ -146,7 +139,7 @@ public class RobotState {
      */
     public double getVelocityTurretDegreesOffset(double turretAngleDegrees) {
 
-        return getVelocityTurretDegrees() - turretAngleDegrees;
+        return (getVelocityTurretDegrees() - turretAngleDegrees);
 
     }
 
@@ -159,10 +152,10 @@ public class RobotState {
     public double getPredictedDistanceToTarget() {
 
         Twist2d predictedTwist2d = m_movingAverageTwist2d.getAverage();
-        double loopsUntilShoot = msTillShoot / 20.0;
+        double loopsUntilShoot = (msTillShoot / 20.0);
 
-        double predictedY = kFieldToCenterHub.getY() - (predictedTwist2d.dy * loopsUntilShoot);
-        double predictedX = kFieldToCenterHub.getX() - (predictedTwist2d.dx * loopsUntilShoot);
+        double predictedY = kFieldToCenterHub.getY() + (predictedTwist2d.dy * loopsUntilShoot);
+        double predictedX = kFieldToCenterHub.getX() + (predictedTwist2d.dx * loopsUntilShoot);
 
         return (Math.sqrt((Math.pow(predictedY, 2) + Math.pow(predictedX, 2))));
     }

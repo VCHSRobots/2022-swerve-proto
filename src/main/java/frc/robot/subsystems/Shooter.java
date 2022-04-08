@@ -54,7 +54,7 @@ public class Shooter extends Base {
 
     private int m_isOKtoShootCounter = 0;
     private int m_turretOKtoShootCounter = 0;
-    private double errTurretDegrees = 2.0;
+    private double errTurretDegrees = 2.7;
 
     private ProfiledPIDController m_turretPIDController = new ProfiledPIDController(0.08, 0, 0,
             new Constraints(kMaxAngularVelocity, kMaxAngularAcceleration));
@@ -429,24 +429,27 @@ public class Shooter extends Base {
         double errorBotRPM = ticksPer100msToRPM(m_shootTalonBot.getClosedLoopTarget()
             - m_shootTalonBot.getSelectedSensorVelocity());
 
-            if (Math.abs(errorBotRPM) < 80 && Math.abs(errorTopRPM) < 100) {
+            if (Math.abs(errorBotRPM) < 90 && Math.abs(errorTopRPM) < 75) {
                 m_isOKtoShootCounter++;
             } else {
                 m_isOKtoShootCounter = 0;
             }
 
-            return m_isOKtoShootCounter > 3;
+            return m_isOKtoShootCounter > 2;
     }
 
     public boolean turretCanShootWithVelocity(double angleDesired) {
         
-        if (Math.abs(getTurretAngleDegrees()) - angleDesired < errTurretDegrees) {
+        // System.out.println("current angle: " + getTurretAngleDegrees());
+        // System.out.println("desired: " + angleDesired);
+        
+        if (Math.abs(getTurretAngleDegrees() - angleDesired) < errTurretDegrees) {
             m_turretOKtoShootCounter++;
         } else {
             m_turretOKtoShootCounter = 0;
         }
         
-        return m_turretOKtoShootCounter > 3;
+        return m_turretOKtoShootCounter > 1;
     }
 
     public void setTurretAngle(double angleTargetDegrees) {
