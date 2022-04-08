@@ -201,31 +201,38 @@ public class SuperStructure extends Base {
                     false, false);
         }
 
-// // TURNTABLE
-if (OI.getBarf()) {
-    m_Shooter.setTurretAngle(180);
-} else if (m_lastButtonWasClimber) {
-    if (Math.abs(m_Shooter.getTurretAngleDegrees() - 90) > 5) {
-        m_Shooter.setTurretAngle(90);
-    }
-} else if (OI.getAimTurret()) {
-    // aimTurretAuto();
-    if (m_VisionShooter.getTargetValid()) {
-        m_Shooter.aimTurret(m_VisionShooter.getYaw());
-    }
-} else if (OI.ShootAndRun()) {
-    if (m_VisionShooter.canSeeTarget()) {
-        desiredAngle = m_state.getVelocityTurretDegreesOffset(m_VisionShooter.getYaw() + 110) + m_VisionShooter.getYaw() + 110;
-        m_Shooter.setTurretAngle(desiredAngle);
-    } else {
-        m_Shooter.setTurretAngle(m_state.getVelocityTurretDegrees());
-    }
-} else if (m_autoAimEnabled) {
-    aimTurretAuto();
-} else {
-    m_Shooter.TurnTable(OI.getRightTurntable(),
-            OI.getLeftTurntable());
-}
+        System.out.println(m_SwerveDrive.getPose2d());
+        if (m_VisionShooter.isOnTarget()) {
+            System.out.println("changing");
+            m_SwerveDrive.resetOdometry(m_Shooter.resetTurntableOdometry(m_VisionShooter.getDistance(), m_SwerveDrive));
+        }
+
+        // // TURNTABLE
+        if (OI.getBarf()) {
+            m_Shooter.setTurretAngle(180);
+        } else if (m_lastButtonWasClimber) {
+            if (Math.abs(m_Shooter.getTurretAngleDegrees() - 90) > 5) {
+                m_Shooter.setTurretAngle(90);
+            }
+        } else if (OI.getAimTurret()) {
+            // aimTurretAuto();
+            if (m_VisionShooter.getTargetValid()) {
+                m_Shooter.aimTurret(m_VisionShooter.getYaw());
+            }
+        } else if (OI.ShootAndRun()) {
+            if (m_VisionShooter.canSeeTarget()) {
+                desiredAngle = m_state.getVelocityTurretDegreesOffset(m_VisionShooter.getYaw() + 110)
+                        + m_VisionShooter.getYaw() + 110;
+                m_Shooter.setTurretAngle(desiredAngle);
+            } else {
+                m_Shooter.setTurretAngle(m_state.getVelocityTurretDegrees());
+            }
+        } else if (m_autoAimEnabled) {
+            aimTurretAuto();
+        } else {
+            m_Shooter.TurnTable(OI.getRightTurntable(),
+                    OI.getLeftTurntable());
+        }
 
         // INTAKE STATE UPDATE
         m_Intake.changeState(OI.startIntake(), OI.stopIntake());
@@ -278,9 +285,12 @@ if (OI.getBarf()) {
             System.out.println("stable " + m_state.robotHasStableVelocity());
             System.out.println("Shooter Vel " + m_Shooter.canShootWithVelocity());
             System.out.println("Turret Good " + m_Shooter.turretCanShootWithVelocity(desiredAngle));
-            // m_Shooter.shootingDist(m_VisionShooter.getMovingAverageDistance() + m_state.getPredictedDistanceToTargetOffset(m_VisionShooter.getMovingAverageDistance()));
-            m_Shooter.shootingDist((m_VisionShooter.getDistance() + m_state.getPredictedDistanceToTargetOffset(m_VisionShooter.getDistance())));
-            if (m_state.robotHasStableVelocity() && m_Shooter.canShootWithVelocity() && m_Shooter.turretCanShootWithVelocity(desiredAngle)) {
+            // m_Shooter.shootingDist(m_VisionShooter.getMovingAverageDistance() +
+            // m_state.getPredictedDistanceToTargetOffset(m_VisionShooter.getMovingAverageDistance()));
+            m_Shooter.shootingDist((m_VisionShooter.getDistance()
+                    + m_state.getPredictedDistanceToTargetOffset(m_VisionShooter.getDistance())));
+            if (m_state.robotHasStableVelocity() && m_Shooter.canShootWithVelocity()
+                    && m_Shooter.turretCanShootWithVelocity(desiredAngle)) {
                 m_Intake.loadShooter();
             } else {
                 m_Intake.turnOffLoadShooter();
@@ -320,16 +330,15 @@ if (OI.getBarf()) {
             m_autoAimEnabled = true;
         }
 
-        
     }
 
     public void aimTurretAuto() {
         // if (m_VisionShooter.getTargetValid()) {
-        //     m_Shooter.aimTurret(m_VisionShooter.getYaw());
+        // m_Shooter.aimTurret(m_VisionShooter.getYaw());
         // } else {
-            // m_Shooter.setTurretAngle(m_state.getTurretAimingAngle().getDegrees());
-            // TODO: try this below
-            m_Shooter.setTurretAngle(m_state.getTurretAimingAngle(m_SwerveDrive.getAngVel()).getDegrees());
+        // m_Shooter.setTurretAngle(m_state.getTurretAimingAngle().getDegrees());
+        // TODO: try this below
+        m_Shooter.setTurretAngle(m_state.getTurretAimingAngle(m_SwerveDrive.getAngVel()).getDegrees());
         // }
     }
 
