@@ -205,7 +205,7 @@ public class RobotState {
         double y = Math.sqrt(acSquared) * (acSquared / Math.abs(acSquared));
         
         if (x < -0.5 || x > 17.0 || y < -0.5 || y > 9.0) {
-            return null;
+            return new Transform2d(new Pose2d(), new Pose2d(-500, -500, new Rotation2d(0.0)));
         }
 
         return new Pose2d(x, y, new Rotation2d(0.0)).minus(kFieldToCenterHub);

@@ -491,6 +491,14 @@ public class Shooter extends Base {
     public void setTurnTableAngleNegHundred() {
         setTurretAngle(90);
     }
+
+    public void wheelSpeedMovingAvg() {
+
+    }
+
+    public void turretMovingAvg() {
+
+    }
 }
 
 /*
