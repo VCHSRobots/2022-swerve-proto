@@ -33,6 +33,11 @@ public class Input {
             inputActions.isBallAtLoadAndMiddleAction();
         }
     }
+    public void isBallAtLoadAndColorSensor(boolean value) {
+        if(value) {
+            inputActions.isBallAtLoadAndColorSensorAction();
+        }
+    }
     public void isBallAtLoadOrMiddle(boolean value) {
         if(value) {
             inputActions.isBallAtLoadOrMiddleAction();

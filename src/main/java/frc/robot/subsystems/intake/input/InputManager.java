@@ -10,13 +10,14 @@ public class InputManager {
         this.inputs = inputs;
     }
 
-    public void manageInputs(boolean startIntake, boolean stopIntake, boolean ballAtMiddle, boolean ballAtLoad) {
+    public void manageInputs(boolean startIntake, boolean stopIntake, boolean ballAtMiddle, boolean ballAtLoad, boolean ballAtColorSensor) {
         for(Input i : inputs) {
             i.startIntake(startIntake);
             i.stopIntake(stopIntake);
             i.isBallAtLoad(ballAtLoad);
-            i.isBallOnlyAtLoad(ballAtLoad && !ballAtMiddle);;
+            i.isBallOnlyAtLoad(ballAtLoad && !ballAtMiddle);
             i.isBallAtLoadAndMiddle(ballAtMiddle && ballAtLoad);
+            i.isBallAtLoadAndColorSensor(ballAtLoad && ballAtColorSensor);
             i.isBallAtLoadOrMiddle(ballAtMiddle || ballAtLoad);
         }
     }

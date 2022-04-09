@@ -24,6 +24,13 @@ public enum IntakeState {
             0, 
             true
         ),
+    CA
+        (
+            Constants.IntakeMotorSpeeds.kIntakeOut,
+            Constants.IntakeMotorSpeeds.kBTOut,
+            0,
+            false
+        ),
     D
         (
             0,

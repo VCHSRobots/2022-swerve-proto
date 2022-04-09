@@ -119,7 +119,7 @@ public class ColorSensor extends Base {
     } else if (m_detectedColor.blue > 0.8) {
       blueBallDetected = true;
     } else {
-
+      
     }
 
   }

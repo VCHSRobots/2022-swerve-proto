@@ -18,6 +18,7 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
+import edu.wpi.first.wpilibj.util.Color;
 import frc.robot.RobotMap;
 import frc.robot.subsystems.Base;
 import frc.robot.subsystems.intake.input.*;
@@ -125,7 +126,7 @@ public class Intake extends Base {
     public void changeState(boolean startIntake, boolean stopIntake) {
 
         // manage inputs
-        inputManager.manageInputs(startIntake, stopIntake, isBallAtMiddle(), isBallAtLoad());
+        inputManager.manageInputs(startIntake, stopIntake, isBallAtMiddle(), isBallAtLoad(), m_colorSensor.isBallDetected());
 
         // control motors and pnuematics
         m_intake.set(ControlMode.PercentOutput, m_state.intakeSpeed);

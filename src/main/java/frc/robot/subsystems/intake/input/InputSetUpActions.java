@@ -19,6 +19,7 @@ public class InputSetUpActions {
         inputs.add(setUpInputA());
         inputs.add(setUpInputB());
         inputs.add(setUpInputC());
+        inputs.add(setUpInputCA());
         inputs.add(setUpInputD());
         inputs.add(setUpInputE());
         inputs.add(setUpInputF());
@@ -43,29 +44,8 @@ public class InputSetUpActions {
             }
 
             @Override
-            public void stopIntakeAction() {
-                
-            }
-
-            @Override
-            public void isBallAtLoadAction() {
-                    
-            }
-
-            @Override
-            public void isBallOnlyAtLoadAction() {
- 
-            }
-
-            @Override
             public void isBallAtLoadAndMiddleAction() {
                 intake.setState(IntakeState.F);
-            }
-
-            @Override
-            public void isBallAtLoadOrMiddleAction() {
-                
-                
             }
             
         };
@@ -85,29 +65,8 @@ public class InputSetUpActions {
             }
 
             @Override
-            public void startIntakeAction() {
-                
-            }
-
-            @Override
             public void isBallAtLoadAction() {
                 intake.setState(IntakeState.C);
-            }
-
-            @Override
-            public void isBallOnlyAtLoadAction() {
- 
-            }
-
-            @Override
-            public void isBallAtLoadAndMiddleAction() {
-                
-            }
-
-            @Override
-            public void isBallAtLoadOrMiddleAction() {
-                
-                
             }
 
         };
@@ -118,13 +77,9 @@ public class InputSetUpActions {
 
     // intake, mover, ON, loader OFF
     // intake down
+    // goes to state CA when color sensor tripped
     private Input setUpInputC() {
         InputActions inputActionsC = new InputActions() {
-
-            @Override
-            public void startIntakeAction() {
-                
-            }
 
             @Override
             public void stopIntakeAction() {
@@ -132,13 +87,24 @@ public class InputSetUpActions {
             }
 
             @Override
-            public void isBallAtLoadAction() {
-                intake.setState(IntakeState.B);
+            public void isBallAtLoadAndColorSensorAction() {
+                intake.setState(IntakeState.CA);
             }
+        };
+        return new Input(inputActionsC);
+    }
+
+    // STATE CCCCCAAAAAA
+
+    // intake, mover, ON, loader OFF
+    // intake in
+    // goes to state A when two balls successfully loaded
+    private Input setUpInputCA() {
+        InputActions inputActionsCA = new InputActions() {
 
             @Override
-            public void isBallOnlyAtLoadAction() {
- 
+            public void stopIntakeAction() {
+                intake.setState(IntakeState.A);
             }
 
             @Override
@@ -146,20 +112,14 @@ public class InputSetUpActions {
                 intake.setState(IntakeState.A);
             }
 
-            @Override
-            public void isBallAtLoadOrMiddleAction() {
-                
-                
-            }
-
         };
-        return new Input(inputActionsC);
+        return new Input(inputActionsCA);
     }
 
     // STATE DDDDDD
 
     // start loading balls into shooter (load shooter)
-    // BUT WITH INTAKE OUT
+    // BUT WITH INTAKE DOWN
     // stops when no shooter buttons are pressed2
     private Input setUpInputD() {
         InputActions inputActionsD = new InputActions() {
@@ -172,26 +132,6 @@ public class InputSetUpActions {
             @Override
             public void stopIntakeAction() {
                 intake.setState(IntakeState.A);
-            }
-
-            @Override
-            public void isBallAtLoadAction() {
-                
-            }
-
-            @Override
-            public void isBallOnlyAtLoadAction() {
- 
-            }
-
-            @Override
-            public void isBallAtLoadAndMiddleAction() {
-                
-            }
-
-            @Override
-            public void isBallAtLoadOrMiddleAction() {
-            
             }
 
         };
@@ -218,23 +158,8 @@ public class InputSetUpActions {
             }
 
             @Override
-            public void isBallAtLoadAction() {
-
-            }
-
-            @Override
             public void isBallOnlyAtLoadAction() {
                 intake.setState(IntakeState.D);
-            }
-
-            @Override
-            public void isBallAtLoadAndMiddleAction() {
-                
-            }
-
-            @Override
-            public void isBallAtLoadOrMiddleAction() {
-                
             }
 
         };
@@ -262,20 +187,6 @@ public class InputSetUpActions {
                 intake.setState(IntakeState.A);
             }
 
-            @Override
-            public void isBallOnlyAtLoadAction() {
- 
-            }
-
-            @Override
-            public void isBallAtLoadAndMiddleAction() {
-                
-            }
-
-            @Override
-            public void isBallAtLoadOrMiddleAction() {
-                
-            }
         };
         return new Input(inputActionsF);
     }
