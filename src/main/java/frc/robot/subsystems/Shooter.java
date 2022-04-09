@@ -33,7 +33,7 @@ public class Shooter extends Base {
     // 360.0);
     private final double kEncoderTicksPerDegree = (231.0 / 56.0) * (62.0 / 13.0) * 2048 * (1.0 / 360.0);
 
-    private final double kZeroOffsetDegrees = -165;
+    private final double kZeroOffsetDegrees = 88.5;
     private final double kMinAngle = -135;
     private final double kMaxAngle = 275;
     private final double kMaxAngularVelocity = 600.0; // keep within 560, started at 135
