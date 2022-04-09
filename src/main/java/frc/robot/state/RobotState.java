@@ -25,6 +25,9 @@ public class RobotState {
     final Transform2d kTurretToCamera = new Transform2d(new Translation2d(Units.inchesToMeters(12), new Rotation2d()),
             new Rotation2d());
 
+    double predictedBallAirTime = 0;
+
+
     TimeInterpolatableBuffer<Pose2d> m_fieldToRobot = TimeInterpolatableBuffer.createBuffer(1);
     TimeInterpolatableBuffer<Pose2d> m_robotToTurret = TimeInterpolatableBuffer.createBuffer(1);
 
@@ -48,6 +51,7 @@ public class RobotState {
             Twist2d currentTwist2d = new Twist2d(poseDifference.getX(), poseDifference.getY(), poseDifference.getRotation().getRadians());
     
             m_movingAverageTwist2d.add(currentTwist2d);
+            predictedBallAirTime = 0.14388*getPredictedPoseToTarget() - 0.35283;
         
         } catch (NullPointerException e) {
             System.out.println(e);
@@ -121,7 +125,6 @@ public class RobotState {
 
         Pose2d robotPose = getRobotToCenterHub(Timer.getFPGATimestamp());
 
-        double predictedBallAirTime = 0.14388*getPredictedDistanceToTarget() - 0.35283;
         double predictedY = robotPose.getY() - (predictedTwist2d.dy * loopsUntilShoot) - (predictedTwist2d.dy * predictedBallAirTime);
         double predictedX = robotPose.getX() - (predictedTwist2d.dx * loopsUntilShoot) - (predictedTwist2d.dx * predictedBallAirTime);
 
@@ -149,13 +152,24 @@ public class RobotState {
      * 
      * @return predicted distance with velocity based on odometry
      */
-    public double getPredictedDistanceToTarget() {
+    public double getPredictedPoseToTarget() {
 
         Twist2d predictedTwist2d = m_movingAverageTwist2d.getAverage();
         double loopsUntilShoot = (msTillShoot / 20.0);
 
-        double predictedY = kFieldToCenterHub.getY() + (predictedTwist2d.dy * loopsUntilShoot);
-        double predictedX = kFieldToCenterHub.getX() + (predictedTwist2d.dx * loopsUntilShoot);
+        double predictedY = kFieldToCenterHub.getY() - (predictedTwist2d.dy * loopsUntilShoot);
+        double predictedX = kFieldToCenterHub.getX() - (predictedTwist2d.dx * loopsUntilShoot);
+
+        return (Math.sqrt((Math.pow(predictedY, 2) + Math.pow(predictedX, 2))));
+    }
+
+    public double getPredictedShotToTarget() {
+
+        Twist2d predictedTwist2d = m_movingAverageTwist2d.getAverage();
+        double loopsUntilShoot = (msTillShoot / 20.0);
+
+        double predictedY = kFieldToCenterHub.getY() - (predictedTwist2d.dy * loopsUntilShoot) - (predictedTwist2d.dy * predictedBallAirTime * 50);
+        double predictedX = kFieldToCenterHub.getX() - (predictedTwist2d.dx * loopsUntilShoot) - (predictedTwist2d.dy * predictedBallAirTime * 50);
 
         return (Math.sqrt((Math.pow(predictedY, 2) + Math.pow(predictedX, 2))));
     }
@@ -169,7 +183,7 @@ public class RobotState {
      */
     public double getPredictedDistanceToTargetOffset(double distanceFromTarget) {
         
-        return getPredictedDistanceToTarget() - distanceFromTarget;
+        return getPredictedShotToTarget() - distanceFromTarget;
 
     }
 
