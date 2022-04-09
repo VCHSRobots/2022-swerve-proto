@@ -1,6 +1,6 @@
 package frc.robot.subsystems.intake.input;
 
-import java.util.ArrayList;
+import java.util.HashMap;
 
 import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.intake.IntakeState;
@@ -14,17 +14,17 @@ public class InputSetUpActions {
     }
 
     public InputManager getNewInputManager() {
-        ArrayList<Input> inputs = new ArrayList<>();
+        HashMap<IntakeState, Input> inputs = new HashMap<>();
 
-        inputs.add(setUpInputA());
-        inputs.add(setUpInputB());
-        inputs.add(setUpInputC());
-        inputs.add(setUpInputCA());
-        inputs.add(setUpInputD());
-        inputs.add(setUpInputE());
-        inputs.add(setUpInputF());
+        inputs.put(IntakeState.A, setUpInputA());
+        inputs.put(IntakeState.B, setUpInputB());
+        inputs.put(IntakeState.C, setUpInputC());
+        inputs.put(IntakeState.CA, setUpInputCA());
+        inputs.put(IntakeState.D, setUpInputD());
+        inputs.put(IntakeState.E, setUpInputE());
+        inputs.put(IntakeState.F, setUpInputF());
 
-        return new InputManager(inputs);
+        return new InputManager(inputs, intake);
     }
 
     // STATE AAAAAA
@@ -87,7 +87,7 @@ public class InputSetUpActions {
             }
 
             @Override
-            public void isBallAtLoadAndColorSensorAction() {
+            public void isBallAtColorSensorAction() {
                 intake.setState(IntakeState.CA);
             }
         };

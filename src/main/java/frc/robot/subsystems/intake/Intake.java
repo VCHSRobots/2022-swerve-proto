@@ -18,7 +18,6 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
-import edu.wpi.first.wpilibj.util.Color;
 import frc.robot.RobotMap;
 import frc.robot.subsystems.Base;
 import frc.robot.subsystems.intake.input.*;
@@ -62,7 +61,7 @@ public class Intake extends Base {
     // NetworkTableEntry ntLoaderPercentOut = debugTab.add("loader percent out",
     // 0.5).getEntry();
 
-    private IntakeState m_state = IntakeState.A;
+    public IntakeState m_state = IntakeState.A;
     private InputManager inputManager;
 
     public Intake() {

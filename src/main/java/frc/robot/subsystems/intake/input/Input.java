@@ -33,9 +33,9 @@ public class Input {
             inputActions.isBallAtLoadAndMiddleAction();
         }
     }
-    public void isBallAtLoadAndColorSensor(boolean value) {
+    public void isBallAtColorSensor(boolean value) {
         if(value) {
-            inputActions.isBallAtLoadAndColorSensorAction();
+            inputActions.isBallAtColorSensorAction();
         }
     }
     public void isBallAtLoadOrMiddle(boolean value) {

@@ -6,6 +6,7 @@ public enum IntakeState {
     
     A
         (
+            "Nothing",
             0,
             0,
             0,
@@ -13,12 +14,14 @@ public enum IntakeState {
         ),
     B
         (
+            "Loading first ball",
             Constants.IntakeMotorSpeeds.kIntakeOut,
             Constants.IntakeMotorSpeeds.kBTOut,
             Constants.IntakeMotorSpeeds.kLoaderOut, 
             true),
     C
         (
+            "Loading second ball (pt 1)",
             Constants.IntakeMotorSpeeds.kIntakeOut,
             Constants.IntakeMotorSpeeds.kBTOut,
             0, 
@@ -26,6 +29,7 @@ public enum IntakeState {
         ),
     CA
         (
+            "Moving second ball to middle",
             Constants.IntakeMotorSpeeds.kIntakeOut,
             Constants.IntakeMotorSpeeds.kBTOut,
             0,
@@ -33,6 +37,7 @@ public enum IntakeState {
         ),
     D
         (
+            "Shooting with intake out",
             0,
             Constants.IntakeMotorSpeeds.kBTOut,
             Constants.IntakeMotorSpeeds.kLoaderLoadingSpeed,
@@ -40,6 +45,7 @@ public enum IntakeState {
         ),
     E
         (
+            "Shooting with intake in",
             0,
             Constants.IntakeMotorSpeeds.kBTOut,
             Constants.IntakeMotorSpeeds.kLoaderLoadingSpeed,
@@ -47,19 +53,22 @@ public enum IntakeState {
         ),
     F
         (
+            "Moving Ball To Color Sensor",
             0,
             Constants.IntakeMotorSpeeds.kBTOut,
             Constants.IntakeMotorSpeeds.kLoaderOut,
             false
         );
 
+    public final String name;
     public final double intakeSpeed;
     public final double ballTransportSpeed;
     public final double loaderSpeed;
     public final boolean pneumaticOut;
     public boolean isReversable = false;
 
-    IntakeState(double intakeSpeed, double ballTransportSpeed, double loaderSpeed, boolean pnuematicOut) {
+    IntakeState(String name, double intakeSpeed, double ballTransportSpeed, double loaderSpeed, boolean pnuematicOut) {
+        this.name = name;
         this.intakeSpeed = intakeSpeed;
         this.ballTransportSpeed = ballTransportSpeed;
         this.loaderSpeed = loaderSpeed;
