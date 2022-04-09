@@ -113,7 +113,7 @@ public class OI {
         return xboxDrive.getLeftBumper();
     }
 
-    static public boolean getRightBumperForWallShot() {
+    static public boolean getRightBumperForLaunchShot() {
         return xboxDrive.getRightBumper();
     }
 
