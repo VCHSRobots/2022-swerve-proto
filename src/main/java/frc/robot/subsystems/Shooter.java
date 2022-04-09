@@ -22,6 +22,7 @@ import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import frc.robot.RobotMap;
 import frc.robot.util.InterpolatingDouble;
 import frc.robot.util.InterpolatingTreeMap;
+import frc.robot.util.MovingAverage;
 import frc.robot.util.distanceRPMPoint;
 
 public class Shooter extends Base {
@@ -50,7 +51,7 @@ public class Shooter extends Base {
 
     private int m_isOKtoShootCounter = 0;
     private int m_turretOKtoShootCounter = 0;
-    private double errTurretDegrees = 2.7;
+    private double errTurretDegrees = 2.5;
 
     private ProfiledPIDController m_turretPIDController = new ProfiledPIDController(0.08, 0, 0,
             new Constraints(kMaxAngularVelocity, kMaxAngularAcceleration));
@@ -58,6 +59,9 @@ public class Shooter extends Base {
 
     // SimpleMotorFeedforward m_ShootFeedForward = new SimpleMotorFeedforward(0.00,
     // 0.00045);
+
+    MovingAverage averageTurretVelocity;
+    double prevTurretPose = 0;
 
     private InterpolatingTreeMap<InterpolatingDouble, InterpolatingDouble> m_interpolatingSpeeds_top = new InterpolatingTreeMap<InterpolatingDouble, InterpolatingDouble>();
     private InterpolatingTreeMap<InterpolatingDouble, InterpolatingDouble> m_interpolatingSpeeds_bot = new InterpolatingTreeMap<InterpolatingDouble, InterpolatingDouble>();
@@ -253,6 +257,8 @@ public class Shooter extends Base {
         m_turretPIDController.disableContinuousInput();
         m_turretPIDController.setTolerance(0.5);
 
+        averageTurretVelocity = new MovingAverage(6);
+
         new Thread(() -> {
             try {
                 Thread.sleep(1000);
@@ -272,7 +278,7 @@ public class Shooter extends Base {
 
     @Override
     public void robotPeriodic() {
-
+        
     }
 
     @Override
@@ -287,6 +293,15 @@ public class Shooter extends Base {
     public void teleopInit() {
         m_isOKtoShootCounter = 0;
         m_turretOKtoShootCounter = 0;
+    }
+
+    public void updateAvgVelocities() {
+        try {
+            averageTurretVelocity.add(getTurretAngleDegrees() - prevTurretPose);
+            prevTurretPose = getTurretAngleDegrees();
+        } catch (Exception e) {
+            System.out.println(e);
+        }
     }
 
     public void warmUp() {
@@ -474,6 +489,10 @@ public class Shooter extends Base {
 
     public double getTurretAngleCANcoder() {
         return m_turntableEncoder.getPosition();
+    }
+
+    public double getAvgTurretVelocity() {
+        return averageTurretVelocity.getAverage();
     }
 
     public void setTurnTableAngleFortFive() {
