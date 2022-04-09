@@ -152,6 +152,7 @@ public class SuperStructure extends Base {
         m_auto.robotPeriodic();
         m_VisionShooter.calculateAngleError();
         m_VisionShooter.addDistanceToMovingAverage();
+        m_Shooter.updateAvgVelocities();
 
         m_Climber.checkZero();
 
@@ -204,12 +205,12 @@ public class SuperStructure extends Base {
                     false, false);
         }
         
-        System.out.println(m_SwerveDrive.getPose2d());
-        if (m_VisionShooter.isOnTarget() && loopCounter % 25 == 0) {
-            System.out.println("changing to ");
-            Transform2d newRobotPose = m_state.resetRobotPoseOdometry(m_VisionShooter.getDistance(), m_Shooter.getTurretAngleDegrees());
-            m_SwerveDrive.resetOdometry(new Pose2d(newRobotPose.getX(), newRobotPose.getY(), m_SwerveDrive.getPose2d().getRotation()));
-        }
+        // System.out.println(m_SwerveDrive.getPose2d());
+        // if (m_VisionShooter.isOnTarget() && loopCounter % 25 == 0) {
+        //     System.out.println("changing to ");
+        //     Transform2d newRobotPose = m_state.resetRobotPoseOdometry(m_VisionShooter.getDistance(), m_Shooter.getTurretAngleDegrees());
+        //     m_SwerveDrive.resetOdometry(new Pose2d(newRobotPose.getX(), newRobotPose.getY(), m_SwerveDrive.getPose2d().getRotation()));
+        // }
 
         // // TURNTABLE
         if (OI.getBarf()) {
@@ -226,7 +227,7 @@ public class SuperStructure extends Base {
         } else if (OI.ShootAndRun()) {
             if (m_VisionShooter.canSeeTarget()) {
                 desiredAngle = m_state.getVelocityTurretDegreesOffset(m_VisionShooter.getYaw() + 110)
-                        + m_VisionShooter.getYaw() + 110;
+                        + m_VisionShooter.getYaw() + 110 + (m_Shooter.getAvgTurretVelocity() * 3);
                 m_Shooter.setTurretAngle(desiredAngle);
             } else {
                 m_Shooter.setTurretAngle(m_state.getVelocityTurretDegrees());
