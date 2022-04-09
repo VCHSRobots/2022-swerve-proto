@@ -154,7 +154,7 @@ public class SuperStructure extends Base {
         m_state.update(m_SwerveDrive.getPose2d(), Rotation2d.fromDegrees(m_Shooter.getTurretAngleDegrees()));
 
         // climber or shooter check
-        if (OI.getAimTurret() || OI.getRightBumperForWallShot() || OI.getLeftBumperForTapeShot()
+        if (OI.getAimTurret() || OI.getRightBumperForLaunchShot() || OI.getLeftBumperForTapeShot()
                 || OI.getRightTriggerForShooting() || OI.getUnjam() || OI.getBarf() || OI.startIntake()
                 || OI.getLeftTurntable() || OI.getRightTurntable()) {
             m_lastButtonWasClimber = false;
@@ -225,9 +225,9 @@ public class SuperStructure extends Base {
             } else {
                 m_Intake.countinueIntakeMotors();
             }
-        } else if (OI.getRightBumperForWallShot()) {
+        } else if (OI.getRightBumperForLaunchShot()) {
             // turn shooter on in rpm mode
-            m_Shooter.shootingRPM(3400, 2530);
+            m_Shooter.shootingRPM(4000, 3200);
 
             if (m_Shooter.IsOkToShoot()) {
                 // Load shooter
