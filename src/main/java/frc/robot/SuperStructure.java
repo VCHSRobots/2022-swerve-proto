@@ -206,7 +206,7 @@ public class SuperStructure extends Base {
         
         System.out.println(m_SwerveDrive.getPose2d());
         if (m_VisionShooter.isOnTarget() && loopCounter % 25 == 0) {
-            System.out.println("changing");
+            System.out.println("changing to ");
             Transform2d newRobotPose = m_state.resetRobotPoseOdometry(m_VisionShooter.getDistance(), m_Shooter.getTurretAngleDegrees());
             m_SwerveDrive.resetOdometry(new Pose2d(newRobotPose.getX(), newRobotPose.getY(), m_SwerveDrive.getPose2d().getRotation()));
         }
