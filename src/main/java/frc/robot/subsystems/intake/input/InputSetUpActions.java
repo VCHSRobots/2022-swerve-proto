@@ -28,7 +28,8 @@ public class InputSetUpActions {
 
     // STATE AAAAAA
 
-    // intake and load off, intake up
+    // intake and load off
+    // intake up
     private Input setUpInputA() {
         InputActions inputActionsA = new InputActions() {
 
@@ -44,13 +45,16 @@ public class InputSetUpActions {
             @Override
             public void stopIntakeAction() {
                 
-                
             }
 
             @Override
             public void isBallAtLoadAction() {
-                
-                
+                    
+            }
+
+            @Override
+            public void isBallOnlyAtLoadAction() {
+ 
             }
 
             @Override
@@ -83,7 +87,6 @@ public class InputSetUpActions {
             @Override
             public void startIntakeAction() {
                 
-                
             }
 
             @Override
@@ -92,8 +95,12 @@ public class InputSetUpActions {
             }
 
             @Override
+            public void isBallOnlyAtLoadAction() {
+ 
+            }
+
+            @Override
             public void isBallAtLoadAndMiddleAction() {
-                
                 
             }
 
@@ -117,7 +124,6 @@ public class InputSetUpActions {
             @Override
             public void startIntakeAction() {
                 
-                
             }
 
             @Override
@@ -128,6 +134,11 @@ public class InputSetUpActions {
             @Override
             public void isBallAtLoadAction() {
                 intake.setState(IntakeState.B);
+            }
+
+            @Override
+            public void isBallOnlyAtLoadAction() {
+ 
             }
 
             @Override
@@ -147,38 +158,40 @@ public class InputSetUpActions {
 
     // STATE DDDDDD
 
-    // previously used state
+    // start loading balls into shooter (load shooter)
+    // BUT WITH INTAKE OUT
+    // stops when no shooter buttons are pressed2
     private Input setUpInputD() {
         InputActions inputActionsD = new InputActions() {
 
             @Override
             public void startIntakeAction() {
-                
-                
+                intake.setState(IntakeState.B);
             }
 
             @Override
             public void stopIntakeAction() {
-                
-                
+                intake.setState(IntakeState.A);
             }
 
             @Override
             public void isBallAtLoadAction() {
                 
-                
+            }
+
+            @Override
+            public void isBallOnlyAtLoadAction() {
+ 
             }
 
             @Override
             public void isBallAtLoadAndMiddleAction() {
                 
-                
             }
 
             @Override
             public void isBallAtLoadOrMiddleAction() {
-                
-                
+            
             }
 
         };
@@ -187,8 +200,10 @@ public class InputSetUpActions {
 
     // STATE EEEEEEE
 
-    // start loading balls into shooter (loadShooter)
+    // start loading balls into shooter (load shooter)
+    //
     // stops when no more shooter buttons are pressed
+    // or changes to state D when ball only at load
     private Input setUpInputE() {
         InputActions inputActionsE = new InputActions() {
 
@@ -204,19 +219,21 @@ public class InputSetUpActions {
 
             @Override
             public void isBallAtLoadAction() {
-                
-                
+
+            }
+
+            @Override
+            public void isBallOnlyAtLoadAction() {
+                intake.setState(IntakeState.D);
             }
 
             @Override
             public void isBallAtLoadAndMiddleAction() {
                 
-                
             }
 
             @Override
             public void isBallAtLoadOrMiddleAction() {
-                
                 
             }
 
@@ -246,14 +263,17 @@ public class InputSetUpActions {
             }
 
             @Override
+            public void isBallOnlyAtLoadAction() {
+ 
+            }
+
+            @Override
             public void isBallAtLoadAndMiddleAction() {
-                
                 
             }
 
             @Override
             public void isBallAtLoadOrMiddleAction() {
-                
                 
             }
         };

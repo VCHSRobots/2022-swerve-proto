@@ -156,6 +156,11 @@ public class Intake extends Base {
     // Turns on shooter intake and mover to put balls in shooter.
     // Used in OI to coordinate shooting.
     public void loadShooter() {
+        if(isBallAtLoad() && !isBallAtMiddle()) {
+            // intake out
+            m_state = IntakeState.D;
+        }
+        // intake in
         m_state = IntakeState.E;
     }
 
@@ -207,7 +212,6 @@ public class Intake extends Base {
         if (isBallAtLoad() && isBallAtMiddle()) {
             return true;
         }
-
         return false;
     }
 

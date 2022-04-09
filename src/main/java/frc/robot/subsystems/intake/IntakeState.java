@@ -27,8 +27,8 @@ public enum IntakeState {
     D
         (
             0,
-            0,
-            0,
+            Constants.IntakeMotorSpeeds.kBTOut,
+            Constants.IntakeMotorSpeeds.kLoaderLoadingSpeed,
             true
         ),
     E

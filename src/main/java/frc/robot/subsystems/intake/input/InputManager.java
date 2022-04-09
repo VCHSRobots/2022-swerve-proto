@@ -15,6 +15,7 @@ public class InputManager {
             i.startIntake(startIntake);
             i.stopIntake(stopIntake);
             i.isBallAtLoad(ballAtLoad);
+            i.isBallOnlyAtLoad(ballAtLoad && !ballAtMiddle);;
             i.isBallAtLoadAndMiddle(ballAtMiddle && ballAtLoad);
             i.isBallAtLoadOrMiddle(ballAtMiddle || ballAtLoad);
         }

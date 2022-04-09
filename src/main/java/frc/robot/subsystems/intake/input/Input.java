@@ -23,6 +23,11 @@ public class Input {
             inputActions.isBallAtLoadAction();
         }
     }
+    public void isBallOnlyAtLoad(boolean value) {
+        if(value) {
+            inputActions.isBallOnlyAtLoadAction();
+        }
+    }
     public void isBallAtLoadAndMiddle(boolean value) {
         if(value) {
             inputActions.isBallAtLoadAndMiddleAction();
