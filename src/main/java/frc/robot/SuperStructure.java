@@ -21,7 +21,6 @@ import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.cscore.UsbCamera;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.util.Units;
@@ -52,6 +51,7 @@ public class SuperStructure extends Base {
     boolean m_lastButtonWasClimber = false;
     boolean m_autoAimEnabled = true;
     boolean m_turretClearForShot = false;
+    boolean toggleShootAndRun = false;
 
     Timer m_Timer = new Timer();
     int m_autoStep = 0;
@@ -61,6 +61,7 @@ public class SuperStructure extends Base {
     double m_shootingDistance = 0;
     double desiredAngle = 0;
     int loopCounter = 0;
+    double m_visionTeleopOffset = 2.0;
 
     private final Compressor m_phCompressor = new Compressor(PneumaticsModuleType.REVPH);
     private final PneumaticHub m_ph = new PneumaticHub(); // even though not used, keep here
@@ -177,7 +178,7 @@ public class SuperStructure extends Base {
         m_Climber.hooksReverse();
         m_Climber.eStop();
         m_VisionShooter.LEDon();
-        m_VisionShooter.setOffset(2);
+        m_VisionShooter.setOffset(m_visionTeleopOffset);
         m_SwerveDrive.setFieldRelative();
         m_autoAimEnabled = true;
 
@@ -225,20 +226,26 @@ public class SuperStructure extends Base {
             if (m_VisionShooter.getTargetValid()) {
                 m_Shooter.aimTurret(m_VisionShooter.getYaw());
             }
-        } else if (OI.ShootAndRun()) {
+
+        } else if (toggleShootAndRun) {
+            m_VisionShooter.setOffset(0.0);
             if (m_VisionShooter.canSeeTarget()) {
                 desiredAngle = m_state.getVelocityTurretDegreesOffset(m_VisionShooter.getYaw() + 110)
                         + m_VisionShooter.getYaw() + 110;
-                m_Shooter.setTurretAngle(desiredAngle + (m_Shooter.getAvgTurretVelocity() * 8));
+                m_Shooter.setTurretAngle(desiredAngle + m_state.turntableOverestimator());
                 // System.out.println("angle diff: " + (m_Shooter.getTurretAngleDegrees() - desiredAngle));
                 // System.out.println("avgTurretVel: " + (m_Shooter.getAvgTurretVelocity() * 1.2));
                 System.out.println("desired: " + desiredAngle);
-                System.out.println("desired w/vel: " + ((m_Shooter.getAvgTurretVelocity() * 8) + desiredAngle));
                 System.out.println("Turret: " + m_Shooter.getTurretAngleDegrees());
                 System.out.println(m_Shooter.getAvgTurretVelocity());
 
             } else {
                 m_Shooter.setTurretAngle(m_state.getVelocityTurretDegrees());
+            }
+        } else if (OI.ShootAndRun()) {
+            toggleShootAndRun = !toggleShootAndRun;
+            if (toggleShootAndRun == false) {
+                m_VisionShooter.setOffset(m_visionTeleopOffset);
             }
         } else if (m_autoAimEnabled) {
             aimTurretAuto();
@@ -294,20 +301,23 @@ public class SuperStructure extends Base {
             // m_Intake.turnOffLoadShooter();
             // }
 
-        } else if (OI.ShootAndRun()) {
+        } else if (toggleShootAndRun) {
             // System.out.println("stable " + m_state.robotHasStableVelocity());
             // System.out.println("Shooter Vel " + m_Shooter.canShootWithVelocity());
             // System.out.println("Turret Good " + m_Shooter.turretCanShootWithVelocity(desiredAngle));
             // m_Shooter.shootingDist(m_VisionShooter.getMovingAverageDistance() +
             // m_state.getPredictedDistanceToTargetOffset(m_VisionShooter.getMovingAverageDistance()));
             m_Shooter.shootingDist((m_VisionShooter.getDistance()
-                    + m_state.getPredictedDistanceToTargetOffset(m_VisionShooter.getDistance())));
+                + m_state.getPredictedDistanceToTargetOffset(m_VisionShooter.getDistance())));
             if (m_state.robotHasStableVelocity() && m_Shooter.canShootWithVelocity()
                     && m_Shooter.turretCanShootWithVelocity(desiredAngle)) {
                 m_Intake.loadShooter();
             } else {
                 m_Intake.turnOffLoadShooter();
             }
+        
+        } else if (OI.ShootAndRun()) {
+            toggleShootAndRun = !toggleShootAndRun;
         } else if (m_lastButtonWasClimber) {
             m_Shooter.turnOff();
         } else if ((ntShooterPreheatEnable.getBoolean(false)

@@ -211,7 +211,7 @@ public class OI {
     }
 
     static public boolean ShootAndRun() {
-        return xboxDrive.getXButton();
+        return xboxDrive.getXButtonPressed();
         // return false;
     }
 

@@ -111,6 +111,10 @@ public class RobotState {
         return m_movingAverageTwist2d.getAverage().dtheta;
     }
 
+    public Twist2d movingAvg2d() {
+        return m_movingAverageTwist2d.getAverage();
+    }
+
     /**
      * 
      * Gets the degrees the turret needs to be for the shooter to shoot at the target
@@ -121,12 +125,13 @@ public class RobotState {
         
         Twist2d predictedTwist2d = m_movingAverageTwist2d.getAverage();
         double radiansToDegrees = 180 / Math.PI;
-        double loopsUntilShoot = (msTillShoot / 20.0);
+        double loopsToShoot = (msTillShoot / 20.0);
 
         Pose2d robotPose = getRobotToCenterHub(Timer.getFPGATimestamp());
 
-        double predictedY = robotPose.getY() - (predictedTwist2d.dy * loopsUntilShoot) - (predictedTwist2d.dy * predictedBallAirTime);
-        double predictedX = robotPose.getX() - (predictedTwist2d.dx * loopsUntilShoot) - (predictedTwist2d.dx * predictedBallAirTime);
+        // may not need part 2 of this equation
+        double predictedY = robotPose.getY() - (predictedTwist2d.dy * loopsToShoot) - (predictedTwist2d.dy * predictedBallAirTime);
+        double predictedX = robotPose.getX() - (predictedTwist2d.dx * loopsToShoot) - (predictedTwist2d.dx * predictedBallAirTime);
 
         double predictedRadiansOfTurret = Math.atan2(predictedY, predictedX);
 
@@ -155,10 +160,10 @@ public class RobotState {
     public double getPredictedPoseToTarget() {
 
         Twist2d predictedTwist2d = m_movingAverageTwist2d.getAverage();
-        double loopsUntilShoot = (msTillShoot / 20.0);
+        double loopsToShoot = (msTillShoot / 20.0);
 
-        double predictedY = kFieldToCenterHub.getY() - (predictedTwist2d.dy * loopsUntilShoot);
-        double predictedX = kFieldToCenterHub.getX() - (predictedTwist2d.dx * loopsUntilShoot);
+        double predictedY = kFieldToCenterHub.getY() - (predictedTwist2d.dy * loopsToShoot);
+        double predictedX = kFieldToCenterHub.getX() - (predictedTwist2d.dx * loopsToShoot);
 
         return (Math.sqrt((Math.pow(predictedY, 2) + Math.pow(predictedX, 2))));
     }
@@ -167,8 +172,9 @@ public class RobotState {
 
         Twist2d predictedTwist2d = m_movingAverageTwist2d.getAverage();
         double loopsUntilShoot = (msTillShoot / 20.0);
-        int cyclesInASecond = 1000/50;
+        int cyclesInASecond = 1000/20;
 
+        // may need to remove loops until shoot
         double predictedY = kFieldToCenterHub.getY() - (predictedTwist2d.dy * loopsUntilShoot) - (predictedTwist2d.dy * predictedBallAirTime * cyclesInASecond);
         double predictedX = kFieldToCenterHub.getX() - (predictedTwist2d.dx * loopsUntilShoot) - (predictedTwist2d.dx * predictedBallAirTime * cyclesInASecond);
 
@@ -190,6 +196,23 @@ public class RobotState {
 
     public boolean robotHasStableVelocity() {
         return m_movingAverageTwist2d.isAcceptablePrediction();
+    }
+
+    public double turntableOverestimator() {
+        double maxDegreeOverestimate = 8.0;
+        double maxVelocityMetersASec = 3.0;
+        double maxVelocityMetersPer20MS = maxVelocityMetersASec / 20;
+        double robotVelocityVector = Math.sqrt((Math.pow(movingAvg2d().dx, 2) + Math.pow(movingAvg2d().dy, 2)));
+        double xQuadrantAccounter = movingAvg2d().dx / Math.abs(movingAvg2d().dx);
+        double yQuadrantAccounter = movingAvg2d().dy / Math.abs(movingAvg2d().dy);
+        
+        if (xQuadrantAccounter < 0 && yQuadrantAccounter < 0) {
+            robotVelocityVector *= xQuadrantAccounter;
+        } else {
+            robotVelocityVector *= xQuadrantAccounter * yQuadrantAccounter;
+        }
+
+        return (robotVelocityVector / maxVelocityMetersPer20MS) * maxDegreeOverestimate;
     }
 
     /**
