@@ -51,7 +51,7 @@ public class Shooter extends Base {
 
     private int m_isOKtoShootCounter = 0;
     private int m_turretOKtoShootCounter = 0;
-    private double errTurretDegrees = 2.5;
+    private double errTurretDegrees = 1.5;
 
     private ProfiledPIDController m_turretPIDController = new ProfiledPIDController(0.08, 0, 0,
             new Constraints(kMaxAngularVelocity, kMaxAngularAcceleration));
@@ -257,7 +257,7 @@ public class Shooter extends Base {
         m_turretPIDController.disableContinuousInput();
         m_turretPIDController.setTolerance(0.5);
 
-        averageTurretVelocity = new MovingAverage(6);
+        averageTurretVelocity = new MovingAverage(15);
 
         new Thread(() -> {
             try {

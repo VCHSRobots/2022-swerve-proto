@@ -228,8 +228,15 @@ public class SuperStructure extends Base {
         } else if (OI.ShootAndRun()) {
             if (m_VisionShooter.canSeeTarget()) {
                 desiredAngle = m_state.getVelocityTurretDegreesOffset(m_VisionShooter.getYaw() + 110)
-                        + m_VisionShooter.getYaw() + 110 + (m_Shooter.getAvgTurretVelocity() * 3);
-                m_Shooter.setTurretAngle(desiredAngle);
+                        + m_VisionShooter.getYaw() + 110;
+                m_Shooter.setTurretAngle(desiredAngle + (m_Shooter.getAvgTurretVelocity() * 8));
+                // System.out.println("angle diff: " + (m_Shooter.getTurretAngleDegrees() - desiredAngle));
+                // System.out.println("avgTurretVel: " + (m_Shooter.getAvgTurretVelocity() * 1.2));
+                System.out.println("desired: " + desiredAngle);
+                System.out.println("desired w/vel: " + ((m_Shooter.getAvgTurretVelocity() * 8) + desiredAngle));
+                System.out.println("Turret: " + m_Shooter.getTurretAngleDegrees());
+                System.out.println(m_Shooter.getAvgTurretVelocity());
+
             } else {
                 m_Shooter.setTurretAngle(m_state.getVelocityTurretDegrees());
             }
@@ -288,9 +295,9 @@ public class SuperStructure extends Base {
             // }
 
         } else if (OI.ShootAndRun()) {
-            System.out.println("stable " + m_state.robotHasStableVelocity());
-            System.out.println("Shooter Vel " + m_Shooter.canShootWithVelocity());
-            System.out.println("Turret Good " + m_Shooter.turretCanShootWithVelocity(desiredAngle));
+            // System.out.println("stable " + m_state.robotHasStableVelocity());
+            // System.out.println("Shooter Vel " + m_Shooter.canShootWithVelocity());
+            // System.out.println("Turret Good " + m_Shooter.turretCanShootWithVelocity(desiredAngle));
             // m_Shooter.shootingDist(m_VisionShooter.getMovingAverageDistance() +
             // m_state.getPredictedDistanceToTargetOffset(m_VisionShooter.getMovingAverageDistance()));
             m_Shooter.shootingDist((m_VisionShooter.getDistance()
