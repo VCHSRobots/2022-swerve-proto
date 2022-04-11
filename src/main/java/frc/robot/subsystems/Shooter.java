@@ -511,12 +511,10 @@ public class Shooter extends Base {
         setTurretAngle(90);
     }
 
-    public void wheelSpeedMovingAvg() {
-
-    }
-
-    public void turretMovingAvg() {
-
+    public double maxTurretMarginOfErr(double ftDistToTarget) {
+        double ftRadiusOfTarget = 2.640625;
+        double marginOfErr = Math.tan(ftRadiusOfTarget/ftDistToTarget);
+        return marginOfErr;
     }
 }
 

@@ -21,6 +21,7 @@ import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.cscore.UsbCamera;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.util.Units;
@@ -210,7 +211,7 @@ public class SuperStructure extends Base {
         // System.out.println(m_SwerveDrive.getPose2d());
         // if (m_VisionShooter.isOnTarget() && loopCounter % 25 == 0) {
         //     System.out.println("changing to ");
-        //     Transform2d newRobotPose = m_state.resetRobotPoseOdometry(m_VisionShooter.getDistance(), m_Shooter.getTurretAngleDegrees());
+        //     Transform2d newRobotPose = m_state.resetRobotPoseOdometry(m_VisionShooter.getDistance(), m_Shooter.getTurretAngleDegrees(), m_VisionShooter.getActualYaw(), m_SwerveDrive.getPose2d().getRotation().getDegrees());
         //     m_SwerveDrive.resetOdometry(new Pose2d(newRobotPose.getX(), newRobotPose.getY(), m_SwerveDrive.getPose2d().getRotation()));
         // }
 
@@ -232,12 +233,11 @@ public class SuperStructure extends Base {
             if (m_VisionShooter.canSeeTarget()) {
                 desiredAngle = m_state.getVelocityTurretDegreesOffset(m_VisionShooter.getYaw() + 110)
                         + m_VisionShooter.getYaw() + 110;
-                m_Shooter.setTurretAngle(desiredAngle + m_state.turntableOverestimator());
+                m_Shooter.setTurretAngle(desiredAngle - m_state.turntableOverestimator());
                 // System.out.println("angle diff: " + (m_Shooter.getTurretAngleDegrees() - desiredAngle));
                 // System.out.println("avgTurretVel: " + (m_Shooter.getAvgTurretVelocity() * 1.2));
                 System.out.println("desired: " + desiredAngle);
                 System.out.println("Turret: " + m_Shooter.getTurretAngleDegrees());
-                System.out.println(m_Shooter.getAvgTurretVelocity());
 
             } else {
                 m_Shooter.setTurretAngle(m_state.getVelocityTurretDegrees());
@@ -310,7 +310,7 @@ public class SuperStructure extends Base {
             m_Shooter.shootingDist((m_VisionShooter.getDistance()
                 + m_state.getPredictedDistanceToTargetOffset(m_VisionShooter.getDistance())));
             if (m_state.robotHasStableVelocity() && m_Shooter.canShootWithVelocity()
-                    && m_Shooter.turretCanShootWithVelocity(desiredAngle)) {
+                    && m_Shooter.turretCanShootWithVelocity(desiredAngle) && m_Intake.isBallAtLoad()) {
                 m_Intake.loadShooter();
             } else {
                 m_Intake.turnOffLoadShooter();

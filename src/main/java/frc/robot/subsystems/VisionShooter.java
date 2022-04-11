@@ -91,6 +91,10 @@ public class VisionShooter extends Base {
         return -ntTargetYaw.getDouble(0) + m_offset;
     }
 
+    public double getActualYaw() {
+        return -ntTargetYaw.getDouble(0);
+    }
+
     public double getPitch() {
         return m_lastTy;
     }
