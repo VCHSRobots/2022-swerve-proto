@@ -8,6 +8,7 @@ import edu.wpi.first.math.geometry.Twist2d;
 import edu.wpi.first.math.interpolation.TimeInterpolatableBuffer;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Timer;
+import frc.robot.subsystems.VisionShooter;
 import frc.robot.util.MovingAverageTwist2d;
 
 public class RobotState {
@@ -15,7 +16,7 @@ public class RobotState {
     Pose2d m_pose;
     Rotation2d m_turretAngle;
     double m_lastTimestamp;
-    double msTillShoot = 115;
+    double msTillShoot = 80;
 
     MovingAverageTwist2d m_movingAverageTwist2d = new MovingAverageTwist2d(10);
 
@@ -132,6 +133,8 @@ public class RobotState {
         // may not need part 2 of this equation
         double predictedY = robotPose.getY() - (predictedTwist2d.dy * loopsToShoot) - (predictedTwist2d.dy * predictedBallAirTime);
         double predictedX = robotPose.getX() - (predictedTwist2d.dx * loopsToShoot) - (predictedTwist2d.dx * predictedBallAirTime);
+        // double predictedY = robotPose.getY() - (predictedTwist2d.dy * predictedBallAirTime);
+        // double predictedX = robotPose.getX() - (predictedTwist2d.dx * predictedBallAirTime);
 
         double predictedRadiansOfTurret = Math.atan2(predictedY, predictedX);
 
@@ -177,6 +180,8 @@ public class RobotState {
         // may need to remove loops until shoot
         double predictedY = kFieldToCenterHub.getY() - (predictedTwist2d.dy * loopsUntilShoot) - (predictedTwist2d.dy * predictedBallAirTime * cyclesInASecond);
         double predictedX = kFieldToCenterHub.getX() - (predictedTwist2d.dx * loopsUntilShoot) - (predictedTwist2d.dx * predictedBallAirTime * cyclesInASecond);
+        // double predictedY = kFieldToCenterHub.getY() - (predictedTwist2d.dy * predictedBallAirTime * cyclesInASecond);
+        // double predictedX = kFieldToCenterHub.getX() - (predictedTwist2d.dx * predictedBallAirTime * cyclesInASecond);
 
         return (Math.sqrt((Math.pow(predictedY, 2) + Math.pow(predictedX, 2))));
     }
@@ -221,12 +226,16 @@ public class RobotState {
     * @param turretDegrees Current DEGREES Of turret
     * @return new pose 2d of the robot based PURELY on the shooter
     */
-    public Transform2d resetRobotPoseOdometry(double limelightDist, double turretDegrees) {
+    public Transform2d resetRobotPoseOdometry(double limelightDist, double turretDegrees, double turretYawDegreesOffset, double robotDegrees) {
 
-        double x = Math.cos(Units.degreesToRadians(turretDegrees)) * Units.feetToMeters(limelightDist);
-        double acSquared = (Math.pow(limelightDist, 2) - Math.pow(x, 2));
-        double y = Math.sqrt(acSquared) * (acSquared / Math.abs(acSquared));
-        
+        double limelightMetersDist = Units.feetToMeters(limelightDist);
+        double x = Math.cos(Units.degreesToRadians(turretDegrees - turretYawDegreesOffset - robotDegrees)) * limelightMetersDist;
+        double acSquared = (Math.pow(limelightMetersDist, 2) - Math.pow(x, 2));
+        double y = Math.sqrt(acSquared);
+
+        System.out.println("x: " + x);
+        System.out.println("y: " + y);
+
         if (x < -0.5 || x > 17.0 || y < -0.5 || y > 9.0) {
             return new Transform2d(new Pose2d(), new Pose2d(-500, -500, new Rotation2d(0.0)));
         }
