@@ -20,7 +20,6 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import frc.robot.RobotMap;
 import frc.robot.subsystems.Base;
-import frc.robot.subsystems.intake.input.*;
 import edu.wpi.first.wpilibj.Timer;
 
 /** Add your docs here. */
@@ -62,7 +61,6 @@ public class Intake extends Base {
     // 0.5).getEntry();
 
     public IntakeState m_state = IntakeState.A;
-    private InputManager inputManager;
 
     public Intake() {
         m_colorSensor.init();
@@ -93,9 +91,6 @@ public class Intake extends Base {
         // debugTab.addNumber("Intake Cur", () -> m_intake.getSupplyCurrent());
         // debugTab.addNumber("Middle Cur", () -> m_mover.getSupplyCurrent());
         // debugTab.addNumber("Loader Cur", () -> m_shooterLoader.getSupplyCurrent());
-
-        InputSetUpActions inputSetUpActions = new InputSetUpActions(this);
-        inputManager = inputSetUpActions.getNewInputManager();
     }
 
     // Robot Init
@@ -124,13 +119,106 @@ public class Intake extends Base {
     // Teleop Periodic
     public void changeState(boolean startIntake, boolean stopIntake) {
 
-        // manage inputs
-        inputManager.manageInputs(startIntake, stopIntake, isBallAtMiddle(), isBallAtLoad(), m_colorSensor.isBallDetected());
+        switch (m_state) {
+            // intake and load off
+            // intake up
+            case A:
+                if (startIntake) {
+                    if (getBallAtMiddle() && getBallAtLoad()) {
+                        m_state = IntakeState.A;
+                    } else {
+                        m_state = IntakeState.B;
+                    }
+                }
+                // move movers if ball not at load shooter place
+                if (getBallAtLoadOrColorSensor() && !getBallAtLoad()) {
+                    m_state = IntakeState.F;
+                }
+                break;
+
+            // intake, mover, ON, loader ON
+            // intake down
+            case B:
+                if (stopIntake) {
+                    m_state = IntakeState.A;
+                }
+                // ball detected right before shooter, go to next state
+                if (getBallAtLoad()) {
+                    m_state = IntakeState.C;
+                }
+                break;
+
+            // intake, mover, ON, loader OFF
+            // intake down
+            // goes to state CA when color sensor tripped
+            case C:
+                if (stopIntake) {
+                    m_state = IntakeState.A;
+                }
+                if (!getBallAtLoad()) {
+                    m_state = IntakeState.B;
+                }
+                // 2nd ball loaded, located at color sensor
+                if (m_colorSensor.getBallDetected()) {
+                    m_state = IntakeState.CA;
+                }
+                break;
+
+            // intake, mover, ON, loader OFF
+            // intake in
+            // goes to state A when two balls successfully loaded
+            case CA:
+                if (stopIntake) {
+                    m_state = IntakeState.A;
+                }
+                if (getBothBallsLoaded()) {
+                    m_state = IntakeState.A;
+                }
+                break;
+
+            // start loading balls into shooter (load shooter)
+            // BUT WITH INTAKE DOWN
+            // stops when no shooter buttons are pressed
+            case D:
+                if (stopIntake) {
+                    m_state = IntakeState.A;
+                }
+                break;
+
+            // start loading balls into shooter (load shooter)
+            // stops when no more shooter buttons are pressed
+            // or changes to state D when ball only at load
+            case E:
+                if (startIntake) {
+                    m_state = IntakeState.B;
+                }
+                if (stopIntake) {
+                    m_state = IntakeState.A;
+                }
+                if (getBallAtLoad() && !getBallAtLoadOrColorSensor()) {
+                    m_state = IntakeState.D;
+                }
+                break;
+
+            // move ball at middle to shooter loader
+            // intake up
+            case F:
+                if (startIntake) {
+                    m_state = IntakeState.B;
+                }
+                if (stopIntake) {
+                    m_state = IntakeState.A;
+                }
+                // ball detected right before shooter, go to next state
+                if (getBallAtLoad()) {
+                    m_state = IntakeState.A;
+                }
+                break;
+        }
 
         // control motors and pnuematics
         m_intake.set(ControlMode.PercentOutput, m_state.intakeSpeed);
         m_mover.set(ControlMode.PercentOutput, m_state.ballTransportSpeed);
-
         if(m_state.isReversable) {
             spitWrongColorBallOut();
             if(isChanging) {
@@ -141,11 +229,9 @@ public class Intake extends Base {
                 }
             }
         }
-
         m_shooterLoader.set(ControlMode.PercentOutput, m_state.loaderSpeed);
 
         setIntakePnuematic(m_state.pneumaticOut);
-
     }
 
     // toggles intake pnuematic, for testing purposes
@@ -156,7 +242,7 @@ public class Intake extends Base {
     // Turns on shooter intake and mover to put balls in shooter.
     // Used in OI to coordinate shooting.
     public void loadShooter() {
-        if(isBallAtLoad() && !isBallAtMiddle()) {
+        if(getBallAtLoad() && !getBallAtMiddle()) {
             // intake out
             m_state = IntakeState.D;
         }
@@ -178,7 +264,7 @@ public class Intake extends Base {
 
     // continues spinning intake motors if ball is there while shooting
     public void countinueIntakeMotors() {
-        if (isBallAtLoad()) {
+        if (getBallAtLoad()) {
             m_state = IntakeState.A;
         } else {
             m_state = IntakeState.F;
@@ -194,7 +280,7 @@ public class Intake extends Base {
     public boolean unjamShooter() {
         m_shooterLoader.set(ControlMode.PercentOutput, -0.2);
         m_shooterLoader.set(ControlMode.PercentOutput, -0.2);
-        return isBallAtLoad();
+        return getBallAtLoad();
     }
 
     // sends motor values to shuffleboard
@@ -209,25 +295,29 @@ public class Intake extends Base {
     }
 
     public boolean getBothBallsLoaded() {
-        if (isBallAtLoad() && isBallAtMiddle()) {
+        if (getBallAtLoad() && getBallAtMiddle()) {
             return true;
         }
         return false;
     }
 
     // helper functions so don't have to remember to invert DIO
-    public boolean isBallAtLoad() {
+    public boolean getBallAtLoad() {
         return !m_loadDIO.get();
     }
 
-    public boolean isBallAtMiddle() {
+    public boolean getBallAtMiddle() {
         return !m_middleDIO.get();
+    }
+
+    public boolean getBallAtLoadOrColorSensor() {
+        return getBallAtMiddle() || m_colorSensor.getBallDetected();
     }
 
     public int getNumberOfBallsHolding() {
         int count = 0;
-        count += isBallAtLoad() ? 1 : 0;
-        count += (isBallAtMiddle()) ? 1 : 0;
+        count += getBallAtLoad() ? 1 : 0;
+        count += (getBallAtMiddle()) ? 1 : 0;
         return count;
     }
 

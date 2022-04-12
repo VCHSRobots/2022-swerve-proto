@@ -124,7 +124,7 @@ public class ColorSensor extends Base {
 
   }
 
-  public boolean isBallDetected() {
+  public boolean getBallDetected() {
     // m_colorSensor.getProximity()
     return isBlueBallDetected() || isRedBallDetected();
   }

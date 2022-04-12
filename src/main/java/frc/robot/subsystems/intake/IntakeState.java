@@ -21,7 +21,7 @@ public enum IntakeState {
             true),
     C
         (
-            "Loading second ball (pt 1)",
+            "Loading second ball (pt1)",
             Constants.IntakeMotorSpeeds.kIntakeOut,
             Constants.IntakeMotorSpeeds.kBTOut,
             0, 
