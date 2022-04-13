@@ -16,7 +16,7 @@ public class RobotState {
     Pose2d m_pose;
     Rotation2d m_turretAngle;
     double m_lastTimestamp;
-    double msTillShoot = 80;
+    double msTillShoot = 60;
 
     MovingAverageTwist2d m_movingAverageTwist2d = new MovingAverageTwist2d(10);
 
@@ -27,7 +27,6 @@ public class RobotState {
             new Rotation2d());
 
     double predictedBallAirTime = 0;
-
 
     TimeInterpolatableBuffer<Pose2d> m_fieldToRobot = TimeInterpolatableBuffer.createBuffer(1);
     TimeInterpolatableBuffer<Pose2d> m_robotToTurret = TimeInterpolatableBuffer.createBuffer(1);
@@ -52,7 +51,8 @@ public class RobotState {
             Twist2d currentTwist2d = new Twist2d(poseDifference.getX(), poseDifference.getY(), poseDifference.getRotation().getRadians());
     
             m_movingAverageTwist2d.add(currentTwist2d);
-            predictedBallAirTime = 0.14388*getPredictedPoseToTarget() - 0.35283;
+            // predictedBallAirTime = 0.14388*getPredictedPoseToTarget() - 0.35283;
+            predictedBallAirTime = 0.13511904762*getPredictedPoseToTarget() + 0.027380952;
         
         } catch (NullPointerException e) {
             System.out.println(e);
@@ -127,14 +127,15 @@ public class RobotState {
         Twist2d predictedTwist2d = m_movingAverageTwist2d.getAverage();
         double radiansToDegrees = 180 / Math.PI;
         double loopsToShoot = (msTillShoot / 20.0);
+        int teleopCyclesInASecond = 1000/20;
 
         Pose2d robotPose = getRobotToCenterHub(Timer.getFPGATimestamp());
 
         // may not need part 2 of this equation
-        double predictedY = robotPose.getY() - (predictedTwist2d.dy * loopsToShoot) - (predictedTwist2d.dy * predictedBallAirTime);
-        double predictedX = robotPose.getX() - (predictedTwist2d.dx * loopsToShoot) - (predictedTwist2d.dx * predictedBallAirTime);
-        // double predictedY = robotPose.getY() - (predictedTwist2d.dy * predictedBallAirTime);
-        // double predictedX = robotPose.getX() - (predictedTwist2d.dx * predictedBallAirTime);
+        // double predictedY = robotPose.getY() - (predictedTwist2d.dy * loopsToShoot) - (predictedTwist2d.dy * predictedBallAirTime);
+        // double predictedX = robotPose.getX() - (predictedTwist2d.dx * loopsToShoot) - (predictedTwist2d.dx * predictedBallAirTime);
+        double predictedY = robotPose.getY() - (predictedTwist2d.dy * predictedBallAirTime * teleopCyclesInASecond);
+        double predictedX = robotPose.getX() - (predictedTwist2d.dx * predictedBallAirTime * teleopCyclesInASecond);
 
         double predictedRadiansOfTurret = Math.atan2(predictedY, predictedX);
 
@@ -175,13 +176,13 @@ public class RobotState {
 
         Twist2d predictedTwist2d = m_movingAverageTwist2d.getAverage();
         double loopsUntilShoot = (msTillShoot / 20.0);
-        int cyclesInASecond = 1000/20;
+        int teleopCyclesInASecond = 1000/20;
 
         // may need to remove loops until shoot
-        double predictedY = kFieldToCenterHub.getY() - (predictedTwist2d.dy * loopsUntilShoot) - (predictedTwist2d.dy * predictedBallAirTime * cyclesInASecond);
-        double predictedX = kFieldToCenterHub.getX() - (predictedTwist2d.dx * loopsUntilShoot) - (predictedTwist2d.dx * predictedBallAirTime * cyclesInASecond);
-        // double predictedY = kFieldToCenterHub.getY() - (predictedTwist2d.dy * predictedBallAirTime * cyclesInASecond);
-        // double predictedX = kFieldToCenterHub.getX() - (predictedTwist2d.dx * predictedBallAirTime * cyclesInASecond);
+        // double predictedY = kFieldToCenterHub.getY() - (predictedTwist2d.dy * loopsUntilShoot) - (predictedTwist2d.dy * predictedBallAirTime * cyclesInASecond);
+        // double predictedX = kFieldToCenterHub.getX() - (predictedTwist2d.dx * loopsUntilShoot) - (predictedTwist2d.dx * predictedBallAirTime * cyclesInASecond);
+        double predictedY = kFieldToCenterHub.getY() - (predictedTwist2d.dy * predictedBallAirTime * teleopCyclesInASecond);
+        double predictedX = kFieldToCenterHub.getX() - (predictedTwist2d.dx * predictedBallAirTime * teleopCyclesInASecond);
 
         return (Math.sqrt((Math.pow(predictedY, 2) + Math.pow(predictedX, 2))));
     }
@@ -204,9 +205,9 @@ public class RobotState {
     }
 
     public double turntableOverestimator() {
-        double maxDegreeOverestimate = 8.0;
+        double maxDegreeOverestimate = 6.0;
         double maxVelocityMetersASec = 3.0;
-        double maxVelocityMetersPer20MS = maxVelocityMetersASec / 20;
+        double maxVelocityMetersPer20MS = maxVelocityMetersASec / 50;
         double robotVelocityVector = Math.sqrt((Math.pow(movingAvg2d().dx, 2) + Math.pow(movingAvg2d().dy, 2)));
         double xQuadrantAccounter = movingAvg2d().dx / Math.abs(movingAvg2d().dx);
         double yQuadrantAccounter = movingAvg2d().dy / Math.abs(movingAvg2d().dy);
