@@ -129,9 +129,10 @@ public class Intake extends Base {
                     } else {
                         m_state = IntakeState.B;
                     }
+                    break;
                 }
                 // move movers if ball not at load shooter place
-                if (getBallAtLoadOrColorSensor() && !getBallAtLoad()) {
+                if (getBallAtMiddleOrColorSensor() && !getBallAtLoad()) {
                     m_state = IntakeState.F;
                 }
                 break;
@@ -141,6 +142,7 @@ public class Intake extends Base {
             case B:
                 if (stopIntake) {
                     m_state = IntakeState.A;
+                    break;
                 }
                 // ball detected right before shooter, go to next state
                 if (getBallAtLoad()) {
@@ -154,6 +156,7 @@ public class Intake extends Base {
             case C:
                 if (stopIntake) {
                     m_state = IntakeState.A;
+                    break;
                 }
                 if (!getBallAtLoad()) {
                     m_state = IntakeState.B;
@@ -170,6 +173,7 @@ public class Intake extends Base {
             case CA:
                 if (stopIntake) {
                     m_state = IntakeState.A;
+                    break;
                 }
                 if (getBothBallsLoaded()) {
                     m_state = IntakeState.A;
@@ -182,6 +186,7 @@ public class Intake extends Base {
             case D:
                 if (stopIntake) {
                     m_state = IntakeState.A;
+                    break;
                 }
                 break;
 
@@ -191,11 +196,13 @@ public class Intake extends Base {
             case E:
                 if (startIntake) {
                     m_state = IntakeState.B;
+                    break;
                 }
                 if (stopIntake) {
                     m_state = IntakeState.A;
+                    break;
                 }
-                if (getBallAtLoad() && !getBallAtLoadOrColorSensor()) {
+                if (getBallAtLoad() && !getBallAtMiddleOrColorSensor()) {
                     m_state = IntakeState.D;
                 }
                 break;
@@ -205,9 +212,12 @@ public class Intake extends Base {
             case F:
                 if (startIntake) {
                     m_state = IntakeState.B;
+                    break;
+
                 }
                 if (stopIntake) {
                     m_state = IntakeState.A;
+                    break;
                 }
                 // ball detected right before shooter, go to next state
                 if (getBallAtLoad()) {
@@ -310,7 +320,7 @@ public class Intake extends Base {
         return !m_middleDIO.get();
     }
 
-    public boolean getBallAtLoadOrColorSensor() {
+    public boolean getBallAtMiddleOrColorSensor() {
         return getBallAtMiddle() || m_colorSensor.getBallDetected();
     }
 
