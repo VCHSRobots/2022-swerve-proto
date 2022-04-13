@@ -154,7 +154,6 @@ public class SuperStructure extends Base {
         m_auto.robotPeriodic();
         m_VisionShooter.calculateAngleError();
         m_VisionShooter.addDistanceToMovingAverage();
-        m_Shooter.updateAvgVelocities();
 
         m_Climber.checkZero();
 
