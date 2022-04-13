@@ -22,7 +22,6 @@ import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import frc.robot.RobotMap;
 import frc.robot.util.InterpolatingDouble;
 import frc.robot.util.InterpolatingTreeMap;
-import frc.robot.util.MovingAverage;
 import frc.robot.util.distanceRPMPoint;
 
 public class Shooter extends Base {

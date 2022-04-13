@@ -188,70 +188,12 @@ public class SuperStructure extends Base {
     public void teleopPeriodic() {
         m_phCompressor.enableAnalog(90, 112);
         m_VisionShooter.LEDon();
-        loopCounter++;
+        // loopCounter++;
 
         // CLIMBER
         // Send inputs to climber control.
         m_Climber.control(OI.getSolenoidReverse(), OI.getSolenoidForward(), OI.getArmsUp(), OI.getArmsDown(),
                 OI.getNxtClimb(), OI.getFinClimb(), OI.getClimbArmSpeedDown(), OI.getClimbArmSpeedUp());
-
-        // DRIVING //
-        // VISION GET BALL
-        if (OI.getVisionBallEngaged()) {
-            // ChassisSpeeds speeds = m_VisionBall.followBall();
-            ChassisSpeeds speeds = new ChassisSpeeds();
-            m_SwerveDrive.driveFromChassisSpeeds(speeds);
-        } else {
-            // XBOX DRIVING CODE
-            m_SwerveDrive.driveWithXbox(OI.getDriveY(), OI.getDriveX(), OI.getDriveRot(),
-                    false, false);
-        }
-        
-        // System.out.println(m_SwerveDrive.getPose2d());
-        // if (m_VisionShooter.isOnTarget() && loopCounter % 25 == 0) {
-        //     System.out.println("changing to ");
-        //     Transform2d newRobotPose = m_state.resetRobotPoseOdometry(m_VisionShooter.getDistance(), m_Shooter.getTurretAngleDegrees(), m_VisionShooter.getActualYaw(), m_SwerveDrive.getPose2d().getRotation().getDegrees());
-        //     m_SwerveDrive.resetOdometry(new Pose2d(newRobotPose.getX(), newRobotPose.getY(), m_SwerveDrive.getPose2d().getRotation()));
-        // }
-
-        // // TURNTABLE
-        if (OI.getBarf()) {
-            m_Shooter.setTurretAngle(180);
-        } else if (m_lastButtonWasClimber) {
-            if (Math.abs(m_Shooter.getTurretAngleDegrees() - 90) > 5) {
-                m_Shooter.setTurretAngle(90);
-            }
-        } else if (OI.getAimTurret()) {
-            // aimTurretAuto();
-            if (m_VisionShooter.getTargetValid()) {
-                m_Shooter.aimTurret(m_VisionShooter.getYaw());
-            }
-
-        } else if (toggleShootAndRun) {
-            m_VisionShooter.setOffset(0.0);
-            if (m_VisionShooter.canSeeTarget()) {
-                desiredAngle = m_state.getVelocityTurretDegreesOffset(m_VisionShooter.getYaw() + 110)
-                        + m_VisionShooter.getYaw() + 110;
-                m_Shooter.setTurretAngle(desiredAngle - m_state.turntableOverestimator());
-                // System.out.println("angle diff: " + (m_Shooter.getTurretAngleDegrees() - desiredAngle));
-                // System.out.println("avgTurretVel: " + (m_Shooter.getAvgTurretVelocity() * 1.2));
-                System.out.println("desired: " + desiredAngle);
-                System.out.println("Turret: " + m_Shooter.getTurretAngleDegrees());
-
-            } else {
-                m_Shooter.setTurretAngle(m_state.getVelocityTurretDegrees());
-            }
-        } else if (OI.ShootAndRun()) {
-            toggleShootAndRun = !toggleShootAndRun;
-            if (toggleShootAndRun == false) {
-                m_VisionShooter.setOffset(m_visionTeleopOffset);
-            }
-        } else if (m_autoAimEnabled) {
-            aimTurretAuto();
-        } else {
-            m_Shooter.TurnTable(OI.getRightTurntable(),
-                    OI.getLeftTurntable());
-        }
 
         // INTAKE STATE UPDATE
         m_Intake.changeState(OI.startIntake(), OI.stopIntake());
@@ -304,10 +246,8 @@ public class SuperStructure extends Base {
             // System.out.println("stable " + m_state.robotHasStableVelocity());
             // System.out.println("Shooter Vel " + m_Shooter.canShootWithVelocity());
             // System.out.println("Turret Good " + m_Shooter.turretCanShootWithVelocity(desiredAngle));
-            // m_Shooter.shootingDist(m_VisionShooter.getMovingAverageDistance() +
-            // m_state.getPredictedDistanceToTargetOffset(m_VisionShooter.getMovingAverageDistance()));
-            m_Shooter.shootingDist((m_VisionShooter.getDistance()
-                + m_state.getPredictedDistanceToTargetOffset(m_VisionShooter.getDistance())));
+            m_Shooter.shootingDist(m_state.shooterDistDesired(m_VisionShooter.getDistance()));
+            desiredAngle = m_state.turretDegreesDesired();
             if (m_state.robotHasStableVelocity() && m_Shooter.canShootWithVelocity()
                     && m_Shooter.turretCanShootWithVelocity(desiredAngle) && m_Intake.isBallAtLoad()) {
                 m_Intake.loadShooter();
@@ -337,6 +277,62 @@ public class SuperStructure extends Base {
             // }
         } else {
             m_Shooter.turnOff();
+        }
+
+        // DRIVING //
+        // VISION GET BALL
+        if (OI.getVisionBallEngaged()) {
+            // ChassisSpeeds speeds = m_VisionBall.followBall();
+            ChassisSpeeds speeds = new ChassisSpeeds();
+            m_SwerveDrive.driveFromChassisSpeeds(speeds);
+        } else {
+            // XBOX DRIVING CODE
+            m_SwerveDrive.driveWithXbox(OI.getDriveY(), OI.getDriveX(), OI.getDriveRot(),
+                    false, false);
+        }
+        
+        // System.out.println(m_SwerveDrive.getPose2d());
+        // if (m_VisionShooter.isOnTarget() && loopCounter % 25 == 0) {
+        //     System.out.println("changing to ");
+        //     Transform2d newRobotPose = m_state.resetRobotPoseOdometry(m_VisionShooter.getDistance(), m_Shooter.getTurretAngleDegrees(), m_VisionShooter.getActualYaw(), m_SwerveDrive.getPose2d().getRotation().getDegrees());
+        //     m_SwerveDrive.resetOdometry(new Pose2d(newRobotPose.getX(), newRobotPose.getY(), m_SwerveDrive.getPose2d().getRotation()));
+        // }
+
+        // // TURNTABLE
+        if (OI.getBarf()) {
+            m_Shooter.setTurretAngle(180);
+        } else if (m_lastButtonWasClimber) {
+            if (Math.abs(m_Shooter.getTurretAngleDegrees() - 90) > 5) {
+                m_Shooter.setTurretAngle(90);
+            }
+        } else if (OI.getAimTurret()) {
+            // aimTurretAuto();
+            if (m_VisionShooter.getTargetValid()) {
+                m_Shooter.aimTurret(m_VisionShooter.getYaw());
+            }
+
+        } else if (toggleShootAndRun) {
+            m_VisionShooter.setOffset(0.0);
+            if (m_VisionShooter.canSeeTarget()) {
+                m_Shooter.setTurretAngle(desiredAngle - m_state.turretDegreesOverEstimate());
+                // System.out.println("angle diff: " + (m_Shooter.getTurretAngleDegrees() - desiredAngle));
+                // System.out.println("avgTurretVel: " + (m_Shooter.getAvgTurretVelocity() * 1.2));
+                System.out.println("desired: " + desiredAngle);
+                System.out.println("Turret: " + m_Shooter.getTurretAngleDegrees());
+
+            } else {
+                aimTurretAuto();
+            }
+        } else if (OI.ShootAndRun()) {
+            toggleShootAndRun = !toggleShootAndRun;
+            if (toggleShootAndRun == false) {
+                m_VisionShooter.setOffset(m_visionTeleopOffset);
+            }
+        } else if (m_autoAimEnabled) {
+            aimTurretAuto();
+        } else {
+            m_Shooter.TurnTable(OI.getRightTurntable(),
+                    OI.getLeftTurntable());
         }
 
         // when shooting released, stop loading
