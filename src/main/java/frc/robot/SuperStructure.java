@@ -181,7 +181,7 @@ public class SuperStructure extends Base {
         m_VisionShooter.setOffset(m_visionTeleopOffset);
         m_SwerveDrive.setFieldRelative();
         m_autoAimEnabled = true;
-
+        toggleShootAndRun = false;
     }
 
     @Override
@@ -242,21 +242,25 @@ public class SuperStructure extends Base {
             // m_Intake.turnOffLoadShooter();
             // }
 
+        } else if (OI.ShootAndRun()) {
+            toggleShootAndRun = !toggleShootAndRun;
         } else if (toggleShootAndRun) {
-            // System.out.println("stable " + m_state.robotHasStableVelocity());
-            // System.out.println("Shooter Vel " + m_Shooter.canShootWithVelocity());
-            // System.out.println("Turret Good " + m_Shooter.turretCanShootWithVelocity(desiredAngle));
+            System.out.println("stable " + m_state.robotHasStableVelocity());
+            System.out.println("Shooter Vel " + m_Shooter.canShootWithVelocity());
+            System.out.println("Turret Good " + m_VisionShooter.withinErrWithTime());
+
             m_Shooter.shootingDist(m_state.shooterDistDesired(m_VisionShooter.getDistance()));
             desiredAngle = m_state.turretDegreesDesired();
+            if (desiredAngle == Double.NaN) {
+                desiredAngle = 0.0;
+            }
             if (m_state.robotHasStableVelocity() && m_Shooter.canShootWithVelocity()
-                    && m_Shooter.turretCanShootWithVelocity(desiredAngle) && m_Intake.isBallAtLoad()) {
+                    && m_VisionShooter.isWithinTurretErr() && m_Intake.isBallAtLoad()) {
                 m_Intake.loadShooter();
             } else {
                 m_Intake.turnOffLoadShooter();
             }
         
-        } else if (OI.ShootAndRun()) {
-            toggleShootAndRun = !toggleShootAndRun;
         } else if (m_lastButtonWasClimber) {
             m_Shooter.turnOff();
         } else if ((ntShooterPreheatEnable.getBoolean(false)
@@ -313,13 +317,10 @@ public class SuperStructure extends Base {
 
         } else if (toggleShootAndRun) {
             m_VisionShooter.setOffset(0.0);
-            if (m_VisionShooter.canSeeTarget()) {
-                m_Shooter.setTurretAngle(desiredAngle - m_state.turretDegreesOverEstimate());
-                // System.out.println("angle diff: " + (m_Shooter.getTurretAngleDegrees() - desiredAngle));
-                // System.out.println("avgTurretVel: " + (m_Shooter.getAvgTurretVelocity() * 1.2));
-                System.out.println("desired: " + desiredAngle);
-                System.out.println("Turret: " + m_Shooter.getTurretAngleDegrees());
-
+            if (m_VisionShooter.getTargetValid()) {
+                // m_Shooter.aimTurret(m_state.turretDegreesDesired());
+                m_VisionShooter.setOffset(desiredAngle);
+                m_Shooter.aimTurret(m_VisionShooter.getYaw() + m_state.turretDegreesOverEstimate());
             } else {
                 aimTurretAuto();
             }

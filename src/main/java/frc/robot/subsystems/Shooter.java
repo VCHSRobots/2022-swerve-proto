@@ -49,8 +49,6 @@ public class Shooter extends Base {
     CANCoder m_turntableEncoder = new CANCoder(RobotMap.kShooter_TurretEncoder, RobotMap.kCANivore_name);
 
     private int m_isOKtoShootCounter = 0;
-    private int m_turretOKtoShootCounter = 0;
-    private double errTurretDegrees = 1.5;
 
     private ProfiledPIDController m_turretPIDController = new ProfiledPIDController(0.08, 0, 0,
             new Constraints(kMaxAngularVelocity, kMaxAngularAcceleration));
@@ -286,7 +284,6 @@ public class Shooter extends Base {
     @Override
     public void teleopInit() {
         m_isOKtoShootCounter = 0;
-        m_turretOKtoShootCounter = 0;
     }
 
     public void warmUp() {
@@ -432,20 +429,6 @@ public class Shooter extends Base {
             }
 
             return m_isOKtoShootCounter > 2;
-    }
-
-    public boolean turretCanShootWithVelocity(double angleDesired) {
-        
-        // System.out.println("current angle: " + getTurretAngleDegrees());
-        // System.out.println("desired: " + angleDesired);
-        
-        if (Math.abs(getTurretAngleDegrees() - angleDesired) < errTurretDegrees) {
-            m_turretOKtoShootCounter++;
-        } else {
-            m_turretOKtoShootCounter = 0;
-        }
-        
-        return m_turretOKtoShootCounter > 2;
     }
 
     public void setTurretAngle(double angleTargetDegrees) {
