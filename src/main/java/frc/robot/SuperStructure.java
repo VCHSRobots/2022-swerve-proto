@@ -188,7 +188,6 @@ public class SuperStructure extends Base {
     public void teleopPeriodic() {
         m_phCompressor.enableAnalog(90, 112);
         m_VisionShooter.LEDon();
-        // loopCounter++;
 
         // CLIMBER
         // Send inputs to climber control.
@@ -258,7 +257,7 @@ public class SuperStructure extends Base {
                     && m_VisionShooter.isWithinTurretErr() && m_state.isResonableDist(m_VisionShooter.getDistance())) {
                 m_Intake.loadShooter();
             } else {
-                m_Intake.turnOffLoadShooter();
+                m_Intake.countinueIntakeMotors();
             }
         
         } else if (m_lastButtonWasClimber) {

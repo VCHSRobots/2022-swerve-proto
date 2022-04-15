@@ -17,7 +17,7 @@ public class RobotState {
     double m_lastTimestamp;
     int msTillShoot = 80;
 
-    MovingAverageTwist2d m_movingAverageTwist2d = new MovingAverageTwist2d(10);
+    MovingAverageTwist2d m_movingAverageTwist2d = new MovingAverageTwist2d(15);
 
     final public Pose2d kFieldToCenterHub = new Pose2d(new Translation2d(Units.inchesToMeters(324), Units.inchesToMeters(162)),
             new Rotation2d());
@@ -26,7 +26,7 @@ public class RobotState {
             new Rotation2d());
 
     double predictedBallAirTime = 0;
-    double predictedRobotDist = 0.0;
+    static double predictedRobotDist = 0.0;
 
     TimeInterpolatableBuffer<Pose2d> m_fieldToRobot = TimeInterpolatableBuffer.createBuffer(1);
     TimeInterpolatableBuffer<Pose2d> m_robotToTurret = TimeInterpolatableBuffer.createBuffer(1);
@@ -114,65 +114,6 @@ public class RobotState {
         return m_movingAverageTwist2d.getAverage();
     }
 
-    /**
-     * 
-     * Gets the degrees the turret needs to be for the shooter to shoot at the target
-     * 
-     * @return degrees the turret should be at to shoot
-     */
-    // public double getVelocityTurretDegrees() {
-        
-    //     Twist2d predictedTwist2d = m_movingAverageTwist2d.getAverage();
-    //     double radiansToDegrees = 180 / Math.PI;
-    //     double loopsToShoot = (msTillShoot / 20.0);
-    //     int teleopCyclesInASecond = 1000/20;
-
-    //     Pose2d robotPose = getRobotToCenterHub(Timer.getFPGATimestamp());
-
-    //     // may not need part 2 of this equation
-    //     // double predictedY = robotPose.getY() - (predictedTwist2d.dy * loopsToShoot) - (predictedTwist2d.dy * predictedBallAirTime);
-    //     // double predictedX = robotPose.getX() - (predictedTwist2d.dx * loopsToShoot) - (predictedTwist2d.dx * predictedBallAirTime);
-    //     double predictedY = robotPose.getY() - (predictedTwist2d.dy * predictedBallAirTime * teleopCyclesInASecond);
-    //     double predictedX = robotPose.getX() - (predictedTwist2d.dx * predictedBallAirTime * teleopCyclesInASecond);
-
-    //     double predictedRadiansOfTurret = Math.atan2(predictedY, predictedX);
-
-    //     return (predictedRadiansOfTurret * radiansToDegrees);
-
-    // }
-
-    /**
-     * 
-     * Gets predicted distance from robot to target based on odometry
-     * 
-     * @return predicted distance with velocity based on odometry
-     */
-    // public double getPredictedPoseToTarget() {
-
-    //     Twist2d predictedTwist2d = m_movingAverageTwist2d.getAverage();
-    //     double loopsToShoot = (msTillShoot / 20.0);
-
-    //     double predictedY = kFieldToCenterHub.getY() - (predictedTwist2d.dy * loopsToShoot);
-    //     double predictedX = kFieldToCenterHub.getX() - (predictedTwist2d.dx * loopsToShoot);
-
-    //     return (Math.sqrt((Math.pow(predictedY, 2) + Math.pow(predictedX, 2))));
-    // }
-
-    // public double getPredictedShotToTarget() {
-
-    //     Twist2d predictedTwist2d = m_movingAverageTwist2d.getAverage();
-    //     double loopsUntilShoot = (msTillShoot / 20.0);
-    //     int teleopCyclesInASecond = 1000/20;
-
-    //     // may need to remove loops until shoot
-    //     // double predictedY = kFieldToCenterHub.getY() - (predictedTwist2d.dy * loopsUntilShoot) - (predictedTwist2d.dy * predictedBallAirTime * cyclesInASecond);
-    //     // double predictedX = kFieldToCenterHub.getX() - (predictedTwist2d.dx * loopsUntilShoot) - (predictedTwist2d.dx * predictedBallAirTime * cyclesInASecond);
-    //     double predictedY = kFieldToCenterHub.getY() - (predictedTwist2d.dy * predictedBallAirTime * teleopCyclesInASecond);
-    //     double predictedX = kFieldToCenterHub.getX() - (predictedTwist2d.dx * predictedBallAirTime * teleopCyclesInASecond);
-
-    //     return (Math.sqrt((Math.pow(predictedY, 2) + Math.pow(predictedX, 2))));
-    // }
-
     public double shooterDistDesired(double ftDist) {
         
         Twist2d predictedTwist2d = m_movingAverageTwist2d.getAverage();
@@ -182,7 +123,7 @@ public class RobotState {
 
         double turretDistDesired = Math.hypot(predictedXDiff, predictedYDiff) + ftDist;
         
-        predictedRobotDist = turretDistDesired;
+        predictedRobotDist = Math.max(Math.min(turretDistDesired, 8.5), 14);
 
         return turretDistDesired;
     }
@@ -194,7 +135,7 @@ public class RobotState {
     public double turretDegreesDesired() {
 
         Twist2d predictedTwist2d = m_movingAverageTwist2d.getAverage();
-        int teleopCyclesInASecond = 1000/20;
+        int teleopCyclesInASecond = 50;
 
         double predictedXBallAirVelocity = Units.metersToFeet(predictedTwist2d.dx) * teleopCyclesInASecond;
         double predictedYBallAirVelocity = Units.metersToFeet(predictedTwist2d.dy) * teleopCyclesInASecond;
@@ -207,43 +148,31 @@ public class RobotState {
             double yMult = predictedYBallAirVelocity == 0.0 ? 1 : predictedYBallAirVelocity / Math.abs(predictedYBallAirVelocity);
 
             robotVelocityVector *= (xMult / yMult);
+            // robotVelocityVector *= (xMult / yMult) * teleopCyclesInASecond;
         }
 
         // predictedBallAirTime = 0.14388*getPredictedPoseToTarget() - 0.35283;
-        // predictedBallAirTime = 0.29285714286*predictedRobotDist - 2.02857142857;
         predictedBallAirTime = 0.1253239322 * Math.pow(1.220558191, predictedRobotDist);
-        // predictedBallAirTime = Math.min(predictedBallAirTime, 0.5);
+        predictedBallAirTime = Math.min(predictedBallAirTime, 0.5);
 
-        return -Units.radiansToDegrees(Math.atan2(robotVelocityVector * predictedBallAirTime, predictedRobotDist));
+        return -Units.radiansToDegrees(Math.atan((robotVelocityVector * predictedBallAirTime) / predictedRobotDist));
+        // return Units.radiansToDegrees(Math.atan(predictedRobotDist / (robotVelocityVector * predictedBallAirTime)));
 
         // double innerAngle = Units.radiansToDegrees(Math.atan2(robotVelocityVector, predictedRobotDist));
         // double horizontalVelocity = robotVelocityVector * Math.sin(innerAngle);
         // double newPredictedDist = Math.sqrt(Math.pow(robotVelocityVector, 2) - Math.pow(horizontalVelocity, 2));
 
-        // return Math.atan2(newPredictedDist, horizontalVelocity) * predictedBallAirTime;
+        // return Math.atan2(newPredictedDist * predictedBallAirTime, horizontalVelocity);
 
     }
 
     public double turretDegreesOverEstimate() {
         
         Twist2d predictedTwist2d = m_movingAverageTwist2d.getAverage();
-        double loopsUntilShoot = (msTillShoot / 20.0);
+        double loopsUntilShoot = (msTillShoot / 20.0) * 0;
         
         return turretDegreesDesired() * (Math.hypot(predictedTwist2d.dx, predictedTwist2d.dy) * loopsUntilShoot);
     }
-
-    /**
-     * 
-     * Creates an offset for the target distance to the robot by utilizing the limelight
-     * 
-     * @param distanceFromTarget distance from the target
-     * @return predicted distance offset to target with aid from limelight
-     */
-    // public double getPredictedDistanceToTargetOffset(double distanceFromTarget) {
-        
-    //     return getPredictedShotToTarget() - distanceFromTarget;
-
-    // }
 
     public boolean robotHasStableVelocity() {
         return m_movingAverageTwist2d.isAcceptablePrediction();

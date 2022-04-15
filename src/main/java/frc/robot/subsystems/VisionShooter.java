@@ -26,7 +26,7 @@ public class VisionShooter extends Base {
     private int m_MAXLOSTCOUNT = 7;
     private double m_max_angle_change_in_20ms = 10.0;
     private double m_offset = 2.0;
-    private double turretErrAllowance = 0.3;
+    private double turretErrAllowance = 1.0;
     private int loopIterations = 0;
 
     private MovingAverage m_movingAverage = new MovingAverage(12);
@@ -154,7 +154,7 @@ public class VisionShooter extends Base {
     }
 
     public boolean isWithinTurretErr() {
-        if (Math.abs(getYaw()) < (m_offset + turretErrAllowance) && Math.abs(getYaw()) < (m_offset - turretErrAllowance)) {
+        if (Math.abs(getYaw()) < Math.abs(m_offset + turretErrAllowance) && Math.abs(getYaw()) > Math.abs(m_offset - turretErrAllowance)) {
             return true;
         }
         return false;
