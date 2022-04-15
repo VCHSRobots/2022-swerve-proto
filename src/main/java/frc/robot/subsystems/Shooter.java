@@ -35,7 +35,7 @@ public class Shooter extends Base {
     private final double kZeroOffsetDegrees = 88.5;
     private final double kMinAngle = -135;
     private final double kMaxAngle = 275;
-    private final double kMaxAngularVelocity = 600.0; // keep within 560, started at 135
+    private final double kMaxAngularVelocity = 400.0; // keep within 560, started at 135, was 600
     private final double kMaxAngularAcceleration = 12000.0; // keep within 5700, started at 455
     // private double m_targetAngle = 0; // keep for later in case 
     // Shuffleboard Tabs and NetworkTableEntries.
