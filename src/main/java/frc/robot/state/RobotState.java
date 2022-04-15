@@ -15,7 +15,7 @@ public class RobotState {
     Pose2d m_pose;
     Rotation2d m_turretAngle;
     double m_lastTimestamp;
-    double msTillShoot = 60;
+    int msTillShoot = 80;
 
     MovingAverageTwist2d m_movingAverageTwist2d = new MovingAverageTwist2d(10);
 
@@ -51,9 +51,6 @@ public class RobotState {
             Twist2d currentTwist2d = new Twist2d(poseDifference.getX(), poseDifference.getY(), poseDifference.getRotation().getRadians());
     
             m_movingAverageTwist2d.add(currentTwist2d);
-            // predictedBallAirTime = 0.14388*getPredictedPoseToTarget() - 0.35283;
-            predictedBallAirTime = 0.29285714286*predictedRobotDist - 2.02857142857;
-            predictedBallAirTime = Math.min(predictedBallAirTime, 0.7);
 
         } catch (NullPointerException e) {
             System.out.println(e);
@@ -180,10 +177,11 @@ public class RobotState {
         
         Twist2d predictedTwist2d = m_movingAverageTwist2d.getAverage();
         double loopsUntilShoot = (msTillShoot / 20.0);
-        double predictedXDiff = predictedTwist2d.dx * loopsUntilShoot;
-        double predictedYDiff = predictedTwist2d.dy * loopsUntilShoot;
+        double predictedXDiff = Units.metersToFeet(predictedTwist2d.dx) * loopsUntilShoot;
+        double predictedYDiff = Units.metersToFeet(predictedTwist2d.dy) * loopsUntilShoot;
 
         double turretDistDesired = Math.hypot(predictedXDiff, predictedYDiff) + ftDist;
+        
         predictedRobotDist = turretDistDesired;
 
         return turretDistDesired;
@@ -198,12 +196,12 @@ public class RobotState {
         Twist2d predictedTwist2d = m_movingAverageTwist2d.getAverage();
         int teleopCyclesInASecond = 1000/20;
 
-        double predictedXBallAirVelocity = Units.metersToFeet(predictedTwist2d.dx * teleopCyclesInASecond);
-        double predictedYBallAirVelocity = Units.metersToFeet(predictedTwist2d.dy * teleopCyclesInASecond);
+        double predictedXBallAirVelocity = Units.metersToFeet(predictedTwist2d.dx) * teleopCyclesInASecond;
+        double predictedYBallAirVelocity = Units.metersToFeet(predictedTwist2d.dy) * teleopCyclesInASecond;
         double robotVelocityVector = Math.hypot(predictedXBallAirVelocity, predictedYBallAirVelocity);
 
         if (predictedXBallAirVelocity < 0 && predictedYBallAirVelocity < 0) {
-            robotVelocityVector *= -1.0;
+            robotVelocityVector *= -1;
         } else {
             double xMult = predictedXBallAirVelocity == 0.0 ? 1 : predictedXBallAirVelocity / Math.abs(predictedXBallAirVelocity);
             double yMult = predictedYBallAirVelocity == 0.0 ? 1 : predictedYBallAirVelocity / Math.abs(predictedYBallAirVelocity);
@@ -211,17 +209,27 @@ public class RobotState {
             robotVelocityVector *= (xMult / yMult);
         }
 
-        // System.out.println(Units.radiansToDegrees(Math.atan2(robotVelocityVector, predictedRobotDist)) * predictedBallAirTime);
+        // predictedBallAirTime = 0.14388*getPredictedPoseToTarget() - 0.35283;
+        // predictedBallAirTime = 0.29285714286*predictedRobotDist - 2.02857142857;
+        predictedBallAirTime = 0.1253239322 * Math.pow(1.220558191, predictedRobotDist);
+        // predictedBallAirTime = Math.min(predictedBallAirTime, 0.5);
 
-        return -Units.radiansToDegrees(Math.atan2(robotVelocityVector, predictedRobotDist)) * predictedBallAirTime;
+        return -Units.radiansToDegrees(Math.atan2(robotVelocityVector * predictedBallAirTime, predictedRobotDist));
+
+        // double innerAngle = Units.radiansToDegrees(Math.atan2(robotVelocityVector, predictedRobotDist));
+        // double horizontalVelocity = robotVelocityVector * Math.sin(innerAngle);
+        // double newPredictedDist = Math.sqrt(Math.pow(robotVelocityVector, 2) - Math.pow(horizontalVelocity, 2));
+
+        // return Math.atan2(newPredictedDist, horizontalVelocity) * predictedBallAirTime;
+
     }
 
     public double turretDegreesOverEstimate() {
         
         Twist2d predictedTwist2d = m_movingAverageTwist2d.getAverage();
-        double loopsUntilShoot = 2;
+        double loopsUntilShoot = (msTillShoot / 20.0);
         
-        return Math.atan2(predictedTwist2d.dy * loopsUntilShoot, predictedTwist2d.dx * loopsUntilShoot);
+        return turretDegreesDesired() * (Math.hypot(predictedTwist2d.dx, predictedTwist2d.dy) * loopsUntilShoot);
     }
 
     /**
@@ -239,6 +247,18 @@ public class RobotState {
 
     public boolean robotHasStableVelocity() {
         return m_movingAverageTwist2d.isAcceptablePrediction();
+    }
+
+    public boolean isResonableDist(double robotDist) {
+        double minDist = 8.5;
+        double maxDist = 14;
+        double predictedDist = shooterDistDesired(robotDist);
+
+        if (predictedDist > minDist && predictedDist < maxDist) {
+            return true;
+        }
+
+        return false;
     }
 
     // public double turntableOverestimator() {

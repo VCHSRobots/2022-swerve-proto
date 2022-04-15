@@ -245,17 +245,17 @@ public class SuperStructure extends Base {
         } else if (OI.ShootAndRun()) {
             toggleShootAndRun = !toggleShootAndRun;
         } else if (toggleShootAndRun) {
-            System.out.println("stable " + m_state.robotHasStableVelocity());
-            System.out.println("Shooter Vel " + m_Shooter.canShootWithVelocity());
-            System.out.println("Turret Good " + m_VisionShooter.withinErrWithTime());
-
+            // System.out.println("stable " + m_state.robotHasStableVelocity());
+            // System.out.println("Shooter Vel " + m_Shooter.canShootWithVelocity());
+            // System.out.println("Turret Good " + m_VisionShooter.withinErrWithTime());
             m_Shooter.shootingDist(m_state.shooterDistDesired(m_VisionShooter.getDistance()));
+            // m_Shooter.shootingDist(Math.min(Math.max(m_state.shooterDistDesired(m_VisionShooter.getDistance()), 15.0), 8));
             desiredAngle = m_state.turretDegreesDesired();
-            if (desiredAngle == Double.NaN) {
-                desiredAngle = 0.0;
-            }
+            // if (desiredAngle == Double.NaN) {
+            //     desiredAngle = 0.0;
+            // }
             if (m_state.robotHasStableVelocity() && m_Shooter.canShootWithVelocity()
-                    && m_VisionShooter.isWithinTurretErr() && m_Intake.isBallAtLoad()) {
+                    && m_VisionShooter.isWithinTurretErr() && m_state.isResonableDist(m_VisionShooter.getDistance())) {
                 m_Intake.loadShooter();
             } else {
                 m_Intake.turnOffLoadShooter();
@@ -316,11 +316,14 @@ public class SuperStructure extends Base {
             }
 
         } else if (toggleShootAndRun) {
-            m_VisionShooter.setOffset(0.0);
             if (m_VisionShooter.getTargetValid()) {
                 // m_Shooter.aimTurret(m_state.turretDegreesDesired());
-                m_VisionShooter.setOffset(desiredAngle);
-                m_Shooter.aimTurret(m_VisionShooter.getYaw() + m_state.turretDegreesOverEstimate());
+                m_VisionShooter.setOffset(desiredAngle - m_state.turretDegreesOverEstimate());
+                m_Shooter.aimTurret(m_VisionShooter.getYaw());
+
+                // System.out.println("Yep: " + (desiredAngle - m_state.turretDegreesOverEstimate()));
+                // System.out.println(desiredAngle);
+                // System.out.println("Light " + m_VisionShooter.getYaw());
             } else {
                 aimTurretAuto();
             }
@@ -328,6 +331,8 @@ public class SuperStructure extends Base {
             toggleShootAndRun = !toggleShootAndRun;
             if (toggleShootAndRun == false) {
                 m_VisionShooter.setOffset(m_visionTeleopOffset);
+            } else {
+                m_VisionShooter.setOffset(0.0);
             }
         } else if (m_autoAimEnabled) {
             aimTurretAuto();

@@ -154,7 +154,7 @@ public class VisionShooter extends Base {
     }
 
     public boolean isWithinTurretErr() {
-        if (Math.abs(getYaw()) < (turretErrAllowance + m_offset)) {
+        if (Math.abs(getYaw()) < (m_offset + turretErrAllowance) && Math.abs(getYaw()) < (m_offset - turretErrAllowance)) {
             return true;
         }
         return false;
