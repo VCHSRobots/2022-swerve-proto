@@ -15,7 +15,7 @@ public class RobotState {
     Pose2d m_pose;
     Rotation2d m_turretAngle;
     double m_lastTimestamp;
-    int msTillShoot = 80;
+    int msTillShoot = 60;
 
     MovingAverageTwist2d m_movingAverageTwist2d = new MovingAverageTwist2d(15);
 
@@ -166,12 +166,14 @@ public class RobotState {
 
     }
 
-    public double turretDegreesOverEstimate() {
+    public double turretDegreesOverEstimate(double marginOfErr) {
         
         Twist2d predictedTwist2d = m_movingAverageTwist2d.getAverage();
-        double loopsUntilShoot = (msTillShoot / 20.0) * 0;
+        double loopsUntilShoot = (msTillShoot / 20.0) * 2.5;
+
+        // System.out.println(marginOfErr);
         
-        return turretDegreesDesired() * (Math.hypot(predictedTwist2d.dx, predictedTwist2d.dy) * loopsUntilShoot);
+        return marginOfErr - (turretDegreesDesired() * Math.hypot(predictedTwist2d.dx, predictedTwist2d.dy * loopsUntilShoot));
     }
 
     public boolean robotHasStableVelocity() {
