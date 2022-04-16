@@ -4,6 +4,8 @@
 
 package frc.robot.subsystems;
 
+import java.util.ArrayList;
+
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
@@ -169,4 +171,29 @@ public class VisionShooter extends Base {
         return loopIterations > 2;
     }
 
+    public double limeShooterDistDesired() {
+        double loopsAhead = 5.0;
+        ArrayList<Double> averageDistPerSecDiff = new ArrayList<Double>(m_movingAverage.getSize()-1);
+        ArrayList<Double> limeLightDistances = m_movingAverage.getNumbers();
+        double prevDist = 0;
+
+        for (int i=0; i<m_movingAverage.getSize(); i++) {
+            if (i==0) {
+                prevDist = limeLightDistances.get(i);
+            } else {
+                averageDistPerSecDiff.set(i, limeLightDistances.get(i) - prevDist);
+                prevDist = limeLightDistances.get(i);
+            }
+        }
+
+        double averageChangeInDist = 0;
+        for (int i = 0; i < m_movingAverage.getSize(); i++) {
+            averageChangeInDist += averageDistPerSecDiff.get(i);
+        }
+        averageChangeInDist /= m_movingAverage.getSize();
+
+        double turretDistDesired = getDistance() + (averageChangeInDist * loopsAhead);
+
+        return Math.max(Math.min(turretDistDesired, 8.5), 14);
+    }
 }

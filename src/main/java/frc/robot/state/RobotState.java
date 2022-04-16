@@ -121,7 +121,10 @@ public class RobotState {
         double predictedXDiff = Units.metersToFeet(predictedTwist2d.dx) * loopsUntilShoot;
         double predictedYDiff = Units.metersToFeet(predictedTwist2d.dy) * loopsUntilShoot;
 
-        double turretDistDesired = Math.hypot(predictedXDiff, predictedYDiff) + ftDist;
+        double turretDistDesired = Math.hypot(predictedXDiff, predictedYDiff);
+        turretDistDesired *= predictedXDiff == 0.0 ? 1 : predictedXDiff / Math.abs(predictedXDiff);
+        turretDistDesired *= predictedYDiff == 0.0 ? 1 : predictedYDiff / Math.abs(predictedYDiff);
+        turretDistDesired += ftDist;
         
         predictedRobotDist = Math.max(Math.min(turretDistDesired, 8.5), 14);
 
@@ -141,15 +144,15 @@ public class RobotState {
         double predictedYBallAirVelocity = Units.metersToFeet(predictedTwist2d.dy) * teleopCyclesInASecond;
         double robotVelocityVector = Math.hypot(predictedXBallAirVelocity, predictedYBallAirVelocity);
 
-        if (predictedXBallAirVelocity < 0 && predictedYBallAirVelocity < 0) {
-            robotVelocityVector *= -1;
-        } else {
+        // if (predictedXBallAirVelocity < 0 && predictedYBallAirVelocity < 0) {
+        //     robotVelocityVector *= -1;
+        // } else {
             double xMult = predictedXBallAirVelocity == 0.0 ? 1 : predictedXBallAirVelocity / Math.abs(predictedXBallAirVelocity);
             double yMult = predictedYBallAirVelocity == 0.0 ? 1 : predictedYBallAirVelocity / Math.abs(predictedYBallAirVelocity);
 
             robotVelocityVector *= (xMult / yMult);
             // robotVelocityVector *= (xMult / yMult) * teleopCyclesInASecond;
-        }
+        // }
 
         // predictedBallAirTime = 0.14388*getPredictedPoseToTarget() - 0.35283;
         predictedBallAirTime = 0.1253239322 * Math.pow(1.220558191, predictedRobotDist);

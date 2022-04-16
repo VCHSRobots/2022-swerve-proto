@@ -20,6 +20,10 @@ public class MovingAverage {
         }
     }
 
+    public ArrayList<Double> getNumbers() {
+        return numbers;
+    }
+
     public double getAverage() {
         double total = 0;
 

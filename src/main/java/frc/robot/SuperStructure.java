@@ -257,10 +257,11 @@ public class SuperStructure extends Base {
             }
             desiredAngle = m_state.turretDegreesDesired();
             m_Shooter.shootingDist(m_state.shooterDistDesired(m_VisionShooter.getDistance()));
+            // m_Shooter.shootingDist(m_VisionShooter.limeShooterDistDesired());
 
-            System.out.println(desiredAngle);
-            System.out.println("Vision: " + m_VisionShooter.getYaw());
-            System.out.println("Overestimate: " + m_state.turretDegreesOverEstimate(m_VisionShooter.m_offset));
+            // System.out.println(desiredAngle);
+            // System.out.println("Vision: " + m_VisionShooter.getYaw());
+            // System.out.println("Overestimate: " + m_state.turretDegreesOverEstimate(m_VisionShooter.m_offset));
         
         } else if (m_lastButtonWasClimber) {
             m_Shooter.turnOff();
