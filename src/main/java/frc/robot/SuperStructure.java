@@ -4,9 +4,16 @@
 
 package frc.robot;
 
-import frc.robot.state.RobotState;
-import frc.robot.subsystems.*;
+import com.pathplanner.lib.PathPlannerTrajectory.PathPlannerState;
 
+import edu.wpi.first.cameraserver.CameraServer;
+import edu.wpi.first.cscore.UsbCamera;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.math.util.Units;
+import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.PneumaticHub;
@@ -17,16 +24,13 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.cameraserver.CameraServer;
-import edu.wpi.first.cscore.UsbCamera;
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import edu.wpi.first.math.util.Units;
-import edu.wpi.first.networktables.NetworkTableEntry;
-
-import com.pathplanner.lib.PathPlannerTrajectory.PathPlannerState;
+import frc.robot.state.RobotState;
+import frc.robot.subsystems.Base;
+import frc.robot.subsystems.Climber;
+import frc.robot.subsystems.Shooter;
+import frc.robot.subsystems.SwerveDrive;
+import frc.robot.subsystems.VisionShooter;
+import frc.robot.subsystems.intake.Intake;
 
 /** Add your docs here. */
 public class SuperStructure extends Base {
@@ -118,11 +122,11 @@ public class SuperStructure extends Base {
 
         Shuffleboard.getTab("super").addNumber("current top RPM", () -> m_Shooter.getTopMotorRPM()).withPosition(0, 0);
         Shuffleboard.getTab("super").addNumber("Current bot RPM", () -> m_Shooter.getBotMotorRPM()).withPosition(1, 0);
-        Shuffleboard.getTab("super").addBoolean("Is Ball in Loader", () -> m_Intake.isBallAtLoad()).withPosition(0, 1);
-        Shuffleboard.getTab("super").addBoolean("Is Ball in Middle", () -> m_Intake.isBallAtMiddle()).withPosition(0,
+        Shuffleboard.getTab("super").addBoolean("Is Ball in Loader", () -> m_Intake.getBallAtLoad()).withPosition(0, 1);
+        Shuffleboard.getTab("super").addBoolean("Is Ball in Middle", () -> m_Intake.getBallAtMiddle()).withPosition(0,
                 2);
         Shuffleboard.getTab("super").addBoolean("Both balls loaded",
-                () -> m_Intake.isBallAtMiddle() && m_Intake.isBallAtLoad()).withPosition(0, 3);
+                () -> m_Intake.getBallAtMiddle() && m_Intake.getBallAtLoad()).withPosition(0, 3);
         // Shuffleboard.getTab("super").add(CameraServer.putVideo("limelight", 320,
         // 240)).withPosition(6, 1).withSize(5,
         // 6);
