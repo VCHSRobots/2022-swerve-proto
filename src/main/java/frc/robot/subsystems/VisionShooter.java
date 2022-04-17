@@ -28,7 +28,7 @@ public class VisionShooter extends Base {
     private int m_MAXLOSTCOUNT = 7;
     private double m_max_angle_change_in_20ms = 10.0;
     public double m_offset = 2.0;
-    private double turretErrAllowance = 0.3;
+    private double turretErrAllowance = 0.5;
     private int loopIterations = 0;
 
     private MovingAverage m_movingAverage = new MovingAverage(12);
@@ -155,15 +155,17 @@ public class VisionShooter extends Base {
         return getTargetValid() && Math.abs(getYaw()) < 6;
     }
 
-    public boolean isWithinTurretErr() {
-        if (getYaw() < m_offset + turretErrAllowance && getYaw() > m_offset - turretErrAllowance) {
+    public boolean isWithinTurretErr(double desiredAngle) {
+        if (desiredAngle == Double.NaN) {
+            return false;
+        } else if (getYaw() < m_offset + turretErrAllowance && getYaw() > m_offset - turretErrAllowance) {
             return true;
         }
         return false;
     }
 
     public boolean withinErrWithTime() {
-        if (isWithinTurretErr()) {
+        if (isWithinTurretErr(m_offset)) {
             loopIterations ++;
         } else {
             loopIterations = 0;
@@ -173,7 +175,7 @@ public class VisionShooter extends Base {
 
     public double limeShooterDistDesired() {
         double loopsAhead = 5.0;
-        ArrayList<Double> averageDistPerSecDiff = new ArrayList<Double>(m_movingAverage.getSize()-1);
+        ArrayList<Double> averageDistPerSecDiff = new ArrayList<Double>();
         ArrayList<Double> limeLightDistances = m_movingAverage.getNumbers();
         double prevDist = 0;
 
@@ -181,19 +183,19 @@ public class VisionShooter extends Base {
             if (i==0) {
                 prevDist = limeLightDistances.get(i);
             } else {
-                averageDistPerSecDiff.set(i, limeLightDistances.get(i) - prevDist);
+                averageDistPerSecDiff.add(limeLightDistances.get(i) - prevDist);
                 prevDist = limeLightDistances.get(i);
             }
         }
 
         double averageChangeInDist = 0;
-        for (int i = 0; i < m_movingAverage.getSize(); i++) {
+        for (int i = 0; i < averageDistPerSecDiff.size(); i++) {
             averageChangeInDist += averageDistPerSecDiff.get(i);
         }
-        averageChangeInDist /= m_movingAverage.getSize();
+        averageChangeInDist /= averageDistPerSecDiff.size();
 
         double turretDistDesired = getDistance() + (averageChangeInDist * loopsAhead);
 
-        return Math.max(Math.min(turretDistDesired, 8.5), 14);
+        return turretDistDesired;
     }
 }
