@@ -172,7 +172,7 @@ public class SuperStructure extends Base {
         m_Climber.hooksReverse();
         m_Climber.eStop();
         m_VisionShooter.LEDon();
-        m_VisionShooter.setOffset(2);
+        m_VisionShooter.setOffset(1);
         m_SwerveDrive.setFieldRelative();
         m_autoAimEnabled = true;
 
