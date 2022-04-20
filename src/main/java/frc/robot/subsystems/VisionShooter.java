@@ -25,7 +25,7 @@ public class VisionShooter extends Base {
     private int m_lostCount = 0;
     private int m_MAXLOSTCOUNT = 7;
     private double m_max_angle_change_in_20ms = 10.0;
-    private double m_offset = 2.0;
+    private double m_offset = 1.0;
 
     private MovingAverage m_movingAverage = new MovingAverage(12);
 
