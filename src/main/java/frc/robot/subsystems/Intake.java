@@ -94,6 +94,8 @@ public class Intake extends Base {
         // debugTab.addNumber("Intake Cur", () -> m_intake.getSupplyCurrent());
         // debugTab.addNumber("Middle Cur", () -> m_mover.getSupplyCurrent());
         // debugTab.addNumber("Loader Cur", () -> m_shooterLoader.getSupplyCurrent());
+        debugTab.addBoolean("Red Detect", () -> m_colorSensor.isRedBallDetected());
+        debugTab.addBoolean("Blue Detect", () -> m_colorSensor.isBlueBallDetected());
     }
 
     // Robot Init
@@ -143,7 +145,7 @@ public class Intake extends Base {
                 }
 
                 // move movers if ball not at load shooter place
-                if(isBallAtMiddle() && !isBallAtLoad()) {
+                if (isBallAtMiddle() && !isBallAtLoad()) {
                     m_state = STATE.F;
                 }
 

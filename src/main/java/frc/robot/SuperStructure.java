@@ -251,12 +251,12 @@ public class SuperStructure extends Base {
         } else if ((ntShooterPreheatEnable.getBoolean(false)
                 || DriverStation.isFMSAttached()) && !m_lastButtonWasClimber) {
             // speed up shooter automatically
-            m_Shooter.shootingDist(8.25);
+            m_Shooter.shootingDist(9.5);
         } else if (OI.getAimTurret()) {
-            m_Shooter.shootingDist(8.25);
+            m_Shooter.shootingDist(9.5);
         } else if (m_Intake.getBothBallsLoaded() && !m_lastButtonWasClimber) {
             // speed up shooter automatically
-            m_Shooter.shootingDist(8.25);
+            m_Shooter.shootingDist(9.5);
             // } else if (OI.driveAndShoot()) {
             // m_Shooter.shootingDist(m_state.getVelocityTurretDegrees());
             // if (m_Shooter.canShootWithVelocity()) {
@@ -362,7 +362,7 @@ public class SuperStructure extends Base {
         // end turret code
         double firstShotMeters = 3.0;
         double secondShotMeters = 3.7;
-        double thirdShotMeters = 3.45;
+        double thirdShotMeters = 3.15;
 
         if (m_autoStep == 0) {
             // follow auto1b_part1 trajectory to pick up 1 balls
