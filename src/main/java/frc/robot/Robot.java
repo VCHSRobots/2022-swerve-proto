@@ -39,7 +39,8 @@ public class Robot extends TimedRobot {
   public void robotInit() {
     LiveWindow.disableAllTelemetry();
 
-    Shuffleboard.getTab("computil").add("xbox", OI.xboxDrive);
+    Shuffleboard.getTab("computil").add("xboxDrive", OI.xboxDrive);
+    Shuffleboard.getTab("computil").add("xboxClimb", OI.xboxClimb);
 
     Shuffleboard.getTab("computil").addNumber("pose/x", ()->swerveDrive.getPose2d().getX());
     Shuffleboard.getTab("computil").addNumber("pose/y", ()->swerveDrive.getPose2d().getY());

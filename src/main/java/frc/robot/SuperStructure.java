@@ -115,6 +115,7 @@ public class SuperStructure extends Base {
         Shuffleboard.getTab("debug").addNumber("Turret Angle", () -> m_Shooter.getTurretAngleDegrees());
         Shuffleboard.getTab("debug").addNumber("Turret CANcoder", () -> m_Shooter.getTurretAngleCANcoder());
         Shuffleboard.getTab("debug").addNumber("autoStep", () -> m_autoStep);
+        Shuffleboard.getTab("debug").addBoolean("last button climber", () -> m_lastButtonWasClimber);
 
         Shuffleboard.getTab("super").addNumber("current top RPM", () -> m_Shooter.getTopMotorRPM()).withPosition(0, 0);
         Shuffleboard.getTab("super").addNumber("Current bot RPM", () -> m_Shooter.getBotMotorRPM()).withPosition(1, 0);
@@ -159,8 +160,7 @@ public class SuperStructure extends Base {
                 || OI.getLeftTurntable() || OI.getRightTurntable()) {
             m_lastButtonWasClimber = false;
         } else if (OI.getArmsDown() || OI.getArmsUp() || OI.getSolenoidForward() || OI.getSolenoidReverse()
-                || OI.getNxtClimb() || OI.getFinClimb() || OI.getClimbArmSpeedUp() > 0.2
-                || OI.getClimbArmSpeedDown() > 0.2) {
+                || OI.getNxtClimb() || OI.getFinClimb()) {
             m_lastButtonWasClimber = true;
         }
     }
@@ -201,7 +201,7 @@ public class SuperStructure extends Base {
         }
 
         // INTAKE STATE UPDATE
-        m_Intake.changeState(OI.startIntake(), OI.stopIntake());
+        m_Intake.changeState(OI.startIntake(), OI.stopIntake(), OI.reverseIntake());
 
         // INTAKE / SHOOTING
         // If any climbing functions are active, turn off shooter wheels.
@@ -361,7 +361,7 @@ public class SuperStructure extends Base {
         aimTurretAuto();
         // end turret code
         double firstShotMeters = 2.88;
-        double secondShotMeters = 3.3;
+        double secondShotMeters = 3.4;
         double thirdShotMeters = 3.15;
 
         if (m_autoStep == 0) {
@@ -532,7 +532,7 @@ public class SuperStructure extends Base {
         }
 
         // always update intake state
-        m_Intake.changeState(false, false);
+        m_Intake.changeState(false, false, false);
     }
 
     public void Auto2() {
@@ -587,7 +587,7 @@ public class SuperStructure extends Base {
         }
 
         // always update intake state
-        m_Intake.changeState(false, false);
+        m_Intake.changeState(false, false, false);
     }
 
     public void Auto3() {

@@ -140,11 +140,6 @@ public class OI {
         // return xboxIntakeTesting.getAButton();
         return false;
     }
-
-    static public boolean reverseIntake() {
-        // return xboxIntakeTesting.getBButton();
-        return false;
-    }
     
     static public boolean getSolenoidReverse() {
         return xboxClimb.getAButtonPressed();
@@ -211,8 +206,12 @@ public class OI {
     }
 
     static public boolean driveAndShoot() {
+        // return xboxDrive.getXButton();
+        return false;
+    }
+
+    static public boolean reverseIntake() {
         return xboxDrive.getXButton();
-        // return false;
     }
 
 }
