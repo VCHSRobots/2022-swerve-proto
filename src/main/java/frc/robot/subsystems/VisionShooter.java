@@ -20,6 +20,7 @@ public class VisionShooter extends Base {
     NetworkTableEntry ntTargetPitch = table.getEntry("ty");
     NetworkTableEntry ntTargetArea = table.getEntry("ta");
     NetworkTableEntry ntTargetValid = table.getEntry("tv");
+    NetworkTableEntry ntTargetCorner = table.getEntry("tcornxy");
 
     private double m_lastTx = 0;
     private double m_lastTy = 0;
@@ -124,6 +125,10 @@ public class VisionShooter extends Base {
 
     public double getMovingAverageDistance() {
         return m_movingAverage.getAverage();
+    }
+
+    public double getPredictedDistFromTarget() {
+        return getDistance() + getMovingAverageDistance();
     }
 
     public void addDistanceToMovingAverage() {

@@ -114,26 +114,29 @@ public class RobotState {
         return m_movingAverageTwist2d.getAverage();
     }
 
-    public double shooterDistDesired(double ftDist) {
+    public double shooterDistDesired(double predictedDistFromTarget) {
         
-        Twist2d predictedTwist2d = m_movingAverageTwist2d.getAverage();
-        double loopsUntilShoot = (msTillShoot / 20.0);
-        double predictedXDiff = Units.metersToFeet(predictedTwist2d.dx) * loopsUntilShoot;
-        double predictedYDiff = Units.metersToFeet(predictedTwist2d.dy) * loopsUntilShoot;
+        Twist2d predictedVelocityTwist2d = m_movingAverageTwist2d.getAverage();
 
-        double turretDistDesired = Math.hypot(predictedXDiff, predictedYDiff);
-        turretDistDesired *= predictedXDiff == 0.0 ? 1 : predictedXDiff / Math.abs(predictedXDiff);
-        turretDistDesired *= predictedYDiff == 0.0 ? 1 : predictedYDiff / Math.abs(predictedYDiff);
-        turretDistDesired += ftDist;
+        double turretFtDistDesired = predictedDistFromTarget;
 
-        if (turretDistDesired < 9.0) {
-            turretDistDesired = 9.0;
+        // double loopsUntilShoot = (msTillShoot / 20.0);
+        // double predictedXDiff = Units.metersToFeet(predictedTwist2d.dx);
+        // double predictedYDiff = Units.metersToFeet(predictedTwist2d.dy);
+
+        // double turretDistDesired = Math.hypot(predictedXDiff, predictedYDiff);
+        // turretDistDesired *= predictedXDiff == 0.0 ? 1 : predictedXDiff / Math.abs(predictedXDiff);
+        // turretDistDesired *= predictedYDiff == 0.0 ? 1 : predictedYDiff / Math.abs(predictedYDiff);
+        // turretDistDesired += ftDist;
+
+        if (turretFtDistDesired < 9.0) {
+            turretFtDistDesired = 9.0;
         }
-        if (turretDistDesired > 12.0) {
-            turretDistDesired = 12;
+        if (turretFtDistDesired > 13.0) {
+            turretFtDistDesired = 13.0;
         }
         
-        return turretDistDesired;
+        return turretFtDistDesired;
     }
 
     public double shooterDistOffset() {
@@ -145,12 +148,12 @@ public class RobotState {
         Twist2d predictedTwist2d = m_movingAverageTwist2d.getAverage();
         int teleopCyclesInASecond = 50;
 
-        double predictedXBallAirVelocity = Units.metersToFeet(predictedTwist2d.dx) / teleopCyclesInASecond;
-        double predictedYBallAirVelocity = Units.metersToFeet(predictedTwist2d.dy) / teleopCyclesInASecond;
-        double robotVelocityVector = Math.hypot(predictedXBallAirVelocity, predictedYBallAirVelocity);
+        double avgXRobotVelocity = Units.metersToFeet(predictedTwist2d.dx) / teleopCyclesInASecond;
+        double avgYRobotVelocity = Units.metersToFeet(predictedTwist2d.dy) / teleopCyclesInASecond;
+        double robotVelocityVector = Math.hypot(avgXRobotVelocity, avgYRobotVelocity);
         
-        double xMult = predictedXBallAirVelocity == 0.0 ? 1 : predictedXBallAirVelocity / Math.abs(predictedXBallAirVelocity);
-        double yMult = predictedYBallAirVelocity == 0.0 ? 1 : predictedYBallAirVelocity / Math.abs(predictedYBallAirVelocity);
+        double xMult = avgXRobotVelocity == 0.0 ? 1 : avgXRobotVelocity / Math.abs(avgXRobotVelocity);
+        double yMult = avgYRobotVelocity == 0.0 ? 1 : avgYRobotVelocity / Math.abs(avgYRobotVelocity);
 
         robotVelocityVector *= (xMult / yMult);
 
@@ -158,7 +161,7 @@ public class RobotState {
         predictedBallAirTime = 0.1253239322 * Math.pow(1.220558191, predictedRobotDist);
         // predictedBallAirTime = Math.max(Math.min(predictedBallAirTime, 0.5), 2.0);
 
-        return -Units.radiansToDegrees(Math.atan((robotVelocityVector * predictedBallAirTime) / predictedRobotDist));
+        return -Units.radiansToDegrees(Math.atan(Units.degreesToRadians((robotVelocityVector * predictedBallAirTime) / predictedRobotDist)));
         // return Units.radiansToDegrees(Math.atan(predictedRobotDist / (robotVelocityVector * predictedBallAirTime)));
 
         // double innerAngle = Units.radiansToDegrees(Math.atan2(robotVelocityVector, predictedRobotDist));
@@ -185,10 +188,10 @@ public class RobotState {
 
     public boolean isResonableDist(double robotDist) {
         double minDist = 9;
-        double maxDist = 12;
-        double predictedDist = shooterDistDesired(robotDist);
+        double maxDist = 13;
+        // double predictedDist = shooterDistDesired(robotDist);
 
-        if (predictedDist > minDist && predictedDist < maxDist) {
+        if (robotDist > minDist && robotDist < maxDist) {
             return true;
         }
 

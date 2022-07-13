@@ -21,7 +21,6 @@ import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.cscore.UsbCamera;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.util.Units;
@@ -255,7 +254,7 @@ public class SuperStructure extends Base {
             // System.out.println("actual: " + m_VisionShooter.getYaw());
 
             if (m_state.robotHasStableVelocity() && m_Shooter.canShootWithVelocity()
-                    && m_VisionShooter.isWithinTurretErr(desiredAngle) && m_state.isResonableDist(m_state.shooterDistDesired(m_VisionShooter.getDistance()))
+                    && m_VisionShooter.isWithinTurretErr(desiredAngle) && m_state.isResonableDist(m_VisionShooter.getPredictedDistFromTarget())
                     && m_VisionShooter.canSeeTarget()) {
                 // System.out.println("true");
                 m_Intake.loadShooter();
@@ -263,7 +262,7 @@ public class SuperStructure extends Base {
                 m_Intake.countinueIntakeMotors();
             }
             desiredAngle = m_state.turretDegreesDesired();
-            m_Shooter.shootingDist(m_state.shooterDistDesired(m_VisionShooter.getDistance()));
+            m_Shooter.shootingDist(m_state.shooterDistDesired(m_VisionShooter.getMovingAverageDistance()));
             // m_Shooter.shootingDist(m_VisionShooter.limeShooterDistDesired());
 
             System.out.println("Desired: " + desiredAngle);
@@ -327,8 +326,9 @@ public class SuperStructure extends Base {
         } else if (toggleShootAndRun) {
             if (m_VisionShooter.getTargetValid()) {
                 // m_Shooter.aimTurret(m_state.turretDegreesDesired());
-                m_VisionShooter.setOffset(desiredAngle);
-                m_Shooter.aimTurret(m_VisionShooter.getYaw() - m_state.turretDegreesOverEstimate());
+                // m_VisionShooter.setOffset(desiredAngle);
+                // m_Shooter.aimTurret(m_VisionShooter.getYaw() - m_state.turretDegreesOverEstimate());
+                m_Shooter.aimTurret(m_VisionShooter.getYaw() + m_state.turretDegreesDesired());
 
                 // System.out.println("Yep: " + (desiredAngle - m_state.turretDegreesOverEstimate()));
                 // System.out.println(desiredAngle);
