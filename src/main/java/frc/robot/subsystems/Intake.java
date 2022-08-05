@@ -64,7 +64,7 @@ public class Intake extends Base {
     private final double kLoaderLoadingSpeed = 0.8;
 
     enum STATE {
-        A, B, C, D, E, F;
+        A, B, C, D, E, F, G;
     };
 
     STATE m_state = STATE.A;
@@ -85,15 +85,8 @@ public class Intake extends Base {
         m_shooterLoader.setNeutralMode(NeutralMode.Brake);
 
         // add to shuffleboard
-        // debugTab.addBoolean("Ball at Middle", () -> !m_middleDIO.get());
-        // debugTab.addBoolean("Ball at Load", () -> !m_loadDIO.get());
-        // debugTab.addNumber("Intake Vel", () -> m_intake.getSelectedSensorVelocity());
-        // debugTab.addNumber("Middle Vel", () -> m_mover.getSelectedSensorVelocity());
-        // debugTab.addNumber("Loader Vel", () ->
-        // m_shooterLoader.getSelectedSensorVelocity());
-        // debugTab.addNumber("Intake Cur", () -> m_intake.getSupplyCurrent());
-        // debugTab.addNumber("Middle Cur", () -> m_mover.getSupplyCurrent());
-        // debugTab.addNumber("Loader Cur", () -> m_shooterLoader.getSupplyCurrent());
+        debugTab.addBoolean("Red Detect", () -> m_colorSensor.isRedBallDetected());
+        debugTab.addBoolean("Blue Detect", () -> m_colorSensor.isBlueBallDetected());
     }
 
     // Robot Init
@@ -120,7 +113,7 @@ public class Intake extends Base {
     }
 
     // Teleop Periodic
-    public void changeState(boolean startIntake, boolean stopIntake) {
+    public void changeState(boolean startIntake, boolean stopIntake, boolean reverse) {
         switch (m_state) {
             case A:
 
@@ -138,12 +131,16 @@ public class Intake extends Base {
                     // don't care
                 }
 
+                if (reverse) {
+                    m_state = STATE.G;
+                }
+
                 if (isBallAtLoad() || isBallAtMiddle()) {
                     // don't care
                 }
 
                 // move movers if ball not at load shooter place
-                if(isBallAtMiddle() && !isBallAtLoad()) {
+                if (isBallAtMiddle() && !isBallAtLoad()) {
                     m_state = STATE.F;
                 }
 
@@ -157,6 +154,10 @@ public class Intake extends Base {
 
                 if (stopIntake) {
                     m_state = STATE.A;
+                }
+
+                if (reverse) {
+                    m_state = STATE.G;
                 }
 
                 // ball detected right before shooter, go to next state
@@ -178,6 +179,9 @@ public class Intake extends Base {
                 }
                 if (stopIntake) {
                     m_state = STATE.A;
+                }
+                if (reverse) {
+                    m_state = STATE.G;
                 }
                 if (isBallAtLoad()) {
                     // don't care, ball already there
@@ -228,13 +232,29 @@ public class Intake extends Base {
                     m_state = STATE.A;
                 }
 
+                if (reverse) {
+                    m_state = STATE.G;
+                }
+
                 // ball detected right before shooter, go to next state
                 if (isBallAtLoad()) {
                     m_state = STATE.A;
                 }
 
                 break;
+            case G:
+                if (startIntake) {
+                    m_state = STATE.B;
+                }
 
+                if (stopIntake) {
+                    m_state = STATE.A;
+                }
+                if (reverse) {
+                    // already here
+                }
+
+                break;
         }
 
         // actual motor states
@@ -317,6 +337,13 @@ public class Intake extends Base {
                 m_shooterLoader.set(ControlMode.PercentOutput, kLoaderOut);
 
                 setIntakePnuematic(false);
+                break;
+            case G:
+                // reverse
+                m_intake.set(ControlMode.PercentOutput, -0.75);
+                m_mover.set(ControlMode.PercentOutput, -0.5);
+                m_shooterLoader.set(ControlMode.PercentOutput, 0);
+                setIntakePnuematic(true);
                 break;
         }
 

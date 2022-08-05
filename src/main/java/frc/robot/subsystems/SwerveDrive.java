@@ -27,8 +27,8 @@ import frc.robot.RobotMap;
 
 /** Add your docs here. */
 public class SwerveDrive extends Base {
-    public static final double kMaxSpeed = 4.3; // 3 meters per second
-    public static final double kMaxAngularSpeed = 3 * Math.PI; // 1 rotation per second
+    public static double kMaxSpeed = 4.3; // 3 meters per second
+    public static double kMaxAngularSpeed = 3 * Math.PI; // 1 rotation per second
 
     private final SlewRateLimiter m_xSpeedLimiter = new SlewRateLimiter(7);
     private final SlewRateLimiter m_ySpeedLimiter = new SlewRateLimiter(7);
@@ -278,10 +278,12 @@ public class SwerveDrive extends Base {
         if (resetOdometryLaunchPad && !m_prevResetOdometry) {
             Translation2d launchPad = new Translation2d(3.86, 5.46);
             resetOdometry(new Pose2d(launchPad, new Rotation2d()));
+            m_fieldRelative = true;
         }
         if (resetOdometryFender && !m_prevResetOdometry) {
             Translation2d rightFender =  new Translation2d(7.82, 2.95);
             resetOdometry(new Pose2d(rightFender, Rotation2d.fromDegrees(-111)));
+            m_fieldRelative = true;
         }
         m_prevResetOdometry = resetOdometryLaunchPad;
 
@@ -289,6 +291,7 @@ public class SwerveDrive extends Base {
     }
 
     // Test Periodic
+    
     public void test(boolean getAButton) {
 
         // ADD CODE TO TEST MOTORS HERE
@@ -313,5 +316,21 @@ public class SwerveDrive extends Base {
         builder.addDoubleProperty("Desired Vx m-s", () -> m_lastChassisSpeedsDesired.vxMetersPerSecond, null);
         builder.addDoubleProperty("Desired Vy m-s", () -> m_lastChassisSpeedsDesired.vyMetersPerSecond, null);
         builder.addDoubleProperty("Desired Rot rad-s", () -> m_lastChassisSpeedsDesired.omegaRadiansPerSecond, null);
+    }
+
+    /**
+     * 
+     * @param maxmps is max meters per second
+     */
+    public void setkMaxSpeed(double maxmps) {
+        kMaxSpeed = maxmps;
+    }
+
+    /**
+     * 
+     * @param maxAngularSpeed
+     */
+    public void setkMaxRot(double maxAngularSpeed) {
+        kMaxAngularSpeed = maxAngularSpeed;
     }
 }

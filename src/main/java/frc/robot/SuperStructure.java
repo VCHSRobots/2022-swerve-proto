@@ -78,6 +78,8 @@ public class SuperStructure extends Base {
     NetworkTableEntry ntShooterPreheatEnable = CompTab.add("Shooter Preheat", false)
             .withWidget(BuiltInWidgets.kToggleButton).getEntry();
 
+    NetworkTableEntry ntKidMode = CompTab.add("Kid Mode", false).withWidget(BuiltInWidgets.kToggleButton).getEntry();
+
     public SuperStructure(SwerveDrive swerveDrive, Intake intake, Shooter shooter, Climber climber) {
         m_SwerveDrive = swerveDrive;
         m_Intake = intake;
@@ -113,6 +115,7 @@ public class SuperStructure extends Base {
         Shuffleboard.getTab("debug").addNumber("Turret Angle", () -> m_Shooter.getTurretAngleDegrees());
         Shuffleboard.getTab("debug").addNumber("Turret CANcoder", () -> m_Shooter.getTurretAngleCANcoder());
         Shuffleboard.getTab("debug").addNumber("autoStep", () -> m_autoStep);
+        Shuffleboard.getTab("debug").addBoolean("last button climber", () -> m_lastButtonWasClimber);
 
         Shuffleboard.getTab("super").addNumber("current top RPM", () -> m_Shooter.getTopMotorRPM()).withPosition(0, 0);
         Shuffleboard.getTab("super").addNumber("Current bot RPM", () -> m_Shooter.getBotMotorRPM()).withPosition(1, 0);
@@ -157,8 +160,7 @@ public class SuperStructure extends Base {
                 || OI.getLeftTurntable() || OI.getRightTurntable()) {
             m_lastButtonWasClimber = false;
         } else if (OI.getArmsDown() || OI.getArmsUp() || OI.getSolenoidForward() || OI.getSolenoidReverse()
-                || OI.getNxtClimb() || OI.getFinClimb() || OI.getClimbArmSpeedUp() > 0.2
-                || OI.getClimbArmSpeedDown() > 0.2) {
+                || OI.getNxtClimb() || OI.getFinClimb()) {
             m_lastButtonWasClimber = true;
         }
     }
@@ -187,12 +189,22 @@ public class SuperStructure extends Base {
                 OI.getNxtClimb(), OI.getFinClimb(), OI.getClimbArmSpeedDown(), OI.getClimbArmSpeedUp());
 
         // DRIVING //
-        // XBOX DRIVING CODE
-        m_SwerveDrive.driveWithXbox(OI.getDriveY(), OI.getDriveX(), OI.getDriveRot(),
-                false, false);
+        
+            // XBOX DRIVING CODE
+            var driveY = OI.getDriveY();
+            var driveX = OI.getDriveX();
+            var driveR = OI.getDriveRot();
+            if (ntKidMode.getBoolean(false)) {
+                driveY *= 0.3;
+                driveX *= 0.3;
+                driveR *= 0.3;
+            }
+            m_SwerveDrive.driveWithXbox(driveY, driveX, driveR,
+                    false, false);
+        
 
         // INTAKE STATE UPDATE
-        m_Intake.changeState(OI.startIntake(), OI.stopIntake());
+        m_Intake.changeState(OI.startIntake(), OI.stopIntake(), OI.reverseIntake());
 
         // INTAKE / SHOOTING
         // If any climbing functions are active, turn off shooter wheels.
@@ -243,12 +255,12 @@ public class SuperStructure extends Base {
         } else if ((ntShooterPreheatEnable.getBoolean(false)
                 || DriverStation.isFMSAttached()) && !m_lastButtonWasClimber) {
             // speed up shooter automatically
-            m_Shooter.shootingDist(8.25);
+            m_Shooter.shootingDist(9.5);
         } else if (OI.getAimTurret()) {
-            m_Shooter.shootingDist(8.25);
+            m_Shooter.shootingDist(9.5);
         } else if (m_Intake.getBothBallsLoaded() && !m_lastButtonWasClimber) {
             // speed up shooter automatically
-            m_Shooter.shootingDist(8.25);
+            m_Shooter.shootingDist(9.5);
             // } else if (OI.driveAndShoot()) {
             // m_Shooter.shootingDist(m_state.getVelocityTurretDegrees());
             // if (m_Shooter.canShootWithVelocity()) {
@@ -352,9 +364,9 @@ public class SuperStructure extends Base {
         // default turret aiming code here
         aimTurretAuto();
         // end turret code
-        double firstShotMeters = 3.0;
-        double secondShotMeters = 3.7;
-        double thirdShotMeters = 3.45;
+        double firstShotMeters = 2.88;
+        double secondShotMeters = 3.4;
+        double thirdShotMeters = 3.15;
 
         if (m_autoStep == 0) {
             // follow auto1b_part1 trajectory to pick up 1 balls
@@ -524,7 +536,7 @@ public class SuperStructure extends Base {
         }
 
         // always update intake state
-        m_Intake.changeState(false, false);
+        m_Intake.changeState(false, false, false);
     }
 
     public void Auto2() {
@@ -579,7 +591,7 @@ public class SuperStructure extends Base {
         }
 
         // always update intake state
-        m_Intake.changeState(false, false);
+        m_Intake.changeState(false, false, false);
     }
 
     public void Auto3() {

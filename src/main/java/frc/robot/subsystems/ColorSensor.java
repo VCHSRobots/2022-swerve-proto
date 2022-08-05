@@ -69,8 +69,7 @@ public class ColorSensor extends Base {
 
   // Robot Init
   public void init() {
-    // colorSensorTab.addBoolean("isRed",()-> isRedBallDetected());
-    // colorSensorTab.addBoolean("isBlue",()-> isBlueBallDetected());
+    
     m_colorMatcher.addColorMatch(kBlueBallColor);
     m_colorMatcher.addColorMatch(kRedBallColor);
   }

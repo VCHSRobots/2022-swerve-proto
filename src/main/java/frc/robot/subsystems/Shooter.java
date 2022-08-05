@@ -39,12 +39,13 @@ public class Shooter extends Base {
     private final double kZeroOffsetDegrees = 88.5;
     private final double kMinAngle = -135;
     private final double kMaxAngle = 275;
-    private final double kMaxAngularVelocity = 400.0; // keep within 560, started at 135, was 600
+    private final double kMaxAngularVelocity = 500.0; // keep within 560, started at 135, was 600
     private final double kMaxAngularAcceleration = 12000.0; // keep within 5700, started at 455
-    // private double m_targetAngle = 0; // keep for later in case 
+    // private double m_targetAngle = 0; // keep for later in case
     // Shuffleboard Tabs and NetworkTableEntries.
     ShuffleboardTab debugTab = Shuffleboard.getTab("debug");
-    // NetworkTableEntry ntVoltage = Shuffleboard.getTab("Shooter").add("voltage", 0.0).getEntry();
+    // NetworkTableEntry ntVoltage = Shuffleboard.getTab("Shooter").add("voltage",
+    // 0.0).getEntry();
 
     WPI_TalonFX m_shootTalonTop = new WPI_TalonFX(RobotMap.kShoot_TopMotor_TalonFX, RobotMap.kCANivore_name);
     WPI_TalonFX m_shootTalonBot = new WPI_TalonFX(RobotMap.kShoot_BottomMotor_TalonFX, RobotMap.kCANivore_name);
@@ -56,7 +57,8 @@ public class Shooter extends Base {
 
     private ProfiledPIDController m_turretPIDController = new ProfiledPIDController(0.08, 0, 0,
             new Constraints(kMaxAngularVelocity, kMaxAngularAcceleration));
-    // private SimpleMotorFeedforward m_turretFeedForward = new SimpleMotorFeedforward(0.29, 0.007); // 0.007
+    // private SimpleMotorFeedforward m_turretFeedForward = new
+    // SimpleMotorFeedforward(0.29, 0.007); // 0.007
 
     // SimpleMotorFeedforward m_ShootFeedForward = new SimpleMotorFeedforward(0.00,
     // 0.00045);
@@ -67,23 +69,24 @@ public class Shooter extends Base {
     public Shooter() {
         distanceRPMPoint[] distanceRPMlist = {
                 new distanceRPMPoint(8.0, 2290, 2520),
-                new distanceRPMPoint(8.5, 2290, 2600),
-                new distanceRPMPoint(9.25, 2340, 2660),
-                new distanceRPMPoint(10, 2340, 2770), 
-                new distanceRPMPoint(10.5, 2440, 2850),
-                new distanceRPMPoint(11, 2500, 2890),
-                new distanceRPMPoint(11.5, 2540, 2920),
-                new distanceRPMPoint(12, 2650, 3010),
-                new distanceRPMPoint(12.5, 2740, 3020),
+                new distanceRPMPoint(8.5, 2300, 2600),
+                new distanceRPMPoint(9.25, 2320, 2660),
+                new distanceRPMPoint(10, 2320, 2770),
+                new distanceRPMPoint(10.5, 2420, 2850),
+                new distanceRPMPoint(11, 2480, 2890),
+                new distanceRPMPoint(11.5, 2530, 2920),
+                new distanceRPMPoint(12, 2640, 3010),
+                new distanceRPMPoint(12.5, 2730, 3020),
                 new distanceRPMPoint(13, 2910, 3070),
                 new distanceRPMPoint(13.2, 2950, 3080),
-                new distanceRPMPoint(13.5, 3040, 3120),
-                new distanceRPMPoint(14, 3140, 3170),
-                new distanceRPMPoint(14.5, 3240, 3170),
-                new distanceRPMPoint(15, 3540, 3220),
-                new distanceRPMPoint(15.5, 3840, 3220),
-                new distanceRPMPoint(16, 4140, 3270),
-        };  
+                // see github commit for changes
+                new distanceRPMPoint(13.5, 3030, 3120),
+                new distanceRPMPoint(14, 3130, 3170),
+                new distanceRPMPoint(14.5, 3200, 3170),
+                new distanceRPMPoint(15, 3530, 3220),
+                new distanceRPMPoint(15.5, 3830, 3220),
+                new distanceRPMPoint(16, 4160, 3270),
+        };
 
         for (distanceRPMPoint point : distanceRPMlist) {
             m_interpolatingSpeeds_bot.put(new InterpolatingDouble(point.distance),
@@ -119,14 +122,14 @@ public class Shooter extends Base {
     // END SHUFFLEBOARD HELPERS
 
     public void robotInit() {
-        debugTab.addNumber("Actual Top RPM", () -> getTopMotorRPM()).withPosition(4, 1).withSize(4, 3)
-                .withWidget(BuiltInWidgets.kGraph);
-        debugTab.addNumber("Actual Bot RPM", () -> getBotMotorRPM()).withPosition(4, 4).withSize(4, 3)
-                .withWidget(BuiltInWidgets.kGraph);
+        debugTab.addNumber("Actual Top RPM", () -> getTopMotorRPM()).withPosition(4, 1).withSize(4, 3);
+        // .withWidget(BuiltInWidgets.kGraph);
+        debugTab.addNumber("Actual Bot RPM", () -> getBotMotorRPM()).withPosition(4, 4).withSize(4, 3);
+        // .withWidget(BuiltInWidgets.kGraph);
         debugTab.addNumber("Top Setpoint", () -> getTopClosedLoopTarget());
-                // .withWidget(BuiltInWidgets.kGraph);
+        // .withWidget(BuiltInWidgets.kGraph);
         debugTab.addNumber("Bot Setpoint", () -> getBotClosedLoopTarget());
-                // .withWidget(BuiltInWidgets.kGraph);
+        // .withWidget(BuiltInWidgets.kGraph);
 
         TalonFXConfiguration baseConfig = new TalonFXConfiguration();
         baseConfig.closedloopRamp = 0.0;
@@ -422,17 +425,17 @@ public class Shooter extends Base {
 
     public boolean canShootWithVelocity() {
         double errorTopRPM = ticksPer100msToRPM(m_shootTalonTop.getClosedLoopTarget()
-            - m_shootTalonTop.getSelectedSensorVelocity());
+                - m_shootTalonTop.getSelectedSensorVelocity());
         double errorBotRPM = ticksPer100msToRPM(m_shootTalonBot.getClosedLoopTarget()
-            - m_shootTalonBot.getSelectedSensorVelocity());
+                - m_shootTalonBot.getSelectedSensorVelocity());
 
-            if (Math.abs(errorBotRPM) < 110 && Math.abs(errorTopRPM) < 125) {
-                m_isOKtoShootCounter++;
-            } else {
-                m_isOKtoShootCounter = 0;
-            }
+        if (Math.abs(errorBotRPM) < 110 && Math.abs(errorTopRPM) < 125) {
+            m_isOKtoShootCounter++;
+        } else {
+            m_isOKtoShootCounter = 0;
+        }
 
-            return m_isOKtoShootCounter > 3;
+        return m_isOKtoShootCounter > 3;
     }
 
     public void setTurretAngle(double angleTargetDegrees) {
@@ -450,13 +453,14 @@ public class Shooter extends Base {
                 DemandType.ArbitraryFeedForward, kS);
     }
 
-   /**
-    * resets the turntables odometry based on the turret and hub
-    * @param limelightDist
-    * @param m_state
-    * @param timeStamp
-    * @return new pose 2d of the robot based PURELY on the shooter
-    */
+    /**
+     * resets the turntables odometry based on the turret and hub
+     * 
+     * @param limelightDist
+     * @param m_state
+     * @param timeStamp
+     * @return new pose 2d of the robot based PURELY on the shooter
+     */
     public Pose2d resetTurntableOdometry(double limelightDist, RobotState m_state, double timeStamp) {
 
         double visionTargetOffsetFromCenter = 2.0;
@@ -465,22 +469,23 @@ public class Shooter extends Base {
 
         double cameraToHubHeightDelta = targetHeight - cameraHeight;
 
-        double straightDistToHubCenter = Math.sqrt(Math.pow(limelightDist, 2) - Math.pow(cameraToHubHeightDelta, 2)) + visionTargetOffsetFromCenter;
+        double straightDistToHubCenter = Math.sqrt(Math.pow(limelightDist, 2) - Math.pow(cameraToHubHeightDelta, 2))
+                + visionTargetOffsetFromCenter;
 
         double x = m_state.getRobotToCenterHub(timeStamp).getX();
         double y = m_state.getRobotToCenterHub(timeStamp).getY();
 
         if (turntableOdometryCanChange()) {
             x = Math.sin(getTurretAngleDegrees()) * straightDistToHubCenter;
-            y = Math.sqrt(Math.pow(straightDistToHubCenter, 2) - Math.pow(x, 2));    
+            y = Math.sqrt(Math.pow(straightDistToHubCenter, 2) - Math.pow(x, 2));
         }
-        
+
         return new Pose2d(x, y, new Rotation2d(Units.degreesToRadians(getTurretAngleDegrees())));
     }
 
-
     /**
      * just a filler function for now, it won't ever be true
+     * 
      * @return
      */
     public boolean turntableOdometryCanChange() {
