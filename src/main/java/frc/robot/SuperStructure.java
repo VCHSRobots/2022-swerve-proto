@@ -65,8 +65,12 @@ public class SuperStructure extends Base {
     ShuffleboardTab CompTab = Shuffleboard.getTab("computil");
     // shuffleboard: camera, is aimed, is ok to shoot, how many balls are in intake
 
-    NetworkTableEntry ntBotRPM = CompTab.add("Bot RPM", 5).withPosition(3, 5).withSize(1, 1).getEntry();
-    NetworkTableEntry ntTopRPM = CompTab.add("Top RPM", 2.5).withPosition(3, 4).withSize(1, 1).getEntry();
+    NetworkTableEntry ntBotRpm_rb = CompTab.add("RB Bot RPM", 2200).withPosition(3, 5).withSize(1, 1).getEntry();
+    NetworkTableEntry ntTopRPM_rb = CompTab.add("RB Top RPM", 1400).withPosition(3, 4).withSize(1, 1).getEntry();
+
+    NetworkTableEntry ntBotRpm_lb = CompTab.add("X Bot RPM", 2200).withSize(1, 1).getEntry();
+    NetworkTableEntry ntTopRPM_lb = CompTab.add("X Top RPM", 1400).withSize(1, 1).getEntry();
+
     NetworkTableEntry ntFeetToRPM = CompTab.add("Feet To RPM", 17).withPosition(0, 0).withSize(1, 1)
             .getEntry();
     NetworkTableEntry ntLEDOn = CompTab.add("Limelight LED On", false)
@@ -148,7 +152,7 @@ public class SuperStructure extends Base {
         m_state.update(m_SwerveDrive.getPose2d(), Rotation2d.fromDegrees(m_Shooter.getTurretAngleDegrees()));
 
         // climber or shooter check
-        if (OI.getAimTurret() || OI.getRightBumperForLaunchShot() || OI.getLeftBumperForTapeShot()
+        if (OI.getAimTurret() || OI.getRightBumperForLaunchShot() || OI.getTapeShot()
                 || OI.getRightTriggerForShooting() || OI.getUnjam() || OI.getBarf() || OI.startIntake()
                 || OI.getLeftTurntable() || OI.getRightTurntable()) {
             m_lastButtonWasClimber = false;
@@ -213,7 +217,7 @@ public class SuperStructure extends Base {
             }
         } else if (OI.getRightBumperForLaunchShot()) {
             // turn shooter on in rpm mode
-            m_Shooter.shootingRPM(ntTopRPM.getDouble(0), ntBotRPM.getDouble(0));
+            m_Shooter.shootingRPM(ntTopRPM_rb.getDouble(0), ntBotRpm_rb.getDouble(0));
 
             if (m_Shooter.IsOkToShoot()) {
                 // Load shooter
@@ -222,7 +226,19 @@ public class SuperStructure extends Base {
             } else {
                 m_Intake.countinueIntakeMotors();
             }
-        } else if (m_lastButtonWasClimber) {
+        } else if (OI.getTapeShot()){
+            m_Shooter.shootingRPM(ntTopRPM_lb.getDouble(0), ntBotRpm_lb.getDouble(0));
+
+            if (m_Shooter.IsOkToShoot()) {
+                m_Intake.loadShooter();
+            } else {
+                m_Intake.countinueIntakeMotors();
+            }
+
+        }
+        
+        
+        else if (m_lastButtonWasClimber) {
             m_Shooter.turnOff();
         } else if ((ntShooterPreheatEnable.getBoolean(false)
                 || DriverStation.isFMSAttached()) && !m_lastButtonWasClimber) {

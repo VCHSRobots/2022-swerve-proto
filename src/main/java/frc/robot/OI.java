@@ -109,8 +109,8 @@ public class OI {
 
     }
 
-    static public boolean getLeftBumperForTapeShot() {
-        return xboxDrive.getLeftBumper();
+    static public boolean getTapeShot() {
+        return xboxDrive.getXButton();
     }
 
     static public boolean getRightBumperForLaunchShot() {
@@ -207,8 +207,8 @@ public class OI {
     }
 
     static public boolean driveAndShoot() {
-        return xboxDrive.getXButton();
-        // return false;
+        // return xboxDrive.getXButton();
+        return false;
     }
 
 }
