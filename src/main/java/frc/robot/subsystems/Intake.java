@@ -131,6 +131,10 @@ public class Intake extends Base {
                     // don't care
                 }
 
+                if (reverse) {
+                    m_state = STATE.G;
+                }
+
                 if (isBallAtLoad() || isBallAtMiddle()) {
                     // don't care
                 }

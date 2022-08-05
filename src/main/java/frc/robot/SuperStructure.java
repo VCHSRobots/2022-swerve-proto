@@ -74,6 +74,8 @@ public class SuperStructure extends Base {
     NetworkTableEntry ntShooterPreheatEnable = CompTab.add("Shooter Preheat", false)
             .withWidget(BuiltInWidgets.kToggleButton).getEntry();
 
+    NetworkTableEntry ntKidMode = CompTab.add("Kid Mode", false).withWidget(BuiltInWidgets.kToggleButton).getEntry();
+
     public SuperStructure(SwerveDrive swerveDrive, Intake intake, Shooter shooter, Climber climber) {
 
         m_SwerveDrive = swerveDrive;
@@ -196,7 +198,15 @@ public class SuperStructure extends Base {
             m_SwerveDrive.driveFromChassisSpeeds(speeds);
         } else {
             // XBOX DRIVING CODE
-            m_SwerveDrive.driveWithXbox(OI.getDriveY(), OI.getDriveX(), OI.getDriveRot(),
+            var driveY = OI.getDriveY();
+            var driveX = OI.getDriveX();
+            var driveR = OI.getDriveRot();
+            if (ntKidMode.getBoolean(false)) {
+                driveY *= 0.3;
+                driveX *= 0.3;
+                driveR *= 0.3;
+            }
+            m_SwerveDrive.driveWithXbox(driveY, driveX, driveR,
                     false, false);
         }
 

@@ -69,24 +69,23 @@ public class Shooter extends Base {
     public Shooter() {
         distanceRPMPoint[] distanceRPMlist = {
                 new distanceRPMPoint(8.0, 2290, 2520),
-                new distanceRPMPoint(8.5, 2290, 2600),
-                new distanceRPMPoint(9.25, 2340, 2660),
-                new distanceRPMPoint(10, 2340, 2770),
-                new distanceRPMPoint(10.5, 2440, 2850),
-                new distanceRPMPoint(11, 2500, 2890),
-                new distanceRPMPoint(11.5, 2540, 2920),
-                new distanceRPMPoint(12, 2650, 3010),
-                new distanceRPMPoint(12.5, 2740, 3020),
+                new distanceRPMPoint(8.5, 2300, 2600),
+                new distanceRPMPoint(9.25, 2320, 2660),
+                new distanceRPMPoint(10, 2320, 2770),
+                new distanceRPMPoint(10.5, 2420, 2850),
+                new distanceRPMPoint(11, 2480, 2890),
+                new distanceRPMPoint(11.5, 2530, 2920),
+                new distanceRPMPoint(12, 2640, 3010),
+                new distanceRPMPoint(12.5, 2730, 3020),
                 new distanceRPMPoint(13, 2910, 3070),
                 new distanceRPMPoint(13.2, 2950, 3080),
-                // post q6 shooting far on far shots. changed below values
+                // see github commit for changes
                 new distanceRPMPoint(13.5, 3030, 3120),
                 new distanceRPMPoint(14, 3130, 3170),
                 new distanceRPMPoint(14.5, 3200, 3170),
-                new distanceRPMPoint(15, 3500, 3220),
-                new distanceRPMPoint(15.5, 3800, 3220),
-                // end changes
-                new distanceRPMPoint(16, 4140, 3270),
+                new distanceRPMPoint(15, 3530, 3220),
+                new distanceRPMPoint(15.5, 3830, 3220),
+                new distanceRPMPoint(16, 4160, 3270),
         };
 
         for (distanceRPMPoint point : distanceRPMlist) {
