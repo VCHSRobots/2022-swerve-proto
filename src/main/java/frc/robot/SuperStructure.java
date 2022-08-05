@@ -75,13 +75,10 @@ public class SuperStructure extends Base {
             .withWidget(BuiltInWidgets.kToggleButton).getEntry();
 
     public SuperStructure(SwerveDrive swerveDrive, Intake intake, Shooter shooter, Climber climber) {
-
         m_SwerveDrive = swerveDrive;
         m_Intake = intake;
         m_Shooter = shooter;
         m_Climber = climber;
-        // m_VisionBall = new VisionBall();
-
     }
 
     @Override
@@ -92,7 +89,6 @@ public class SuperStructure extends Base {
         m_Shooter.robotInit();
         m_Climber.robotInit();
         m_auto.robotInit();
-        // m_VisionBall.robotInit();
         m_VisionShooter.robotInit();
 
         m_cameraThread = new Thread(
@@ -103,8 +99,6 @@ public class SuperStructure extends Base {
         m_cameraThread.setDaemon(true);
         m_cameraThread.start();
 
-        // Shuffleboard.getTab("super").add("compressor",
-        // m_phCompressor).withPosition(12, 0).withSize(1, 1);
         Shuffleboard.getTab("super").addBoolean("IsOkToShoot", () -> m_Shooter.IsOkToShoot()).withPosition(0, 4);
 
         Shuffleboard.getTab("super").addNumber("Camera Based Distance", () -> m_VisionShooter.getDistance())
@@ -189,16 +183,9 @@ public class SuperStructure extends Base {
                 OI.getNxtClimb(), OI.getFinClimb(), OI.getClimbArmSpeedDown(), OI.getClimbArmSpeedUp());
 
         // DRIVING //
-        // VISION GET BALL
-        if (OI.getVisionBallEngaged()) {
-            // ChassisSpeeds speeds = m_VisionBall.followBall();
-            ChassisSpeeds speeds = new ChassisSpeeds();
-            m_SwerveDrive.driveFromChassisSpeeds(speeds);
-        } else {
-            // XBOX DRIVING CODE
-            m_SwerveDrive.driveWithXbox(OI.getDriveY(), OI.getDriveX(), OI.getDriveRot(),
-                    false, false);
-        }
+        // XBOX DRIVING CODE
+        m_SwerveDrive.driveWithXbox(OI.getDriveY(), OI.getDriveX(), OI.getDriveRot(),
+                false, false);
 
         // INTAKE STATE UPDATE
         m_Intake.changeState(OI.startIntake(), OI.stopIntake());
@@ -207,7 +194,6 @@ public class SuperStructure extends Base {
         // If any climbing functions are active, turn off shooter wheels.
         if (OI.getUnjam()) {
             m_Intake.unjamShooter();
-
         } else if (OI.getBarf()) {
             m_Shooter.setBarfVoltage();
             if (m_Shooter.isSpinningFastEnoughForBarf()
@@ -227,7 +213,7 @@ public class SuperStructure extends Base {
             }
         } else if (OI.getRightBumperForLaunchShot()) {
             // turn shooter on in rpm mode
-            m_Shooter.shootingRPM(4000, 3200);
+            m_Shooter.shootingRPM(ntTopRPM.getDouble(0), ntBotRPM.getDouble(0));
 
             if (m_Shooter.IsOkToShoot()) {
                 // Load shooter
@@ -236,16 +222,6 @@ public class SuperStructure extends Base {
             } else {
                 m_Intake.countinueIntakeMotors();
             }
-            // } else if (OI.getLeftBumperForTapeShot()) {
-            // // 4000, 2900 for vision target on bot of screen
-            // // m_Shooter.shootingRPM(5100, 3000);
-            // m_Shooter.shootingRPM(2500, 2650); // tape speeds
-            // if (m_Shooter.IsOkToShoot()) {
-            // // load shooter
-            // m_Intake.loadShooter();
-            // } else {
-            // m_Intake.turnOffLoadShooter();
-            // }
         } else if (m_lastButtonWasClimber) {
             m_Shooter.turnOff();
         } else if ((ntShooterPreheatEnable.getBoolean(false)

@@ -132,10 +132,6 @@ public class OI {
         return xboxDrive.getLeftTriggerAxis() > 0.5;
     }
 
-    static public boolean getVisionBallEngaged() {
-        return xboxDrive.getLeftStickButton();
-    }
-
     static public boolean forwardIntake() {
         // return xboxIntakeTesting.getAButton();
         return false;

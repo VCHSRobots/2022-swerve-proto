@@ -369,7 +369,7 @@ public class Shooter extends Base {
                 - m_shootTalonBot.getSelectedSensorVelocity());
         boolean isBotFast = ticksPer100msToRPM(m_shootTalonBot.getSelectedSensorVelocity()) > 1300;
 
-        if (Math.abs(errorBotRPM) < 50 && Math.abs(errorTopRPM) < 70 && isBotFast) {
+        if (Math.abs(errorBotRPM) < 100 && Math.abs(errorTopRPM) < 100 && isBotFast) {
             m_isOKtoShootCounter++;
         } else {
             m_isOKtoShootCounter = 0;
