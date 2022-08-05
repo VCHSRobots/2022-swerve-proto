@@ -66,8 +66,9 @@ public class OI {
         return xboxDrive.getLeftBumper();
     }
 
-    static public boolean getYforDisableAutoAim() {
-        return xboxDrive.getYButton();
+    static public boolean getDisableAutoAim() {
+        // return xboxDrive.getYButton();
+        return xboxDrive.getRightStickButtonPressed();
     }
 
     static public double getDriveRot() {
@@ -91,7 +92,7 @@ public class OI {
     }
 
     static public boolean startIntake() {
-        return xboxDrive.getRightStickButtonPressed() || xboxDrive.getAButtonPressed();
+        return xboxDrive.getAButtonPressed();
     }
 
     static public boolean stopIntake() {
@@ -110,7 +111,7 @@ public class OI {
     }
 
     static public boolean getTapeShot() {
-        return xboxDrive.getXButton();
+        return xboxDrive.getYButton();
     }
 
     static public boolean getRightBumperForLaunchShot() {

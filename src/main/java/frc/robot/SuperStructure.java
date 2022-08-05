@@ -68,8 +68,8 @@ public class SuperStructure extends Base {
     NetworkTableEntry ntBotRpm_rb = CompTab.add("RB Bot RPM", 2200).withPosition(3, 5).withSize(1, 1).getEntry();
     NetworkTableEntry ntTopRPM_rb = CompTab.add("RB Top RPM", 1400).withPosition(3, 4).withSize(1, 1).getEntry();
 
-    NetworkTableEntry ntBotRpm_lb = CompTab.add("X Bot RPM", 2200).withSize(1, 1).getEntry();
-    NetworkTableEntry ntTopRPM_lb = CompTab.add("X Top RPM", 1400).withSize(1, 1).getEntry();
+    NetworkTableEntry ntBotRpm_lb = CompTab.add("Y Bot RPM", 2200).withSize(1, 1).getEntry();
+    NetworkTableEntry ntTopRPM_lb = CompTab.add("Y Top RPM", 1400).withSize(1, 1).getEntry();
 
     NetworkTableEntry ntFeetToRPM = CompTab.add("Feet To RPM", 17).withPosition(0, 0).withSize(1, 1)
             .getEntry();
@@ -189,19 +189,18 @@ public class SuperStructure extends Base {
                 OI.getNxtClimb(), OI.getFinClimb(), OI.getClimbArmSpeedDown(), OI.getClimbArmSpeedUp());
 
         // DRIVING //
-        
-            // XBOX DRIVING CODE
-            var driveY = OI.getDriveY();
-            var driveX = OI.getDriveX();
-            var driveR = OI.getDriveRot();
-            if (ntKidMode.getBoolean(false)) {
-                driveY *= 0.3;
-                driveX *= 0.3;
-                driveR *= 0.3;
-            }
-            m_SwerveDrive.driveWithXbox(driveY, driveX, driveR,
-                    false, false);
-        
+
+        // XBOX DRIVING CODE
+        var driveY = OI.getDriveY();
+        var driveX = OI.getDriveX();
+        var driveR = OI.getDriveRot();
+        if (ntKidMode.getBoolean(false)) {
+            driveY *= 0.3;
+            driveX *= 0.3;
+            driveR *= 0.3;
+        }
+        m_SwerveDrive.driveWithXbox(driveY, driveX, driveR,
+                false, false);
 
         // INTAKE STATE UPDATE
         m_Intake.changeState(OI.startIntake(), OI.stopIntake(), OI.reverseIntake());
@@ -238,7 +237,7 @@ public class SuperStructure extends Base {
             } else {
                 m_Intake.countinueIntakeMotors();
             }
-        } else if (OI.getTapeShot()){
+        } else if (OI.getTapeShot()) {
             m_Shooter.shootingRPM(ntTopRPM_lb.getDouble(0), ntBotRpm_lb.getDouble(0));
 
             if (m_Shooter.IsOkToShoot()) {
@@ -248,8 +247,7 @@ public class SuperStructure extends Base {
             }
 
         }
-        
-        
+
         else if (m_lastButtonWasClimber) {
             m_Shooter.turnOff();
         } else if ((ntShooterPreheatEnable.getBoolean(false)
@@ -277,7 +275,7 @@ public class SuperStructure extends Base {
             m_Intake.turnOffLoadShooter();
         }
 
-        if (OI.getYforDisableAutoAim()) {
+        if (OI.getDisableAutoAim()) {
             m_autoAimEnabled = false;
         }
 
