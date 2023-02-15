@@ -36,6 +36,16 @@ public class SwerveModule implements Sendable {
         private static final int kTalonFXEncoderResolution = 2048;
         private static final double kDriveMetersPerIntegratedTick = 2.0 * Math.PI * kWheelRadius * (1.0 / 6.54)
                         * (1.0 / (double) kTalonFXEncoderResolution);
+
+        // turning PID Values
+        public static final double kPModuleTurningController = 0.1325;//5.4457;
+        public static final double kDModuleTurningController = 0;
+        public static final double kMaxModuleAngularSpeedRadiansPerSecond = 19.0;
+        public static final double kMaxModuleAngularAccelerationRadiansPerSecondSquared = 150.0; // 24/.15
+                    
+        public static final double kSModuleTurningFeedforward = 0.70944;//0.17017;
+        public static final double kVModuleTurningFeedforward = 0.2632;//2.2716;
+        public static final double kAModuleTurningFeedforward = 0.0061352;//0.2872;
                         
         // 360 deg * turning rot per motor rot * motor rot per 2048 enc ticks
         // wheel turning rotations per turning motor rotations = 1 : 10
@@ -54,16 +64,29 @@ public class SwerveModule implements Sendable {
         private final PIDController m_drivePIDController = new PIDController(2.0, 0, 0); // 2
 
         // Gains are for example purposes only - must be determined for your own robot!
+        // private final ProfiledPIDController m_turningPIDController = new ProfiledPIDController(
+        //                 2.5,
+        //                 0,
+        //                 0,
+        //                 new TrapezoidProfile.Constraints(
+        //                                 kModuleMaxAngularVelocity, kModuleMaxAngularAcceleration));
+
         private final ProfiledPIDController m_turningPIDController = new ProfiledPIDController(
-                        2.5,
-                        0,
-                        0,
-                        new TrapezoidProfile.Constraints(
-                                        kModuleMaxAngularVelocity, kModuleMaxAngularAcceleration));
+                kPModuleTurningController,
+                0,
+                kDModuleTurningController,
+                new TrapezoidProfile.Constraints(
+                    kMaxModuleAngularSpeedRadiansPerSecond,
+                    kMaxModuleAngularAccelerationRadiansPerSecondSquared));
+
+        private final SimpleMotorFeedforward m_turnFeedforward = new SimpleMotorFeedforward(
+                kSModuleTurningFeedforward,
+                kVModuleTurningFeedforward,
+                0);
 
         // Gains are for example purposes only - must be determined for your own robot!
         private final SimpleMotorFeedforward m_driveFeedforward = new SimpleMotorFeedforward(0.4, 2.2); // 0.4, 1.93
-        private final SimpleMotorFeedforward m_turnFeedforward = new SimpleMotorFeedforward(0.34, 0.32); // 0.1,0.25
+        // private final SimpleMotorFeedforward m_turnFeedforward = new SimpleMotorFeedforward(0.34, 0.32); // 0.1,0.25
 
         private final SimpleMotorFeedforward m_driveFeedforwardIntegrated = new SimpleMotorFeedforward(0, 0);
 
